@@ -1,0 +1,90 @@
+<?php
+include_once('sql/function.php');
+$dashbord = GetActive('dashbord');
+$atendent = GetActive('atendent');
+$notification = GetActive('notification');
+$lessonManage_sub = GetActive('lessonManage', 'sub');
+$addsnippet_sub = GetActive('addsnippet', 'sub');
+$updatelesson_sub = GetActive('updatelesson', 'sub');
+(GetActive('addsnippet') != '' || GetActive('lessonManage') != '') ? $addcontent = "active-page-link" : $addcontent = "";
+(GetActive('updatelesson') != '') ? $updatecontent = "active-page-link" : $updatecontent = "";
+
+?>
+<!-- Sidebar wrapper start -->
+<nav class="sidebar-wrapper">
+
+    <!-- Sidebar brand starts -->
+    <div class="sidebar-brand">
+        <a href="index.php" class="logo">
+            <img src="assets/images/logo.png" alt="Admin Dashboards" />
+        </a>
+    </div>
+    <!-- Sidebar brand starts -->
+
+    <!-- Sidebar menu starts -->
+    <div class="sidebar-menu">
+        <div class="sidebarMenuScroll">
+            <ul>
+                <li class="<?php echo $dashbord; ?>">
+                    <a href="index.php">
+                        <i class="bi bi-house"></i>
+                        <span class="menu-text">Dashboards</span>
+                    </a>
+                </li>
+                <li class="<?php echo $atendent; ?>">
+                    <a href="atendent.php">
+                        <i class="bi bi-house"></i>
+                        <span class="menu-text">Atendent</span>
+                    </a>
+                </li>
+                <!-- <li class="<?php // echo $lesson; 
+                                ?>">
+				<a href="addLesson.php">
+                    <i class="bi bi-camera-video"></i>
+					<span class="menu-text">Add Content</span>
+				</a>
+			</li> -->
+                <li class="sidebar-dropdown sidebar-dropdown-arror <?php echo $addcontent; ?>">
+                    <a href="#">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="menu-text ">Add Content</span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li>
+                                <a href="lessonManagement.php" class="<?php echo $lessonManage_sub; ?>">Lesson Management</a>
+                            </li>
+                            <li>
+                                <a href="addsnippet.php" class="<?php echo $addsnippet_sub; ?>">Add Snippet</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- <li class="sidebar-dropdown sidebar-dropdown-arror <?php //echo $updatecontent; 
+                                                                        ?>">
+                    <a href="#">
+                        <i class="bi bi-plus-circle"></i>
+                        <span class="menu-text ">update Content</span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li>
+                                <a href="lessonManagement.php" class="<?php //echo $updatelesson_sub; 
+                                                                        ?>">Update Lessons</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> -->
+                <li class="<?php echo $notification; ?>">
+                    <a href="notification.php">
+                        <i class="bi bi-house"></i>
+                        <span class="menu-text">Notofication</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Sidebar menu ends -->
+
+</nav>
+<!-- Sidebar wrapper end -->

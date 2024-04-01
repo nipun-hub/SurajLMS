@@ -1,0 +1,4 @@
+mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IN TO adminuser(UName , Email , Password , MobNum) VALUE(?,?,?,?)' at line 1 in C:\xampp\htdocs\new\arise\admin\login\sql\process_data.php:25
+Stack trace:
+#0 C:\xampp\htdocs\new\arise\admin\login\sql\process_data.php(25): mysqli->prepare('INSERT IN TO ad...')
+#1 {main}

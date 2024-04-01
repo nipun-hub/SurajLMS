@@ -1,0 +1,6 @@
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $LesName in /home/opocraf04b9u/public_html/admin/sql/process.php on line 636
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $Type in /home/opocraf04b9u/public_html/admin/sql/process.php on line 644
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $Type in /home/opocraf04b9u/public_html/admin/sql/process.php on line 645
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $Link in /home/opocraf04b9u/public_html/admin/sql/process.php on line 652
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $Dict in /home/opocraf04b9u/public_html/admin/sql/process.php on line 678
+[24-Mar-2024 08:26:33 Asia/colombo] PHP Warning:  Undefined variable $tableData in /home/opocraf04b9u/public_html/admin/sql/process.php on line 708
