@@ -42,6 +42,7 @@ try {
     // get class name
     if (isset($_POST['getactiveClass'])) {
         if (isset($_SESSION['clz'])) {
+            $monthName = isset($_POST['month']) ? substr($_POST['month'], 4) : null;
             $activeClass = explode("-", $_SESSION['clz'])[1];
             $sql = "SELECT * FROM class WHERE ClassId = ?";
             $stmt = $conn->prepare($sql);
@@ -52,6 +53,7 @@ try {
                 $classHeader = $row['year'] . "-" . $row['ClassName'] . " in " . $row['InstiName'];
                 $data = array(
                     "status" => "done",
+                    "month" => GetMonthName($monthName),
                     "type" => $row['Type'],
                     "price" => $row['Price'],
                     "classHeader" => $classHeader,

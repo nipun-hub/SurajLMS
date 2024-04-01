@@ -35,6 +35,13 @@ function nthj(type, val = null) {
         });
         show_alert();
     } else if (type == 'register') { // register
+        alert[0].querySelector('h2').innerHTML = "Register Institute" + "<br>(" + val + ")";
+        var lablecontent = val == 'Online' ? "Register Code" : "Institute Id Numner";
+        var UserRegCode = alert[0].querySelector('#hiddenRegCode').value;
+        var enterRegCodeVal = val == 'Online' ? UserRegCode : null;
+        document.getElementById('instiid').disabled = val == "Online" ? true : false;
+        alert[0].querySelector('#instiid').value = enterRegCodeVal;
+        alert[0].querySelectorAll('.card-body label')[0].innerHTML = lablecontent;
         alert.forEach((self) => {
             self.style.display = "none";
         });
@@ -88,7 +95,7 @@ function nthj(type, val = null) {
         }, 10000);
         show_alert();
     } else if (type == 5 && val != null && val != undefined) { // payment alert
-        console.log(val);
+        // console.log(val);
         alert.forEach((self) => {
             self.style.display = "none";
         });
@@ -96,16 +103,17 @@ function nthj(type, val = null) {
         clearFormData();
         loading(false, 3);
         clearFormData();
-        formData = "getactiveClass=";
+        formData = "getactiveClass=" + "&month=" + val;
         var price;
         $.post("sql/process.php", formData, function (response, status) {
-            // console.log(response.status);
             if (response.type == "online") {
                 price = response.price;
                 mainTitle = "Payment";
                 alert[3].querySelector('.price').innerHTML = `Price : Rs ${response.price}.00`;
+                alert[3].querySelector('.month').innerHTML = `Payment for ${response.month}`;
             } else if (response.type == "physical") {
                 mainTitle = "Active";
+                alert[3].querySelector('.month').innerHTML = `Payment for ${response.month}`;
             }
             alert[3].querySelector('h2').innerHTML = `${mainTitle}<br>${response.classHeader}`;
         });
