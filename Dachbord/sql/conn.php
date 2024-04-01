@@ -9,6 +9,4 @@
   //  session start
   session_start();
 
-  $_SESSION['login'] = 12;
-
   ?>
