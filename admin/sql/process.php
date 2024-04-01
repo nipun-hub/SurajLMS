@@ -1721,8 +1721,8 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
                     <span class='text-blue td-status'><i class='bi bi-clock-history'></i> {$row['Status']}</span>
                 </td>
                 <td>
-                    <span class=' btn btn-success p-0 px-2' onclick='aprued(`insti`,{$InstiId})'>Aprued</span>
-                    <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,{$InstiId})'>Ignored</span>
+                    <span class=' btn btn-success p-0 px-2' onclick='aprued(`insti`,`{$InstiId}`)'>Aprued</span>
+                    <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,`{$InstiId})`'>Ignored</span>
                     <!-- <span class='badge shade-blue min-90'>Processing</span> -->
                 </td>
             </tr>
@@ -1878,80 +1878,80 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
 //     echo $htmlContentHeader . $htmlContent . $htmlContentFooter;
 // }
 
-if (isset($_POST['updateInstiReg'])) {
-    $respons = $_POST['updateInstiReg'];
-    $htmlContent = "";
-    $htmlContentHeader = "
-            <div class='table-responsive'>
-                <table class='table v-middle'>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Reg Code</th>
-                            <th>Mobile Number</th>
-                            <th>Image</th>
-                            <th>Insti Idd</th>
-                            <th>Insti</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id='table-content-change'>";
-    $htmlContentFooter = "
-                    </tbody>
-                </table>
-            </div>";
-    $status = "pending";
-    if ($respons == "" || $respons = null) {
-        $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata JOIN userdata ON userdata.UserId = user.UserId WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $status);
-    } else {
-        $respons = "%{$respons}%";
-        $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata JOIN userdata ON userdata.UserId = user.UserId WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $status, $respons, $respons, $respons);
-    }
-    // $stmt = $conn->prepare($sql);
-    // $stmt->bind_param("s", $status);
-    $stmt->execute();
-    $reusalt = $stmt->get_result();
-    while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-        $regcode = $row['RegCode'];
-        $name = $row['UserName'];
-        $InstiName = $row['InstiName'];
-        $InstiId = $row['InstiId'];
-        $InstiPic = $row['InstiPic'];
-        $status1 = $row['Status'];
-        // $type = $row['Type'];
-        // $month = substr($row['Month'], 0, 3) . " " . GetMonthName(substr($row['Month'], 4, 5));
-        $htmlContent .= "
-            <tr>
-                <td>{$name}</td>
-                <td>{$regcode}</td>
-                <td>Mobile : {$row['MobNum']}<br>Whatsapp : {$row['WhaNum']}</td>
-                <td>
-                    <div class='media-box'>
-                        <img src='../Dachbord/user_images/instiRegImg/{$InstiPic}' class='media-avatar notifiImage' alt='Image not found!' onclick='showImage(this.src)'>
-                    </div>
-                </td>
-                <td>{$InstiId}</td>
-                <td>{$InstiName}</td>
-                <td>
-                    <!-- <span class='text-green td-status'><i class='bi bi-check-circle'></i> Paid</span> -->
-                    <!-- <span class='text-red td-status'><i class='bi bi-x-circle'></i> Failed</span> -->
-                    <span class='text-blue td-status'><i class='bi bi-clock-history'></i> {$status1}</span>
-                </td>
-                <td>
-                    <span class=' btn btn-success p-0 px-2' onclick='aprued(`insti`,{$InstiId})'>Aprued</span>
-                    <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,{$InstiId})'>Ignored</span>
-                    <!-- <span class='badge shade-blue min-90'>Processing</span> -->
-                </td>
-            </tr>
-            ";
-    }
-    echo $htmlContentHeader . $htmlContent . $htmlContentFooter;
-}
+// if (isset($_POST['updateInstiReg'])) {
+//     $respons = $_POST['updateInstiReg'];
+//     $htmlContent = "";
+//     $htmlContentHeader = "
+//             <div class='table-responsive'>
+//                 <table class='table v-middle'>
+//                     <thead>
+//                         <tr>
+//                             <th>Name</th>
+//                             <th>Reg Code</th>
+//                             <th>Mobile Number</th>
+//                             <th>Image</th>
+//                             <th>Insti Id</th>
+//                             <th>Insti</th>
+//                             <th>Status</th>
+//                             <th>Action</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody id='table-content-change'>";
+//     $htmlContentFooter = "
+//                     </tbody>
+//                 </table>
+//             </div>";
+//     $status = "pending";
+//     if ($respons == "" || $respons = null) {
+//         $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata JOIN userdata ON userdata.UserId = user.UserId WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("s", $status);
+//     } else {
+//         $respons = "%{$respons}%";
+//         $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata JOIN userdata ON userdata.UserId = user.UserId WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ?)";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("ssss", $status, $respons, $respons, $respons);
+//     }
+//     // $stmt = $conn->prepare($sql);
+//     // $stmt->bind_param("s", $status);
+//     $stmt->execute();
+//     $reusalt = $stmt->get_result();
+//     while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+//         $regcode = $row['RegCode'];
+//         $name = $row['UserName'];
+//         $InstiName = $row['InstiName'];
+//         $InstiId = $row['InstiId'];
+//         $InstiPic = $row['InstiPic'];
+//         $status1 = $row['Status'];
+//         // $type = $row['Type'];
+//         // $month = substr($row['Month'], 0, 3) . " " . GetMonthName(substr($row['Month'], 4, 5));
+//         $htmlContent .= "
+//             <tr>
+//                 <td>{$name}</td>
+//                 <td>{$regcode}</td>
+//                 <td>Mobile : {$row['MobNum']}<br>Whatsapp : {$row['WhaNum']}</td>
+//                 <td>
+//                     <div class='media-box'>
+//                         <img src='../Dachbord/user_images/instiRegImg/{$InstiPic}' class='media-avatar notifiImage' alt='Image not found!' onclick='showImage(this.src)'>
+//                     </div>
+//                 </td>
+//                 <td>{$InstiId}</td>
+//                 <td>{$InstiName}</td>
+//                 <td>
+//                     <!-- <span class='text-green td-status'><i class='bi bi-check-circle'></i> Paid</span> -->
+//                     <!-- <span class='text-red td-status'><i class='bi bi-x-circle'></i> Failed</span> -->
+//                     <span class='text-blue td-status'><i class='bi bi-clock-history'></i> {$status1}</span>
+//                 </td>
+//                 <td>
+//                     <span class=' btn btn-success p-0 px-2' onclick='aprued(`insti`,`{$InstiId})`'>Aprued</span>
+//                     <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,`{$InstiId})`'>Ignored</span>
+//                     <!-- <span class='badge shade-blue min-90'>Processing</span> -->
+//                 </td>
+//             </tr>
+//             ";
+//     }
+//     echo $htmlContentHeader . $htmlContent . $htmlContentFooter;
+// }
 
 // update admin notification  table section start
 
