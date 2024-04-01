@@ -202,6 +202,7 @@
 
 
         function aprued(type, id) {
+            console.log(type + id);
             PassData = "aprued=" + "&type=" + type + "&id=" + id;
             $.post("sql/process.php", PassData, function(response, status) {
                 if (response == ' success Ignored insti' || response == ' success aprued insti') {
