@@ -231,7 +231,7 @@
 										</div>
 										<!-- <center><img class="w-auto" src="assets/img/site use/instiimge/Free Class.jpg"></center> -->
 										<div class="info-details" style="height: 125px;">
-											<span class='alert alert-success'>Actived</span>
+											<span class='alert alert-success'>Activeddd</span>
 											<?php // echo $row['payStatus'] ==  'active' ? "<span class='alert alert-success'>Active</span>" : ($row['payStatus'] ==  'pending' ? "<span class='alert alert-warning'>Pending</span>" : "<span class='alert alert-danger'>Not Pay</span>"); 
 											?>
 											<!-- <i class='bi bi-lock'></i> -->
