@@ -5,7 +5,7 @@ var container = document.querySelector(".container_player"),
     progressBar = container.querySelector(".progress-bar"),
     volumeBtn = container.querySelector(".volume i"),
     volumeSlider = container.querySelector(".left input");
-    currentVidTime = container.querySelector(".current-time"),
+currentVidTime = container.querySelector(".current-time"),
     videoDuration = container.querySelector(".video-duration"),
     skipBackward = container.querySelector(".skip-backward i"),
     skipForward = container.querySelector(".skip-forward i"),
@@ -16,23 +16,25 @@ var container = document.querySelector(".container_player"),
     qualityOptions = container.querySelector(".quality-options"),
     pipBtn = container.querySelector(".pic-in-pic span"),
     fullScreenBtn = container.querySelector(".fullscreen i");
-    var timer;
-     // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
+var timer;
+var finifhCounter = 0;
+var addPoint = 0;
+// 2. This code loads the IFrame Player API code asynchronously.
+var tag = document.createElement('script');
 
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-          setTimeout(stopVideo, 6000);
-          done = true;
-        }
-      }
-      function stopVideo() {
-        player.stopVideo();
-      }
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING && !done) {
+        setTimeout(stopVideo, 6000);
+        done = true;
+    }
+}
+function stopVideo() {
+    player.stopVideo();
+}
 
 //       // Replace with your YouTube video ID
 // const videoId = 'hiZkihneQLA';
@@ -49,11 +51,11 @@ function onYouTubeIframeAPIReady() {
             'onStateChange': onPlayerStateChange
         },
         playerVars: {
-          controls: 0,
-          disablekb: 1,
-          rel: 0,
-          modestbranding: 1,
-          showinfo: 0
+            controls: 0,
+            disablekb: 1,
+            rel: 0,
+            modestbranding: 1,
+            showinfo: 0
         }
     });
 
@@ -88,37 +90,37 @@ function onPlayerReady(event) {
 
 var formatTime = time => {
     let seconds = Math.floor(time % 60),
-    minutes = Math.floor(time / 60) % 60,
-    hours = Math.floor(time / 3600);
+        minutes = Math.floor(time / 60) % 60,
+        hours = Math.floor(time / 3600);
 
     seconds = seconds < 10 ? `0${seconds}` : seconds;
     minutes = minutes < 10 ? `0${minutes}` : minutes;
     hours = hours < 10 ? `0${hours}` : hours;
 
-    if(hours == 0) {
+    if (hours == 0) {
         return `${minutes}:${seconds}`
     }
     return `${hours}:${minutes}:${seconds}`;
 }
 
-    // mainVideo.addEventListener("timeupdate", e => {
-        // let NewLineWith = (player.getCurrentTime() / player.getDuration()) * 100;
-        // progressBar.style.width = `${NewLineWith}%`;
-        // currentVidTime.innerText = formatTime(currentTime);
-    // });
+// mainVideo.addEventListener("timeupdate", e => {
+// let NewLineWith = (player.getCurrentTime() / player.getDuration()) * 100;
+// progressBar.style.width = `${NewLineWith}%`;
+// currentVidTime.innerText = formatTime(currentTime);
+// });
 
 
 
 // The API calls this function when the player's state changes
 function onPlayerStateChange(event) {
-        if (player.getPlayerState() == 1) {
-            // player.pauseVideo();
-            playPauseBtn.classList.replace('fa-play', 'fa-pause');
-        }else if(player.getPlayerState() == 0){
-            playPauseBtn.classList.replace('fa-pause', 'fa-play');
-        }
-        videoDuration.innerText = formatTime(player.getDuration());
-        // You can add custom logic for state changes here
+    if (player.getPlayerState() == 1) {
+        // player.pauseVideo();
+        playPauseBtn.classList.replace('fa-play', 'fa-pause');
+    } else if (player.getPlayerState() == 0) {
+        playPauseBtn.classList.replace('fa-pause', 'fa-play');
+    }
+    videoDuration.innerText = formatTime(player.getDuration());
+    // You can add custom logic for state changes here
 }
 
 // // Play/Pause button click event
@@ -144,7 +146,16 @@ function seek() {
 function updateFunction() {
     let NewLineWith = (player.getCurrentTime() / player.getDuration()) * 100;
     progressBar.style.width = `${NewLineWith}%`;
+    player.getPlayerState() === 1 && NewLineWith <= 99 ? finifhCounter++ : null;
+    var finishprecentage = (finifhCounter / player.getDuration() * 100);
+    if (finishprecentage > 5 && NewLineWith > 80 && addPoint == 0) {
+        PassData = "manageActivity=" + "&type=" + 'votchRecoding' + "&data=" + Lesid;
+        $.post("sql/process.php", PassData, function (data, status) { console.log("add activity " + data); });
+        // console.log('mark as finished' + Lesid);
+        addPoint++;
+    }
     currentVidTime.innerText = formatTime(player.getCurrentTime());
+    setTimeout
 }
 setInterval(updateFunction, 1000);
 
@@ -154,7 +165,7 @@ function adjustVolume() {
     const volumeBar = document.getElementById('volume-bar');
     if (volumeBar.value == 0) {
         volumeBtn.classList.replace("fa-volume-high", "fa-volume-xmark");
-    }else{
+    } else {
         volumeBtn.classList.replace("fa-volume-xmark", "fa-volume-high");
     }
     player.setVolume(volumeBar.value);
@@ -186,7 +197,7 @@ hideControls();
 container.addEventListener("mousemove", () => {
     container.classList.add("show-controls");
     clearTimeout(timer);
-    hideControls();   
+    hideControls();
 });
 
 videoTimeline.addEventListener("mousemove", e => {
@@ -209,7 +220,7 @@ var draggableProgressBar = e => {
     progressBar.style.width = `${e.offsetX}px`;
     mainVideo.currentTime = (e.offsetX / timelineWidth) * player.getDuration();
     player.seekTo(mainVideo.currentTime);
-  ;  // currentVidTime.innerText = formatTime(mainVideo.currentTime);
+    ;  // currentVidTime.innerText = formatTime(mainVideo.currentTime);
 }
 
 speedOptions.querySelectorAll("li").forEach(option => {
@@ -217,13 +228,13 @@ speedOptions.querySelectorAll("li").forEach(option => {
         var speed = option.dataset.speed;
         if (speed == 2.0) {
             player.setPlaybackRate(2.0);
-        }else if(speed == 1.5){
+        } else if (speed == 1.5) {
             player.setPlaybackRate(1.5);
-        }else if(speed == 1.0){
+        } else if (speed == 1.0) {
             player.setPlaybackRate(1.0);
-        }else if(speed == 0.5){
+        } else if (speed == 0.5) {
             player.setPlaybackRate(0.5);
-        }else if(speed == 0.75){
+        } else if (speed == 0.75) {
             player.setPlaybackRate(0.75);
         }
         speedOptions.querySelector(".active").classList.remove("active");
@@ -232,7 +243,7 @@ speedOptions.querySelectorAll("li").forEach(option => {
 });
 
 document.addEventListener("click", e => {
-    if(e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-rounded") {
+    if (e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-rounded") {
         speedOptions.classList.remove("show");
     }
 });
@@ -267,7 +278,7 @@ document.addEventListener("click", e => {
 
 fullScreenBtn.addEventListener("click", () => {
     container.classList.toggle("fullscreen");
-    if(document.fullscreenElement) {
+    if (document.fullscreenElement) {
         fullScreenBtn.classList.replace("fa-compress", "fa-expand");
         return document.exitFullscreen();
     }
@@ -285,26 +296,26 @@ videoTimeline.addEventListener("mousedown", () => videoTimeline.addEventListener
 document.addEventListener("mouseup", () => videoTimeline.removeEventListener("mousemove", draggableProgressBar));
 
 // short cuts
-document.addEventListener('keydown', function(event) {
-  if (event.keyCode == 77) {
-    toggleMute();
-  }
-  if (event.keyCode == 39) {
-    player.seekTo(player.getCurrentTime() + 5);
-  }
-  if (event.keyCode == 37) {
-    player.seekTo(player.getCurrentTime() - 5);
-  }
-  if (event.keyCode == 32) {
-    togglePlayPause();
-  }
-  if (event.keyCode == 70) {
-    container.classList.toggle("fullscreen");
-    if(document.fullscreenElement) {
-        fullScreenBtn.classList.replace("fa-compress", "fa-expand");
-        return document.exitFullscreen();
+document.addEventListener('keydown', function (event) {
+    if (event.keyCode == 77) {
+        toggleMute();
     }
-    fullScreenBtn.classList.replace("fa-expand", "fa-compress");
-    container.requestFullscreen();
-  }
+    if (event.keyCode == 39) {
+        player.seekTo(player.getCurrentTime() + 5);
+    }
+    if (event.keyCode == 37) {
+        player.seekTo(player.getCurrentTime() - 5);
+    }
+    if (event.keyCode == 32) {
+        togglePlayPause();
+    }
+    if (event.keyCode == 70) {
+        container.classList.toggle("fullscreen");
+        if (document.fullscreenElement) {
+            fullScreenBtn.classList.replace("fa-compress", "fa-expand");
+            return document.exitFullscreen();
+        }
+        fullScreenBtn.classList.replace("fa-expand", "fa-compress");
+        container.requestFullscreen();
+    }
 });

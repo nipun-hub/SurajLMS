@@ -105,6 +105,7 @@
 			$stmt->bind_param("s", $activeClass);
 			$stmt->execute();
 			$reusalt = $stmt->get_result();
+			$stmt->close();
 			if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
 				if ($row['Type'] == 'physical') {
 		?>
@@ -210,8 +211,7 @@
 					</form>
 		<?php }
 			}
-		}
-		$stmt->close(); ?>
+		} ?>
 	</div>
 
 	<!-- alert_custom END -->

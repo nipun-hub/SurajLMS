@@ -1,4 +1,11 @@
 <?php
+
+if (isset($_REQUEST['logout'])) {
+    session_destroy();
+    header('location:./');
+    exit;
+}
+
 // chech logged user ?
 if (!isset($_SESSION['adminlogin'])) {
     header('location:login/');

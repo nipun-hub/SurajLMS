@@ -296,11 +296,11 @@ function validatelesson_val(val) {
     var return_data = true;
     if (val == 1) {
         for (var count = 0; count < inputfeelds.length - 1; count++) {
+            // console.log(inputfeelds[count].name);
             if (inputfeelds[count].value == null || inputfeelds[count].value == "") {
                 inputfeelds[count].classList.toggle("is-valid", false);
                 inputfeelds[count].classList.toggle("is-invalid", true);
                 return_data = false;
-                console.log(inputfeelds[count].name);
             } else {
                 inputfeelds[count].classList.toggle("is-valid", true);
                 inputfeelds[count].classList.toggle("is-invalid", false);
@@ -345,6 +345,7 @@ function validatelesson_val(val) {
         }
     } else if (val == 2) {
         for (let index = 0; index < inputfeelds3.length - 1; index++) {
+            // console.log(inputfeelds3[index].name);
             if (inputfeelds3[index].value == null || inputfeelds3[index].value == "") {
                 inputfeelds3[index].classList.toggle("is-valid", false);
                 inputfeelds3[index].classList.toggle("is-invalid", true);

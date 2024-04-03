@@ -92,10 +92,10 @@
                     </div> -->
                     <div class="row my-3 text-center">
                         <div class="col-xxl-3 col-md-4 col-sm-4  col-6 mb-3">
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#lessovVidNot" onclick="clickLessons(1)" <?php echo ($adminType[0] == "owner" || $adminType == 'editor') ? null : "disabled";?>><i class="bi bi-plus"></i>&nbsp;Add Note & Video</button>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#lessovVidNot" onclick="clickLessons(1)" <?php echo ($adminType[0] == "owner" || $adminType == 'editor') ? null : "disabled"; ?>><i class="bi bi-plus"></i>&nbsp;Add Note & Video</button>
                         </div>
                         <div class="col-xxl-3 col-md-4 col-sm-4  col-6 mb-3">
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#lessonClzUpd" onclick="clickLessons(2)"  <?php echo ($adminType[0] == "owner" || $adminType == 'editor') ? null : "disabled";?>><i class="bi bi-plus"></i>&nbsp;Add ClassWork , File Upload</button>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#lessonClzUpd" onclick="clickLessons(2)" <?php echo ($adminType[0] == "owner" || $adminType == 'editor') ? null : "disabled"; ?>><i class="bi bi-plus"></i>&nbsp;Add ClassWork , File Upload</button>
                         </div>
                         <div class="col-xxl-3 col-md-4 col-sm-4  col-6 mb-3">
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addQuizIns" onclick="cickquiz()"><i class="bi bi-plus"></i>&nbsp;Add Quiz</button>
@@ -149,6 +149,19 @@
                                                     </div>
                                                     <input name="date-check" class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                                                     <input name="expdate" type="date" class="form-control datepicker-week-numbers ">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-sm-12 col-12">
+                                                <div class="mb-3 AddLesSub1">
+                                                    <label for="inputweek" class="form-label">Week of lesson *</label>
+                                                    <select name="week" class="form-select" id="inputweek">
+                                                        <option value="">Select the Week</option>
+                                                        <option value="1'st Week">1'st Week</option>
+                                                        <option value="2'nd Week">2'nd Week</option>
+                                                        <option value="3'rd Week">3'rd Week</option>
+                                                        <option value="4'th Week">4'th Week</option>
+                                                        <option value="5'th Week">5'th Week</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-sm-12 col-12">
@@ -238,6 +251,19 @@
                                                     </div>
                                                     <input name="date-check" class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                                                     <input name="expdate" type="date" class="form-control datepicker-week-numbers ">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-sm-12 col-12">
+                                                <div class="mb-3 AddLesSub2">
+                                                    <label for="inputweek" class="form-label">Week of lesson *</label>
+                                                    <select name="week" class="form-select" id="inputweek">
+                                                        <option value="">Select the Week</option>
+                                                        <option value="1'st Week">1'st Week</option>
+                                                        <option value="2'nd Week">2'nd Week</option>
+                                                        <option value="3'rd Week">3'rd Week</option>
+                                                        <option value="4'th Week">4'th Week</option>
+                                                        <option value="5'th Week">5'th Week</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-sm-12 col-12">
