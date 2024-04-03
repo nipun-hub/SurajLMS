@@ -23,6 +23,15 @@ try {
 try {
 
     // grt group id
+    if (isset($_POST['gettype'])) {
+        if (isset(explode("-", $_SESSION['clz'])[2])) {
+            echo explode("-", $_SESSION['clz'])[2];
+        } else {
+            echo "undefind";
+        }
+    }
+
+    // grt type
     if (isset($_POST['getGid'])) {
         if (isset(explode("-", $_SESSION['clz'])[3])) {
             echo explode("-", $_SESSION['clz'])[3];
@@ -182,27 +191,41 @@ try {
             if ($subType == 'lesevent') {
                 $data = $_POST['data'];
                 $activeClaId = explode("-", $_SESSION['clz'])[1];
-                $Gid = explode("-", $_SESSION['clz'])[3];
-
-                mysqli_set_charset($conn, "utf8mb4");
-                $sql = "SELECT grouplist.MGName,lesson.LesName FROM lesson,grouplist WHERE grouplist.GId = '$Gid' and lesson.LesId = '$data' ";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
-                    $MGName = $row['LesName'];
-                    $ClassName = $row['MGName'];
+                $id = explode("-", $_SESSION['clz'])[3];
+                if (explode("-", $_SESSION['clz'])[2] == 'month') {
+                    mysqli_set_charset($conn, "utf8mb4");
+                    $sql = "SELECT LesName FROM lesson WHERE  LesId = '$data' ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+                        $Title = $row['LesName'];
+                        $STitle = substr($id, 0, 4) . " " . GetMonthName(substr($id, 4));
+                    } else {
+                        $Title = '';
+                        $STitle = '';
+                    }
                 } else {
-                    $MGName = '';
-                    $ClassName = '';
+                    mysqli_set_charset($conn, "utf8mb4");
+                    $sql = "SELECT grouplist.MGName,lesson.LesName FROM lesson,grouplist WHERE grouplist.GId = '$id' and lesson.LesId = '$data' ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+                        $Title = $row['LesName'];
+                        $STitle = $row['MGName'];
+                    } else {
+                        $Title = '';
+                        $STitle = '';
+                    }
                 }
                 $htmlContent = "
                 <div class='sub-nav'>
                     <div class='sub-nav-body' id='sub-nav-body'>
                         <div class='radio-btn'>
                             <div class='ul'>
-                                <label onclick='backtoclass({$Gid},2)' class='bg-red text-white d-flex' for='sub_nav-1'>{$ClassName}<i class=' bi bi-caret-right'></i> </label>
-                                <label class='ul-dict' for='sub_nav-1'>{$MGName}</label>
+                                <label onclick='backtoclass({$id},2)' class='bg-red text-white d-flex' for='sub_nav-1'>{$STitle}<i class=' bi bi-caret-right'></i> </label>
+                                <label class='ul-dict' for='sub_nav-1'>{$Title}</label>
                             </div>
                         </div>
 		            </div>
@@ -240,9 +263,9 @@ try {
 		            </div>
 		        </div>";
                 } elseif ($type == 'month') {
-
+                    $data = isset($_POST['data']) || $_POST['data'] != "undefined" ? $_POST['data'] : explode("-", $_SESSION['clz'])[3];
                     $_SESSION['clz'] = $_SESSION['clz'] . "-" . $data;
-
+                    $data = explode("-", $_SESSION['clz'])[3];
                     $sql = "SELECT class.ClassName FROM class WHERE ClassId = '$activeClaId' ";
                     $stmt = $conn->prepare($sql);
                     $stmt->execute();
@@ -418,9 +441,9 @@ try {
                     <div class='col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup'>
                         <div class='main-card h-auto' style='--index:{$i}'>
                             <div class='main-sub-card'>
-                                    <i class='{$indigate} position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>
-                                <img class='main-card-img' src='assets/img/site use/group/{$image}'>
-                                <div class='main-card-details w-100 mt-2'>
+                                <i class='{$indigate} position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>" .
+                        ($image != null ? "<img class='main-card-img' src='assets/img/site use/group/{$image}'>" : "<div class='StylingText01'><div class='top'>{$MGName}</div><div class='bottom' aria-hidden='true'>{$MGName}</div></div>") .
+                        "<div class='main-card-details w-100 mt-2'>
                                     {$action}
                                     <div class='name'>{$MGName}</div>
                                 </div>
@@ -563,7 +586,6 @@ try {
             $paymentPending = "<span class='alert alert-warning p-0 px-2'>Payment Pending&nbsp;<i class='bi bi-lock'></i></span>";
             $Compleate = "<span class='alert alert-success p-0 px-2'>Complete&nbsp;<i class='bi bi-check2-circle'></i></span>";
             $NonCompleate = "<span class='alert alert-info p-o px-2'>None complete&nbsp;</span>";
-            $unwatch = "<span data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
             $upcommingindi = "<span class='alert alert-danger p-0 px-2' >Upcomming&nbsp;<i class='bi bi-clock-history'></i></i></span>";
 
             $htmlFullContent = "";
@@ -583,7 +605,7 @@ try {
                 $GidNew = "%[{$data}]%";
                 $activeClaId_upd = "%[{$activeClaId}]%";
                 $status = "active";
-                $sql = "SELECT recaccess.Month FROM recaccess,lesson WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId GROUP BY recaccess.Month ORDER BY recaccess.InsDate DESC";
+                $sql = "SELECT recaccess.Month,recaccess.week FROM recaccess,lesson WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId GROUP BY recaccess.Month,recaccess.week ORDER BY recaccess.InsDate DESC";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sss", $activeClaId_upd, $GidNew, $status);
                 $stmt->execute();
@@ -591,21 +613,32 @@ try {
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         $Month = $row['Month'];
+                        $week = $row['week'];
 
                         $MonthFomat = DateTime::createFromFormat("Ym", $Month)->format("Y-m");
                         $MonthFomat = explode("-", $MonthFomat);
                         $MonthName = GetMonthName($MonthFomat[1]);
 
-                        $sql1 = "SELECT * FROM recaccess,lesson WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
+                        $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = Lesson.LesId and activity.Status = ? WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
                         $stmt = $conn->prepare($sql1);
-                        $stmt->bind_param("ssss", $activeClaId_upd, $GidNew, $Month, $status);
+                        $stmt->bind_param("issssss", $UserId, $status, $activeClaId_upd, $GidNew, $Month, $week, $status);
                         $stmt->execute();
                         $result0 = $stmt->get_result();
                         if ($result0->num_rows > 0) {
                             $numofrow = $result0->num_rows;
-                            $CompleateStatus = $NonCompleate;
+                            $viweCompleate = 0;
+                            // get compleate lesson count 
+                            if (true) {
+                                $sql = "SELECT COUNT(activity.ActId) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note'";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->bind_param("issssss", $UserId, $activeClaId_upd, $GidNew, $Month, $week, $status, $status);
+                                $stmt->execute();
+                                $reusaltactivity = $stmt->get_result();
+                                if ($reusaltactivity->num_rows > 0 && $rowactivity = $reusaltactivity->fetch_assoc()) {
+                                    $viweCompleate = $rowactivity['countOfCompleate'];
+                                }
+                            }
                             // les compleate status
-                            $viweCompleate = 1;
                             $viwepresentage = (100 / $numofrow) * $viweCompleate;
                             $viwepresentage = number_format($viwepresentage, 0);
                             $lessonOne = "
@@ -617,14 +650,19 @@ try {
                                     </div>
 		                	    </div>
 		                	    &nbsp;
-		                	    <p>{$viwepresentage}%&nbsp;&nbsp;{$MonthName} {$MonthFomat[0]}</p>
+		                	    <p>{$viwepresentage}%&nbsp;&nbsp;{$MonthName} {$MonthFomat[0]} ( {$row['week']} )</p>
 		                    </div>";
                             $contentRow = "";
                             while ($row0 = $result0->fetch_assoc()) {
+                                $unwatch = "<span onclink=`markUnCompleate({$row0['LesId']})` data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
+                                $CompleateStatus = $row0['ActId'] != null ? $Compleate : $NonCompleate;
+                                $CompleateStatus = $row0['Type'] == 'note'  ? "" : $CompleateStatus;
+                                $eye = $row0['ActId'] != null && ($row0['Type'] == 'video' || $row0['Type'] == 'quiz') ? $unwatch : "";
                                 $lesMonth = $row0['Month'];
+                                $lessonName = $row0['LesName'];
+
                                 $paymentnotpay = "<span class='alert alert-danger p-0 px-2' onclick='nthj(5,`{$lesMonth}`)'>Not paid&nbsp;<i class='bi bi-lock'></i></span>";
                                 $click =  "onclick='lesEvent(`{$row0['LesId']}`,`{$row0['Type']}`)'";
-                                $lessonName = $row0['LesName'];
 
                                 $sql = "SELECT * FROM payment WHERE UserId = ? and ClassId = ? and Month = ? ";
                                 $stmt = $conn->prepare($sql);
@@ -646,7 +684,6 @@ try {
                                     $StatusIndi = $paymentnotpay;
                                     $onclickEvent = "";
                                 }
-                                $eye = "";
                                 if ($row0['Type'] == 'video') {
                                     $lesindi = $video;
                                 } elseif ($row0['Type'] == 'note') {
@@ -702,9 +739,9 @@ try {
                     }
                     foreach ($GidList as $GId) {
                         $GidNew = "%[{$GId}]%";
-                        $sql1 = "SELECT rac.*,les.* FROM recaccess rac,lesson les WHERE rac.ClassId LIKE ? and rac.GId LIKE ? and rac.Month = ? and rac.Status = ? and rac.LesId = les.LesId  ORDER BY rac.InsDate DESC";
+                        $sql1 = "SELECT rac.*,les.*,act.ActId FROM recaccess rac,lesson les LEFT JOIN activity act ON act.UserId = ? and les.LesId = act.OtherId and act.Status = ? WHERE rac.ClassId LIKE ? and rac.GId LIKE ? and rac.Month = ? and rac.Status = ? and rac.LesId = les.LesId  ORDER BY rac.InsDate DESC";
                         $stmt = $conn->prepare($sql1);
-                        $stmt->bind_param("ssss", $activeClaId_upd, $GidNew, $data, $status);
+                        $stmt->bind_param("isssss", $UserId, $status, $activeClaId_upd, $GidNew, $data, $status);
                         $stmt->execute();
                         $result0 = $stmt->get_result();
                         if ($result0->num_rows > 0) {
@@ -716,9 +753,18 @@ try {
                             $MGName = $rowMG['MGName'];
 
                             $numofrow = $result0->num_rows;
-                            $CompleateStatus = $NonCompleate;
+                            // $CompleateStatus = $NonCompleate;
                             // les compleate status
-                            $viweCompleate = 1;
+                            if (true) {
+                                $sql = "SELECT COUNT(activity.ActId) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note'";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->bind_param("isssss", $UserId, $activeClaId_upd, $GidNew, $data, $status, $status);
+                                $stmt->execute();
+                                $reusaltactivity = $stmt->get_result();
+                                if ($reusaltactivity->num_rows > 0 && $rowactivity = $reusaltactivity->fetch_assoc()) {
+                                    $viweCompleate = $rowactivity['countOfCompleate'];
+                                }
+                            }
                             $viwepresentage = (100 / $numofrow) * $viweCompleate;
                             $viwepresentage = number_format($viwepresentage, 0);
                             $lessonOne = "
@@ -735,9 +781,15 @@ try {
                             $contentRow = "";
                             while ($row0 = $result0->fetch_assoc()) {
                                 $lesMonth = $row0['Month'];
+                                $lessonName = $row0['LesName'];
+                                $unwatch = "<span onclink=`markUnCompleate({$row0['LesId']})` data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
+
+                                $CompleateStatus = $row0['ActId'] != null ? $Compleate : $NonCompleate;
+                                $CompleateStatus = $row0['Type'] == 'note'  ? "" : $CompleateStatus;
+                                $eye = $row0['ActId'] != null && ($row0['Type'] == 'video' || $row0['Type'] == 'quiz') ? $unwatch : "";
+
                                 $paymentnotpay = "<span class='alert alert-danger p-0 px-2' onclick='nthj(5,`{$lesMonth}`)'>Not paid&nbsp;<i class='bi bi-lock'></i></span>";
                                 $click = "onclick='lesEvent(`{$row0['LesId']}`,`{$row0['Type']}`)'";
-                                $lessonName = $row0['LesName'];
 
                                 $sql = "SELECT * FROM payment WHERE UserId = ? and Month = ? ";
                                 $stmt = $conn->prepare($sql);
@@ -799,7 +851,7 @@ try {
             }
             $htmlFullContent = $htmlContentHeader . $allLessonContent . $htmlContentFooter;
         } catch (Exception $e) {
-            $htmlFullContent = "Undefind DIntent";
+            $htmlFullContent = "Undefind DIntent" . $e;
         }
 
         echo $htmlFullContent;
@@ -971,11 +1023,14 @@ try {
                 </div>";
             } elseif ($type == 'quiz') {
                 $lessonId = $_POST['LessonData'];
-                $sql = "SELECT LesName FROM lesson WHERE LesId = '$lessonId'";
+                $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
                 $reusalt = $stmt->get_result();
-                $LesName = ($row = $reusalt->fetch_assoc()) ? $row['LesName'] : 'undefined';
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $LesName = $row['LesName'];
+                    $LesTime = $row['Time'];
+                }
                 $htmlContent = "
                 <div class='mainGroupOptions'>
                     <div class='card item-center m-1 p-2'>
@@ -986,7 +1041,7 @@ try {
                             <div class='info_box w-100'>
                                 <div class='info-title'><span>Some Rules of this Quiz</span></div>
                                 <div class='info-list'>
-                                    <div class='info'>1. You will have only <span>15 seconds</span> per each question.</div>
+                                    <div class='info'>1. You will have only <span>{$LesTime} seconds</span> per each question.</div>
                                     <div class='info'>2. Once you select your answer, it can't be undone.</div>
                                     <div class='info'>3. You can't select any option once time goes off.</div>
                                     <div class='info'>4. You can't exit from the Quiz while you're playing.</div>
@@ -1029,7 +1084,7 @@ try {
                                     <i class='fas fa-crown' animate__animated animate__swing animate__infinite infinite></i>
                                 </div>
                                 <div class='complete_text'>You've completed the Quiz!</div>
-                                <div class='score_text'>
+                                <div class='score_text text-center d-block'>
                                     <!-- Here I've inserted Score Result from JavaScript -->
                                 </div>
                                 <div class='buttons'>
@@ -1069,6 +1124,7 @@ try {
             } elseif ($type == 'quiz') {
                 $list = [];
                 $fileParth = "../assets/js/quiz/quction.js";
+                mysqli_set_charset($conn, "utf8mb4");
                 $sql = "SELECT * FROM quction WHERE LesId = '$lesId' and Status = 'active' ORDER BY Number ASC";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
@@ -1128,11 +1184,75 @@ try {
         $type = $_POST['type'];
         $LessonId = $_POST['data'];
         if ($type == 'votchRecoding') {
-            $respons = $type;
+            try {
+                $sql = "SELECT ActId,Status FROM activity WHERE UserId = ? and OtherId = ? and Type = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iis", $UserId, $LessonId, $type);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $respons = "update";
+                } else {
+                    $conn->begin_transaction();
+
+                    $point = 10;
+                    $status = "active";
+                    $sql = "INSERT INTO activity(UserId,OtherId,Type,Status,Point) VALUES(?,?,?,?,?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iisss", $UserId, $LessonId, $type, $status, $point);
+                    $stmt->execute();
+
+                    $sql = "UPDATE user SET Point = (SELECT Point FROM user WHERE UserId = ?)+10 WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $UserId, $UserId);
+                    $stmt->execute();
+
+                    $conn->commit();
+
+                    $respons = "insert";
+                }
+            } catch (Exception $e) {
+                $conn->rollback();
+                $respons = "error";
+            }
         } elseif ($type == 'viwePdf') {
             $respons = $type;
         } elseif ($type == 'compleateQuiz') {
-            $respons = $type;
+            $quixSummary = explode("-", $_POST['quixSummary']);
+            $marks = $quixSummary[0] / $quixSummary[1] * 100;
+            $point = $quixSummary[0];
+            $dict = "Total Question - {$quixSummary[0]} => Compleate Quection - {$quixSummary[1]}";
+            $status = "active";
+            try {
+                $sql = "SELECT ActId,Status FROM activity WHERE UserId = ? and OtherId = ? and Type = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iis", $UserId, $LessonId, $type);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $respons = "alredy add point";
+                } else {
+                    $conn->begin_transaction();
+
+                    $sql = "INSERT INTO activity(UserId,OtherId,Type,Point,Marks,Dict,Status) VALUES(?,?,?,?,?,?,?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iisssss", $UserId, $LessonId, $type, $point, $marks, $dict, $status);
+                    $stmt->execute();
+
+                    $sql = "UPDATE user SET Point = (SELECT Point FROM user WHERE UserId = ?)+? WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iii", $UserId, $point, $UserId);
+                    $stmt->execute();
+
+                    $conn->commit();
+                    $respons = "insert";
+                }
+            } catch (Exception $e) {
+                $conn->rollback();
+                $respons = "error - " . $e;
+            }
         } elseif ($type == 'uploadFile') {
             $fileTmpName = $_FILES['zipFile']['tmp_name'];
             $fileName = $UserId . "_" . $LessonId . ".zip";

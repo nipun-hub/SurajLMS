@@ -27,7 +27,9 @@ start_btn.onclick = () => {
 
 // if exitQuiz button clicked
 exit_btn.onclick = () => {
-    info_box.classList.remove("activeInfo"); //hide info box
+    changePageControles();
+    changemainCardContent();
+    // info_box.classList.remove("activeInfo"); //hide info box
 }
 
 // if continueQuiz button clicked
@@ -64,7 +66,9 @@ restart_quiz.onclick = () => {
 
 // if quitQuiz button clicked
 quit_quiz.onclick = () => {
-    window.location.reload(); //reload the current window
+    changePageControles();
+    changemainCardContent();
+    // window.location.reload(); //reload the current window
 }
 
 var next_btn = document.querySelector("footer .next_btn");
@@ -153,19 +157,24 @@ function showResult() {
     quiz_box.classList.remove("activeQuiz"); //hide quiz box
     result_box.classList.add("activeResult"); //show result box
     const scoreText = result_box.querySelector(".score_text");
-    if (userScore > 3) { // if user scored more than 3
+    let quixSummary = userScore + "-" + questions.length;
+    var quizPrecentage = userScore / questions.length * 100;
+    if (quizPrecentage >= 70) { // if user scored more than 3
         //creating a new span tag and passing the user score number and total question number
-        let scoreTag = '<span>and congrats! 🎉, You got <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span>';
+        let scoreTag = '<span>and congrats! 🎉, You got <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span><i class ="fs-1 text-success bi bi-emoji-smile-upside-down" style="text-align:center;"></i>';
         scoreText.innerHTML = scoreTag;  //adding new span tag inside score_Text
     }
-    else if (userScore > 1) { // if user scored more than 1
-        let scoreTag = '<span>and nice 😎, You got <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span>';
+    else if (quizPrecentage >= 45) { // if user scored more than 1
+        let scoreTag = '<span>and nice , You got <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span><i class ="fs-1 text-info bi bi-emoji-expressionless"></i>';
         scoreText.innerHTML = scoreTag;
     }
     else { // if user scored less than 1
-        let scoreTag = '<span>and sorry 😐, You got only <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span>';
+        let scoreTag = '<span>and sorry 🙁, You got only <p>' + userScore + '</p> out of <p>' + questions.length + '</p></span><i class ="fs-1 text-red bi bi-emoji-surprise"></i>';
         scoreText.innerHTML = scoreTag;
     }
+    console.log(quixSummary);
+    PassData = "manageActivity=" + "&type=" + 'compleateQuiz' + "&data=" + Lesid + "&quixSummary=" + quixSummary;
+    $.post("sql/process.php", PassData, function (data, status) { console.log("add activity " + data); });
 }
 
 function startTimer(time) {
@@ -201,18 +210,18 @@ function startTimer(time) {
 function startTimerLine(time) {
     // let intervalID = setInterval(() => {
     //     clearInterval(intervalID);
-        counterLine = setInterval(timer, 25);
-        function timer() {
-            let time_parts = (100 / (timeValue)) / (1000 / 25);
-            time += time_parts; //upgrading time value with 1
-            if (time > 100) {
-                time = 100;
-            }
-            time_line.style.width = time + "%"; //increasing width of time_line with px by time value
-            if (time >= 100) { //if time value is greater than 549
-                clearInterval(counterLine); //clear counterLine
-            }
+    counterLine = setInterval(timer, 25);
+    function timer() {
+        let time_parts = (100 / (timeValue)) / (1000 / 25);
+        time += time_parts; //upgrading time value with 1
+        if (time > 100) {
+            time = 100;
         }
+        time_line.style.width = time + "%"; //increasing width of time_line with px by time value
+        if (time >= 100) { //if time value is greater than 549
+            clearInterval(counterLine); //clear counterLine
+        }
+    }
     // }, 1000);
 }
 

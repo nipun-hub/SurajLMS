@@ -17,18 +17,18 @@
 <div class="header-actions-container">
 
     <!-- Search container start -->
-    <div class="search-container">
+    <!-- <div class="search-container"> -->
 
         <!-- Search input group start -->
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search anything">
+        <!-- <div class="input-group"> -->
+            <!-- <input type="text" class="form-control" placeholder="Search anything">
             <button class="btn" type="button">
                 <i class="bi bi-search"></i>
             </button>
-        </div>
+        </div> -->
         <!-- Search input group end -->
 
-    </div>
+    <!-- </div> -->
     <!-- Search container end -->
 
     <!-- Leads start -->
@@ -74,7 +74,7 @@
             <a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
                 <span class="user-name d-none d-md-block"><?php echo $UserName;?></span>
                 <span class="avatar">
-                    <img src="assets/images/user.png" alt="Admin Templates">
+                    <img loading="lazy src="assets/images/user.png" alt="Admin Templates">
                     <span class="status online"></span>
                 </span>
             </a>

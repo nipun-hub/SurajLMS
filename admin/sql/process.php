@@ -412,6 +412,7 @@ if (isset($_POST['AddLessonData'])) {
         $lestype = $_POST['lestype'];
         $expdate = $_POST['expdate'];
         $lesdict = $_POST['lesdict'];
+        $week = $_POST['week'];
 
         $lesName = ($lestype != 'quiz') ? $_POST['lesname'] : null;
         $leslink = ($_POST['AddLessonData'] == 1) ? $_POST['leslink'] : null;
@@ -468,16 +469,18 @@ if (isset($_POST['AddLessonData'])) {
             } else {
                 try {
                     $conn->begin_transaction();
-                    $sql1 = "INSERT INTO lesson(LesName,Dict,Link,Type,InsertDate,Status) VALUE(?,?,?,?,?,?)";
+
+                    $sql1 = "INSERT INTO lesson(LesName,Dict,Link,Type,Status) VALUE(?,?,?,?,?)";
                     $stmt = $conn->prepare($sql1);
-                    $stmt->bind_param("ssssss", $lesName, $lesdict, $LesLink, $lestype, $today, $status);
+                    $stmt->bind_param("sssss", $lesName, $lesdict, $LesLink, $lestype, $status);
                     $stmt->execute();
                     $inserted_id = $stmt->insert_id;
 
-                    $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?)";
+                    $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,ExpDate,Status) VALUE(?,?,?,?,?,?,?)";
                     $stmt = $conn->prepare($sql2);
-                    $stmt->bind_param("sssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $today, $expdate, $status);
+                    $stmt->bind_param("sssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $week, $expdate, $status);
                     $stmt->execute();
+
                     $conn->commit();
 
                     $respons = "successfull";
@@ -497,11 +500,11 @@ if (isset($_POST['AddLessonData'])) {
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                     // insert or update resaccess
                     try {
-                        $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?)";
+
+                        $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?,?)";
                         $stmt = $conn->prepare($sql2);
-                        $stmt->bind_param("sssssss", $quiz, $classNew, $groupNew, $thisMonth, $today, $expdate, $status);
-                        $stmt->execute();
-                        $respons = "successfull";
+                        $stmt->bind_param("ssssssss", $quiz, $classNew, $groupNew, $thisMonth, $week, $today, $expdate, $status);
+                        $respons = $stmt->execute() ? "successfull" : "error";
                     } catch (Exception $e) {
                         $respons = "error";
                     }
@@ -525,9 +528,9 @@ if (isset($_POST['AddLessonData'])) {
                         $stmt->execute();
                         $inserted_id = $stmt->insert_id;
 
-                        $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?)";
+                        $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?,?)";
                         $stmt = $conn->prepare($sql2);
-                        $stmt->bind_param("sssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $today, $expdate, $status);
+                        $stmt->bind_param("ssssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $week, $today, $expdate, $status);
                         $stmt->execute();
                         $conn->commit();
 
@@ -1677,9 +1680,9 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
             $accessSql .= ")";
         }
         $addsql = $adminType[0] == 'admin' && isset($adminType[1]) ? " AND user.InstiName = '$adminType[1]' $accessSql" : null;
-        $sql = $data != null ? "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ?) $addsql" : "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId $addsql";
+        $sql = $data != null ? "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ? or user.InstiName LIKE ? ) $addsql" : "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId $addsql";
         $stmt = $conn->prepare($sql);
-        $data != null ? $stmt->bind_param("ssss", $status, $data, $data, $data) : $stmt->bind_param("s", $status);
+        $data != null ? $stmt->bind_param("sssss", $status, $data, $data, $data, $data) : $stmt->bind_param("s", $status);
         // if ($respons == "" || $respons = null) {
         //     $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ";
         //     $stmt = $conn->prepare($sql);
@@ -2038,7 +2041,7 @@ if (isset($_POST['Ignored'])) {
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                     $instipic = $row['InstiPic'];
                     $unlinkParth = "../../Dachbord/user_images/instiRegImg/" . $instipic;
-                    unlink($unlinkParth);
+                    file_exists($unlinkParth) ? unlink($unlinkParth) : null;
                 }
                 $null = null;
                 $status = 'pending';

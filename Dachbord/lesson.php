@@ -194,61 +194,6 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 					<!-- Row start -->
 					<div class="row" id="mainCardContent">
 
-						<?php
-						$insti = explode("-", $_SESSION['clz'])[0];
-						$activeClaId = explode("-", $_SESSION['clz'])[1];
-
-						$sql = "SELECT * FROM grouplist WHERE HideFrom Not LIKE '%$insti%' and HideFrom NOT LIKE '%All%' and HideFrom Not LIKE '%[$activeClaId]%' OR HideFrom IS NULL ORDER BY Status ASC";
-						$stmt = $conn->prepare($sql);
-						$stmt->execute();
-						$rusalt = $stmt->get_result();
-						$i = 0;
-						while ($row = $rusalt->fetch_assoc() && false) {
-							$status = $row['Status'];
-						?>
-							<div class="col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup">
-								<div class="main-card h-auto" style="--index: <?php echo $i; ?>;">
-									<div class="main-sub-card">
-										<?php if ($status == 'active') { ?>
-											<i class="bi bi-unlock position-absolute top-0 start-100 pe-5 pt-5 translate-middle"></i>
-										<?php } else { ?>
-											<i class="lock bi bi-lock position-absolute top-0 start-100 pe-5 pt-5 translate-middle"></i>
-										<?php } ?>
-										<!-- <div class="StylingText01"> -->
-										<!-- <div class="subtitle">2024</div> -->
-										<!-- <div class="top">Speed Revision</div> -->
-										<!-- <div class="bottom" aria-hidden="true">Speed Revision</div> -->
-										<!-- </div> -->
-										<img class="main-card-img" src="assets/img/site use/group/<?php echo $row['MGImage'] ?>">
-										<div class="main-card-details w-100 mt-2">
-											<div class="d-flex justify-content-between">
-												<?php if ($status == 'active') { ?>
-													<span class="green"><i class="bi bi-unlock"></i>&nbsp; Access available</span>
-												<?php } else { ?>
-													<span class="red"><i class="bi bi-lock"></i>&nbsp;Restricted</span>
-												<?php } ?>
-												<!-- <div>20%</div> -->
-												<!-- <div class='circular'> -->
-												<!-- <input type='hidden' value='100'> -->
-												<!-- <div class='circular-progress flex-end'> -->
-												<!-- </div> -->
-												<!-- </div> -->
-											</div>
-											<div class="name"><?php echo $row['MGName']; ?></div>
-										</div>
-										<div class="main-card-footer mt-2 h-auto">
-											<?php if ($status == 'active') { ?>
-												<button onclick="mainCardAction(<?php echo $row['GId']; ?> , 1)" class="btn btn-info py-1 px-3 w-50">Asign</button>
-											<?php } else { ?>
-												<button onclick="mainCardAction(0 , 0)" class="btn btn-info py-1 px-3"><i class="fs-6 bi bi-lock me-2"></i>Restricted</button>
-											<?php } ?>
-
-										</div>
-									</div>
-								</div>
-							</div>
-						<?php $i++;
-						} ?>
 
 						<?php if (false) { ?>
 							<!-- quiz section start -->
@@ -546,7 +491,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 
 		function backtoclass(data, type = null) {
 			if (type == 2) {
-				console.log('datauojh');
+				// console.log('datauojh');
 				changePageControles(data);
 				// PaymentStatus();
 				changemainCardContent();
@@ -572,6 +517,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		}
 
 		var videoId;
+		var Lesid;
 
 		function lesEvent(value, type) {
 			PaymentStatus('empty');
@@ -584,6 +530,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 						if (response != " undefind") {
 							data = data.replace(" ", "");
 							videoId = data;
+							Lesid = value;
 							$('#mainCardContent').html(response);
 							loadScript('assets/js/player.js');
 							onYouTubeIframeAPIReady();
@@ -594,14 +541,15 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				changePageControlesLec(value);
 				PassData = "LessonData=" + value + "&type=" + type;
 				$.post("sql/process.php", PassData, function(response, status) {
-					console.log(response);
+					// console.log(response);
 					// response == ' success' ? console.log('prepare quiz successfull') : console.log('failed prepare the quiz');
 					PassData = "lesRespons=" + "&value=" + value + "&type=" + type;
 					$.post("sql/process.php", PassData, function(data, status) {
-						console.log(data);
+						// console.log(data);
 						if (response != "undefind") {
 							data = data.replace(" ", "");
-							videoId = data;
+							// videoId = data;
+							Lesid = value;
 							$('#mainCardContent').html(response);
 							loadScript('assets/js/quiz/quction.js');
 							loadScript('assets/js/quiz/quiz.js');
@@ -609,7 +557,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 					});
 				});
 			} else if (type == 'upload') {
-				console.log('done');
+				// console.log('done');
 				document.getElementById('uploadPdfAlert').click();
 				localStorage.setItem('UploadFileData', value);
 				loadScript('assets/js/fuleUploader.js');

@@ -273,14 +273,18 @@ function Pay(type, val = null, val2 = null) {
             $.ajax({
                 url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (data, status) {
                     response = errorHadel(data);
-                    console.log(data);
                     if (response == 'Successfull') {
                         PaymentStatus();
                         // update html content
                         formData = "getGid=";
                         $.post("sql/process.php", formData, function (response, status) {
                             var gid = response.replace(" ", '');
-                            gid == 'undefind' ? mainCardContent() : changemainCardContent('clickGroup');
+                            formData = "gettype=";
+                            $.post("sql/process.php", formData, function (response2, status) {
+                                var lestype = response2.replace(" ", '');
+                                gid == 'undefind' ? mainCardContent() : (lestype == "lesson" ? changemainCardContent('clickGroup') : changemainCardContent('clickMonth'));
+                            });
+
                         });
                         close_alert();
                         nthj(4, 'payphy');
@@ -301,12 +305,11 @@ function Pay(type, val = null, val2 = null) {
         var imageData = image.files[0];
         var price = document.querySelector('.PaymentOnlhidden').value;
         if (validonldata()) {
-            console.log("donesfsf");
             var PassData = new FormData;
             PassData.append("PaymetOnl", "");
             PassData.append("payMonth", val)
             PassData.append("price", val2);
-            console.log(val2);
+            // console.log(val2);
             inputfeelds.forEach((self) => {
                 PassData.append(self.name, self.value);
             });
@@ -314,14 +317,18 @@ function Pay(type, val = null, val2 = null) {
             $.ajax({
                 url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
                     response = errorHadel(response);
-                    console.log(response);
                     if (response == 'Successfull') {
                         PaymentStatus();
                         // update html content
                         formData = "getGid=";
                         $.post("sql/process.php", formData, function (response, status) {
                             var gid = response.replace(" ", '');
-                            gid == 'undefind' ? mainCardContent() : changemainCardContent('clickMonth');
+                            formData = "gettype=";
+                            $.post("sql/process.php", formData, function (response2, status) {
+                                var lestype = response2.replace(" ", '');
+                                gid == 'undefind' ? mainCardContent() : (lestype == "lesson" ? changemainCardContent('clickGroup') : changemainCardContent('clickMonth'));
+                            });
+
                         });
                         close_alert();
                         nthj(4, 'payonl');
