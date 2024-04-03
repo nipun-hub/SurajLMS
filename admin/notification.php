@@ -191,6 +191,7 @@
         function Ignored(val1, val2) {
             PassData = "Ignored=" + "&type=" + val1 + "&id=" + val2;
             $.post("sql/process.php", PassData, function(response, status) {
+                console.log(response);
                 if (response == ' success Ignored insti' || response == ' success aprued insti') {
                     showBody();
                 } else if (response == ' success Ignored payment' || response == ' success aprued payment') {
@@ -204,6 +205,7 @@
         function aprued(type, id) {
             PassData = "aprued=" + "&type=" + type + "&id=" + id;
             $.post("sql/process.php", PassData, function(response, status) {
+                console.log(response);
                 if (response == ' success Ignored insti' || response == ' success aprued insti') {
                     showBody();
                 } else if (response == ' success Ignored payment' || response == ' success aprued payment') {

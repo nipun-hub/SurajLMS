@@ -1722,7 +1722,7 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
                 </td>
                 <td>
                     <span class=' btn btn-success p-0 px-2' onclick='aprued(`insti`,`{$InstiId}`)'>Aprued</span>
-                    <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,`{$InstiId})`'>Ignored</span>
+                    <span class=' btn btn-info p-0 px-2' onclick='Ignored(`insti`,`{$InstiId}`)'>Ignored</span>
                     <!-- <span class='badge shade-blue min-90'>Processing</span> -->
                 </td>
             </tr>
@@ -2151,4 +2151,4 @@ if (isset($_POST['aprued'])) {
 // file write 
 // $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
 // fwrite($myfile, $key);
-// fclose($myfile);F
+// fclose($myfile);
