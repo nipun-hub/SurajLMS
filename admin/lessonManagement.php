@@ -156,11 +156,11 @@
                                                     <label for="inputweek" class="form-label">Week of lesson *</label>
                                                     <select name="week" class="form-select" id="inputweek">
                                                         <option value="">Select the Week</option>
-                                                        <option value="1'st Week">1'st Week</option>
-                                                        <option value="2'nd Week">2'nd Week</option>
-                                                        <option value="3'rd Week">3'rd Week</option>
-                                                        <option value="4'th Week">4'th Week</option>
-                                                        <option value="5'th Week">5'th Week</option>
+                                                        <option value="First week">First week</option>
+                                                        <option value="Second week">Second week</option>
+                                                        <option value="Third Week">Third Week</option>
+                                                        <option value="Fourth week">Fourth week</option>
+                                                        <option value="Fifth week">Fifth week</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -258,11 +258,11 @@
                                                     <label for="inputweek" class="form-label">Week of lesson *</label>
                                                     <select name="week" class="form-select" id="inputweek">
                                                         <option value="">Select the Week</option>
-                                                        <option value="1'st Week">1'st Week</option>
-                                                        <option value="2'nd Week">2'nd Week</option>
-                                                        <option value="3'rd Week">3'rd Week</option>
-                                                        <option value="4'th Week">4'th Week</option>
-                                                        <option value="5'th Week">5'th Week</option>
+                                                        <option value="First week">First week</option>
+                                                        <option value="Second week">Second week</option>
+                                                        <option value="Third Week">Third Week</option>
+                                                        <option value="Fourth week">Fourth week</option>
+                                                        <option value="Fifth week">Fifth week</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -439,124 +439,10 @@
                     <!-- model add thye quction end -->
 
                     <!-- model update lesson start -->
-                    <div class="modal fade" id="updateLesson" tabindex="-1" aria-labelledby="updateLessonLabel" aria-hidden="true">
+                    <div class="modal fade" id="mainModal" tabindex="-1" aria-labelledby="mainModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-xl">
-                            <div class="modal-content" id="updateLessonAlert">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="updateLessonLabel">Update Lessson<span class="ModelTitle"></span></h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-12 add-lesson">
+                            <div class="modal-content" id="mainModalAlert">
 
-                                            <!-- Card start -->
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <form id="addlesson">
-
-                                                        <!-- Row start -->
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <div class="mb-3">
-                                                                    <div class="table-responsive">
-                                                                        <table class="table table-bordered m-0">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>Name</th>
-                                                                                    <th>Desctiption </th>
-                                                                                    <th>Type</th>
-                                                                                    <th>Access Class</th>
-                                                                                    <th>Show Groups</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td></td>
-                                                                                    <td></td>
-                                                                                    <td></td>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-4 col-sm-6 col-12">
-                                                                <div class="mb-3 AddLesSub">
-                                                                    <label for="inputName" class="form-label">Lesson Name *</label>
-                                                                    <input name="lesname" type="text" class="form-control" id="inputName" placeholder="Enter Lesson Name">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-4 col-sm-6 col-12">
-                                                                <div class="mb-3 AddLesSub">
-                                                                    <label for="inputIndustryType" class="form-label">Select Lesson Type *</label>
-                                                                    <select name="lestype" class="form-select" id="inputIndustryType">
-                                                                        <option value="">Select Type</option>
-                                                                        <option value="video">Video</option>
-                                                                        <option value="note">Note</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-4 col-sm-6 col-12">
-                                                                <div class="mb-3 AddLesSub">
-                                                                    <label for="inputEmail" class="form-label">Lesson Link *</label>
-                                                                    <input name="leslink" type="text" class="form-control" id="inputEmail" placeholder="Enter Lesson Link">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-6 col-sm-12 col-12">
-                                                                <div class="mb-3 tags group3">
-                                                                    <label class="form-label d-flex">Select show in group</label>
-                                                                    <select id="group3" class="select-multiple js-states form-control" title="Select Product Category" multiple="multiple">
-                                                                        <option>111111111111111111111111111111111111111111111111</option>
-                                                                    </select>
-                                                                    <div class="invalid-feedback">Please Select the Group</div>
-                                                                    <div class="valid-feedback">Done!</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-xl-6 col-sm-12 col-12">
-                                                                <div class="mb-3 tags access3">
-                                                                    <label class="form-label d-flex">Select access class</label>
-                                                                    <select id="access3" class="select-multiple js-states form-control" title="Select Product Category" multiple="multiple">
-                                                                        <option>111111111111111111111111111111111111111111111111111111</option>
-                                                                    </select>
-                                                                    <div class="invalid-feedback">Please Select the access</div>
-                                                                    <div class="valid-feedback">Done!</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-12">
-                                                                <div class="mb-3 AddLesSub">
-                                                                    <label for="inputMessage" class="form-label">Desctiption ( optional )</label>
-                                                                    <textarea name="lesdict" class="form-control" id="inputMessage" placeholder="Enter Desctiption" rows="3"></textarea>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Row end -->
-
-                                                        <!-- Form actions footer start -->
-                                                        <!-- <div class="form-actions-footer"> -->
-                                                        <!-- <button id="cansal" class="btn btn-light">Cancel</button> -->
-                                                        <!-- <button class="btn btn-success" onclick="submitAddLesson()">Submit</button> -->
-                                                        <!-- </div> -->
-                                                        <!-- Form actions footer end -->
-
-                                                    </form>
-
-                                                </div>
-                                            </div>
-                                            <!-- Card end -->
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Save changes</button>
-                                </div>
-                                <div class="my-3 rusaltLog mx-3">
-                                    <div class="valid-feedback alert alert-success text-center alert-dismissible fade show py-2">Successfull add the lesson!</div>
-                                    <div class="invalid-feedback alert alert-danger text-center alert-dismissible fade show py-2">Failed add the lesson</div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -587,6 +473,7 @@
                                     </div>
                                 </div>
                                 <div class="card-body" id="table-content-change">
+                                    <center><img src="assets/img/gif/loding.gif" width="300" alt="" srcset=""></center>
                                 </div>
                             </div>
                             <!-- notification Request -->
@@ -635,10 +522,7 @@
     <script src="assets/vendor/overlay-scroll/custom-scrollbar.js"></script>
 
     <!-- Apex Charts -->
-    <!-- <script src="assets/vendor/apex/apexcharts.min.js"></script> -->
-    <!-- <script src="assets/vendor/apex/custom/sales/salesGraph.js"></script> -->
-    <!-- <script src="assets/vendor/apex/custom/sales/revenueGraph.js"></script> -->
-    <!-- <script src="assets/vendor/apex/custom/sales/taskGraph.js"></script> -->
+    <script src="assets/vendor/apex/apexcharts.min.js"></script>
 
     <!-- Input Mask JS -->
     <!-- <script src="assets/vendor/input-masks/cleave.min.js"></script> -->
@@ -726,21 +610,6 @@
         });
         // load the quiz data options end
 
-        //  lesson update data start 
-        function update(value) {
-            var data1 = value.split(' ')[0];
-            var data2 = value.split(' ')[1];
-            formData = "lessonUpdateAlert=" + '&data1=' + data1 + '&data2=' + data2;
-            $.post("sql/process.php", formData, function(response, status) {
-                $('#updateLessonAlert').html(response);
-                loadaccess();
-                loadGroup();
-                loadScript('assets/vendor/bs-select/bs-select-custom.js');
-                loadScript('assets/vendor/bs-select/bs-select.min.js');
-                document.getElementById('clickupdateLesson').click();
-            });
-        }
-        //  lesson update data end
 
         // load cearhc respons dataa start 
         function serchinp() {
@@ -752,110 +621,58 @@
         }
         // load cearhc respons dataa end
 
-        // ***************************************** compleate section ***************************
-
-        // update lesson start
-        // function Update(val) {
-        //     nthj(7, val);
-        // }
-        // update lesson end
-
-
-        /// clickImageRespond.forEach((self) => {
-        //     self.addEventListener("click", () => {
-        //         nthj(6, self.src);
-        //     });
-        // });
-
-        // function showBody(value) {
-        //     var inptutevent = document.querySelectorAll('.admin-table .card');
-        //     var inptutevent = document.querySelectorAll('.admin-table .card');
-        //     inptutevent.forEach((self) => {
-        //         // self.style.display = "none";
-        //     });
-        //     if (value == 1) {
-        //         // inptutevent[0].style.display = "block";
-        //         $(document).ready(function() {
-        //             formData = "updatePayment=";
-        //             $.post("sql/process.php", formData, function(response, status) {
-        //                 $('#table-content-change').html(response);
-        //                 console.log(response);
-        //             });
-        //         });
-        //     } else if (value == 2) {
-
-        //     } else if (value == 3) {
-        //         $(document).ready(function() {
-        //             formData = "updateInstiReg=";
-        //             $.post("sql/process.php", formData, function(response, status) {
-        //                 $('#table-content-change').html(response);
-        //                 console.log(response);
-        //             });
-        //         });
-        //     }
-        // }
-
-        // function Ignored(val1, val2) {
-        //     PassData = "Ignored=" + "&type=" + val1 + "&id=" + val2;
-        //     $.post("sql/process.php", PassData, function(response, status) {
-        //         if (response == ' success insti') {
-        //             $(document).ready(function() {
-        //                 formData = "updateInstiReg=";
-        //                 $.post("sql/process.php", formData, function(response, status) {
-        //                     $('#table-content-change').html(response);
-        //                 });
-        //             });
-        //         } else if (response == ' success payment') {
-        //             $(document).ready(function() {
-        //                 formData = "updatePayment=";
-        //                 $.post("sql/process.php", formData, function(response, status) {
-        //                     $('#table-content-change').html(response);
-        //                 });
-        //             });
-        //         }
-        //         console.log(response);
-        //     });
-
-        // }
+        //  lesson update data start 
+        function update(value) {
+            var data1 = value.split(' ')[0];
+            var data2 = value.split(' ')[1];
+            formData = "lessonUpdateAlert=" + '&data1=' + data1 + '&data2=' + data2;
+            $.post("sql/process.php", formData, function(response, status) {
+                $('#mainModalAlert').html(response);
+                loadaccess();
+                loadGroup();
+                loadScript('assets/vendor/bs-select/bs-select-custom.js');
+                loadScript('assets/vendor/bs-select/bs-select.min.js');
+                document.getElementById('clickShowModel').click();
+            });
+        }
+        //  lesson update data end
 
 
-        // function aprued(type, id) {
-        //     PassData = "aprued=" + "&type=" + type + "&id=" + id;
-        //     $.post("sql/process.php", PassData, function(response, status) {
-        //         if (response == ' success insti') {
-        //             $(document).ready(function() {
-        //                 formData = "updateInstiReg=";
-        //                 $.post("sql/process.php", formData, function(response, status) {
-        //                     $('#table-content-change').html(response);
-        //                 });
-        //             });
-        //         } else if (response == ' success payment') {
-        //             $(document).ready(function() {
-        //                 formData = "updatePayment=";
-        //                 $.post("sql/process.php", formData, function(response, status) {
-        //                     $('#table-content-change').html(response);
-        //                 });
-        //             });
-        //         }
-        //         console.log(response);
-        //     });
-        // }/ var clickImageRespond = document.querySelectorAll('.admin-table .notifiImage');
+        function viweMore(id, type) {
+            var options;
+            var chart;
+            formData = "viewMore=" + "&type=lesson" + '&id=' + id;
+            $.post("sql/process.php", formData, function(response, status) {
+                $('#mainModalAlert').html(response);
+                loadaccess();
+                loadGroup();
+                loadScript('assets/vendor/bs-select/bs-select-custom.js');
+                loadScript('assets/vendor/bs-select/bs-select.min.js');
+                formData = "getChartVariyable=" + "&type=lessonViwes" + '&id=' + id;
+                $.post("sql/process.php", formData, function(response, status) {
+                    if (status) {
+                        var options = response.lesSummary1;
+                        var chart1 = new ApexCharts(
+                            document.querySelector("#lessonSummary"),
+                            options
+                        );
+                        setTimeout(function() {
+                            chart1.render();
+                        }, 500);
 
-
-        // window.onload = function() {
-        //     url_data = window.location.search;
-        //     if (url_data == '?success_login') {
-        //         history.pushState({
-        //             page: 'new-page'
-        //         }, 'New Page', './');
-        //         nthj(3);
-        //     } else if (url_data == '?success_register') {
-        //         history.pushState({
-        //             page: 'new-page'
-        //         }, 'New Page', './');
-        //         nthj(4);
-        //     }
-        // };
+                        var options = response.lesSummary2;
+                        var chart2 = new ApexCharts(
+                            document.querySelector("#lessonSummary2"),
+                            options
+                        );
+                        setTimeout(function() {
+                            chart2.render();
+                        }, 500);
+                    }
+                });
+                document.getElementById('clickShowModel').click();
+            });
+        }
     </script>
 
 </body>
