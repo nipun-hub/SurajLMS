@@ -19,7 +19,7 @@ if (isset($_SESSION['adminlogin'])) {
     $UserName = $row['UName'];
     $adminAcsess = explode("][", substr($row['Access'], 1, -1));
     $adminType = explode("-", $row['Type']);
-    $hiddenStatus = !$adminType[0] == 'owner' || $adminType[0] == 'editor' ? null : 'hidden';
+    $hiddenStatus = $adminType[0] == 'owner' || $adminType[0] == 'editor' ? null : 'hidden';
 } else {
     $UserId = 'null';
     echo "error loading";
@@ -395,7 +395,7 @@ if (isset($_POST['UpdateLessonContent'])) {
             <td class='item-center' {$hiddenStatus}>
                 <div class='actions'>
 					<a onclick='update(this.id)' id='{$LesId} {$type}'><i class='bi bi-pencil-square text-green'></i></a>
-                    <i class='d-none' id='clickupdateLesson' data-bs-toggle='modal' data-bs-target='#updateLesson'></i>
+                    <i class='d-none' id='clickShowModel' data-bs-toggle='modal' data-bs-target='#mainModal'></i>
                     {$actionbtn}
 					<a onclick='viweMore({$LesId},`{$type}`)'><i class='bi bi-list text-green'></i></a>
 				</div>
@@ -623,7 +623,7 @@ if (isset($_POST['lessonUpdateAlert'])) {
                     </div>
                 </div>";
             } else {
-                $$tableData = "undefind";
+                $tableData = "undefind";
             }
             $htmlHeader = "
             <div class='modal-header'>
@@ -1036,21 +1036,130 @@ if (isset($_POST['addwinner'])) {
 }
 // add winner data end
 
+// update insti Data start
+if (isset($_POST['updateInsti'])) {
+    try {
+        $id = $_POST['id'];
+        $place = $_POST['place'];
+        $dict = $_POST['dict'];
+        $subDict = $_POST['subDict'];
+        $imageData = isset($_FILES['instiImage']) ? $_FILES['instiImage'] : null;
+
+        $sql = "SELECT InstiName FROM insti WHERE InstiId = '$id'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $row = $reusalt->fetch_assoc();
+        $InstiName = $row['InstiName'];
+        $picName = $InstiName . ".jpg";
+
+        $sql = isset($_FILES['instiImage']) ? "UPDATE insti SET InstiPlace = ? , Dict = ? , SubDict = ? , InstiPic = ? WHERE InstiId = ?" : "UPDATE insti SET InstiPlace = ? , Dict = ? , SubDict = ? WHERE InstiId = ?";
+        $stmt = $conn->prepare($sql);
+        isset($_FILES['instiImage']) ?  $stmt->bind_param("sssss", $place, $dict, $subDict, $picName, $id) :  $stmt->bind_param("ssss", $place, $dict, $subDict, $id);
+        if ($stmt->execute()) {
+            isset($_FILES['instiImage'])  ? move_uploaded_file($_FILES['instiImage']['tmp_name'], "../../Dachbord/assets/img/site use/instiimge/" . $picName) : null;
+        }
+
+        $respons = "success";
+    } catch (Exception $e) {
+        $respons = "error " . $e;
+    }
+    echo $respons;
+}
+// update insti Data end
+if (isset($_POST['classUpdate'])) {
+    try {
+        $id = $_POST['id'];
+        $className = $_POST['className'];
+
+        $sql = "UPDATE class SET ClassName = ? WHERE ClassId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $className, $id);
+        $stmt->execute();
+
+        $respons = "success";
+    } catch (Exception $e) {
+        $respons = "error";
+    }
+    echo $respons;
+}
+// update class data start 
+
+// group update start 
+if (isset($_POST['groupUpdate'])) {
+    try {
+        $id = $_POST['id'];
+        $groupName = $_POST['groupName'];
+
+        if (true) {
+            $sql = "SELECT MGImage,HideFrom FROM grouplist WHERE GId = '$id'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $stmt->close();
+            $row = $reusalt->fetch_assoc();
+            $MGImage = $row['MGImage'];
+            $HideFrom = $row['HideFrom'];
+        }
+
+        if (isset($_POST['hideList'])) {
+            $hideList = "";
+            $listinhide = explode(",", $_POST['hideList']);
+            foreach ($listinhide as $value) {
+                $classdata = explode("-", $value);
+                $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sss", $classdata[1], $classdata[2], $classdata[0]);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $classId = $row['ClassId'];
+                    $hideList .= "[{$classId}]";
+                }
+                $stmt->close();
+            }
+        } else {
+            $hideList = $HideFrom;
+        }
+
+        // update dtabase 
+        $sql = "UPDATE grouplist SET MGName = ? , HideFrom = ? WHERE GId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $groupName, $hideList, $id);
+        $stmt->execute();
+
+        isset($_FILES['groupImage'])  ? move_uploaded_file($_FILES['groupImage']['tmp_name'], "../../Dachbord/assets/img/site use/group/" . $MGImage) : null;
+
+        $respons = "success";
+    } catch (\Throwable $th) {
+        $respons = "error";
+    }
+    echo $respons;
+}
+// group update end 
+
+// update class data end
+
 // model html Content data load start 
 
 if (isset($_POST['loadModelDataInsert'])) {
     $type = $_POST['Type'];
-    $modelFooter = "
-    <div class='modal-footer pt-3'>
-        <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
-        <button type='button' class='btn btn-success' onclick='submitModelSnippet(`insert`,`{$type}`)'>Finish</button>
-    </div>";
+    $data = isset($_POST['data']) ? $_POST['data'] : null;
+    if ($type == "instiUpdate" || $type == "classUpdate" || $type == "groupUpdate") {
+        $modelFooter = "
+        <div class='modal-footer pt-3'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+            <button type='button' class='btn btn-success' onclick='submitModelSnippet(`{$type}`,{$data})'>Update</button>
+        </div>";
+    } else {
+        $modelFooter = "
+        <div class='modal-footer pt-3'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+            <button type='button' class='btn btn-success' onclick='submitModelSnippet(`insert`,`{$type}`)'>Finish</button>
+        </div>";
+    }
     if ($type == 'insti') {
         $modelHead = "
-        <div class='my-3 rusaltLog mx-3'>
-            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the inatitute!</div>
-            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the inatitute</div>
-        </div>
         <div class='modal-header'>
             <h5 class='modal-title' id='modelMainLabel'>Add inatitute</h5>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
@@ -1098,13 +1207,13 @@ if (isset($_POST['loadModelDataInsert'])) {
                 </div>
             </div>
             <!-- Row end -->
-        </form>";
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the inatitute!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the inatitute</div>
+        </div>";
     } elseif ($type == 'class') {
         $modelHead = "
-        <div class='my-3 rusaltLog mx-3'>
-            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the Class!</div>
-            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the Class</div>
-        </div>
         <div class='modal-header'>
             <h5 class='modal-title' id='modelMainLabel'>Add the Class</h5>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
@@ -1160,13 +1269,13 @@ if (isset($_POST['loadModelDataInsert'])) {
                 </div>
             </div>
             <!-- Row end -->
-        </form>";
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the Class!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the Class</div>
+        </div>";
     } elseif ($type == 'group') {
         $modelHead = "
-        <div class='my-3 rusaltLog mx-3'>
-            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the group!</div>
-            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the group</div>
-        </div>
         <div class='modal-header'>
             <h5 class='modal-title' id='modelMainLabel'>Add the group</h5>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
@@ -1198,13 +1307,13 @@ if (isset($_POST['loadModelDataInsert'])) {
                 </div>
             </div>
             <!-- Row end -->
-        </form>";
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the group!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the group</div>
+        </div>";
     } elseif ($type == 'winner') {
         $modelHead = "
-        <div class='my-3 rusaltLog mx-3'>
-            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the winning student!</div>
-            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the winning student</div>
-        </div>
         <div class='modal-header'>
             <h5 class='modal-title' id='modelMainLabel'>Add Winning Student</h5>
             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
@@ -1248,7 +1357,201 @@ if (isset($_POST['loadModelDataInsert'])) {
                 <label class='form-label'>Select Winner Image</label>
                 <input name='winnerImage' accept='image/*' type='file' id='imgInp' class='form-control' onchange='changeImage()' />
             </div>
-        </form>";
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the winning student!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the winning student</div>
+        </div>";
+    } elseif ($type == 'instiUpdate') {
+        $data = $_POST['data'];
+        $modelHead = "
+        <div class='modal-header'>
+            <h5 class='modal-title' id='modelMainLabel'>Update Institute</h5>
+            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+        <div class='modal-body bg-light'>";
+        $sql = "SELECT * FROM insti WHERE InstiId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $data);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $stmt->close();
+        $row = $reusalt->fetch_assoc();
+        $image = $row['InstiPic'];
+        $subDict = explode("-", $row['SubDict'])[0];
+        $modelBody = "
+        <form id='Formclear' class='item-center'>
+        <div class='col-xxl-6 col-sm-10 col-12'>
+        <div class='info-tile'>
+            <center>
+                <label for='imgInp'><img id='image-preview' class='w-auto' src='../Dachbord/assets/img/site use/instiimge/{$image}' alt='insti Image'></label>
+            </center>
+            <div class='info-details' style='height: 125px;'>
+                <span class='green w-50'><input name='place' type='text' class='w-75 bg-transparent border-none' value = '{$row['InstiPlace']}'></span><i class='bi bi-check2-circle'></i>
+                <p class='pt-2'><textarea name = 'dict' class='border-none w-100 h-auto'>{$row['Dict']}</textarea></p>
+            </div>
+            <div class='card__data'>
+                <center>
+                    <p>
+                        <span class='card__description'><b>
+                                {$row['InstiName']}
+                            </b><br>
+                            <input name='subDict' type='text' class=' border-none ' value = '{$subDict}'>
+                        </span>
+                    </p>
+                    <div class='card_btn'>
+                        <p class='btn btn-info mt-3 p-2'><span class='icon'><i class='bi bi-arrow-right-circle'></i> Login</span></p>
+                    </div>
+                </center>
+
+            </div>
+        </div>
+    </div>
+        </form>
+        <form runat='server' id='Formclear' class='pb-4'>
+            <!-- <input type='file' class='form-control' id='inputGroupFile02'> -->
+            <div class='mb-3 d-none'>
+                <label class='form-label'>Select Winner Image</label>
+                <input name='winnerImage' accept='image/*' type='file' id='imgInp' class='form-control' onchange='changeImage()' />
+            </div>
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull Update Institute!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed Update Institute</div>
+        </div>";
+    } elseif ($type == "classUpdate") {
+        $data = $_POST['data'];
+        $modelHead = "
+            <div class='modal-header'>
+                <h5 class='modal-title' id='modelMainLabel'>Update The Class</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body bg-light'>";
+        $sql = "SELECT * FROM class WHERE ClassId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $data);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $stmt->close();
+        $row = $reusalt->fetch_assoc();
+        $ClassName = $row['ClassName'];
+        $modelBody = "
+            <form id='Formclear'>
+                <!-- Row start -->
+                <div class='row'>
+                    <div class='col-xl-12 col-sm-12 col-12'>
+                        <div class='mb-3'>
+                            <label for='className' class='form-label'>Class Name</label>
+                            <input name='className' type='text' class='form-control' value='{$ClassName}' placeholder='Enter Class Name'>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
+            </form>
+            <div class='my-3 rusaltLog mx-3'>
+                <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the group!</div>
+                <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the group</div>
+            </div>";
+    } elseif ($type == "groupUpdate") {
+        $modelHead = "
+        <div class='modal-header'>
+            <h5 class='modal-title' id='modelMainLabel'>Update group</h5>
+            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+        <div class='modal-body bg-light'>";
+        $sql = "SELECT * FROM grouplist WHERE GId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $data);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $stmt->close();
+        $row = $reusalt->fetch_assoc();
+        // get hide NAme 
+        if ($row['HideFrom'] != null) {
+            $HideName = "";
+            try {
+                $hidearray = explode("][", substr($row['HideFrom'], 1, -1));
+                foreach ($hidearray as $value) {
+                    $sql = "SELECT * FROM class WHERE ClassId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $value);
+                    $stmt->execute();
+                    $reusalt1 = $stmt->get_result();
+                    $stmt->close();
+                    $row1 = $reusalt1->fetch_assoc();
+                    $HideName .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
+                }
+            } catch (\Throwable $th) {
+                $HideName = "Undefind";
+            }
+        } else {
+            $HideName = "Not Hide Class";
+        }
+        $modelBody = "
+        <form id='Formclear'>
+            <div class='row item-center'>
+                <div class='col-12 '>
+                    <div class='table-responsive'>
+                        <table class='table v-middle'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Image</th>
+                                    <th>Hide From</th>
+                                    <th>Status</th>
+                                </tr>
+                             </thead>
+                             <tbody id='table-content-change'>
+                                <td>{$row['GId']}</td>
+                                <td>{$row['MGName']}</td>
+                                <td><img width='50' id='image-preview' class='main-card-img' src='../Dachbord/assets/img/site use/group/{$row['MGImage']}' ></td>
+                                <td>{$HideName}</td>
+                                <td>{$row['Status']}</td>
+                             </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class='col-xl-4 col-sm-6 col-8 '>
+                    <div class='main-card h-auto'>
+                        <div class='main-sub-card'>
+                            <i class=' position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>
+                            <label for='imgInp'>
+                                <center><img id='image-preview' class='main-card-img' src='../Dachbord/assets/img/site use/group/{$row['MGImage']}' ></center>
+                            </label>
+                        <div class='main-card-details w-100 mt-2'>
+                                <span class='green'><i class='bi bi-unlock'></i>&nbsp;Access available</span>
+                                <div class='name'>
+                                    <textarea name = 'groupName' class='border-none w-100 h-auto' rows='5'>{$row['MGName']}</textarea>
+                                </div>
+                            </div>
+                            <div class='main-card-footer mt-2 h-auto'>
+                                <button class='btn btn-info py-1 px-3'>Acign</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-xl-6 col-sm-6 col-12 item-center' >
+                    <div class='mb-3 tags w-100 grouphideclass'>
+                        <label class='form-label d-flex'>Select Hide Class *</label>
+                        <select name='hidefrom' id='grouphide' class='is-valid select-multiple js-states form-control w-100' title='Select Product Category' multiple='multiple'>
+                            <option>111111111111111111111111111111111111111111111111111</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <form runat='server' id='Formclear' class='pb-4'>
+            <!-- <input type='file' class='form-control' id='inputGroupFile02'> -->
+            <div class='mb-3 d-none'>
+                <label class='form-label'>Select Winner Image</label>
+                <input name='winnerImage' accept='image/*' type='file' id='imgInp' class='form-control' onchange='changeImage()' />
+            </div>
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the group!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the group</div>
+        </div>";
     }
     $htmlContent = $modelHead . $modelBody . $modelFooter;
     echo $htmlContent;
@@ -1374,13 +1677,13 @@ if (isset($_POST['changeSnippitManageTable'])) {
                 $HideFrom = "";
                 $InstiIdList = explode("][", substr($row['HideFrom'], 1, -1));
                 foreach ($InstiIdList as $value) {
-                    $sql = "SELECT InstiName FROM insti WHERE InstiId = ? ";
+                    $sql = "SELECT * FROM class WHERE ClassId = ? ";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $value);
                     $stmt->execute();
                     $reusalt1 = $stmt->get_result();
                     if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                        $HideFrom .= $row1['InstiName'] . "br";
+                        $HideFrom .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
                     }
                 }
             } else {
@@ -1437,8 +1740,9 @@ if (isset($_POST['changeSnippitManageTable'])) {
                 <td>
                 <div class='actions item-center'>
                     {$action}
+                    <a onclick='del(this.id,`winner`)' id='{$NotifiId}'><i class='bi bi-trash text-red'></i></a>
                     &nbsp;
-                    <a onclick='update(this.id,`winner`)' id='{$NotifiId}'><i class='bi bi-pencil-square text-green fs-6'></i></a>
+                    <!--<a onclick='update(this.id,`winner`)' id='{$NotifiId}'><i class='bi bi-pencil-square text-green fs-6'></i></a>-->
                 </div>
                 </td>
             </tr>";
@@ -1550,6 +1854,43 @@ if (isset($_POST['disableWith'])) {
 }
 
 // update snppet checked table content end
+
+// delete item start 
+if (isset($_POST['deleteWith'])) {
+    $type = $_POST['type'];
+    $data = $_POST['data'];
+    if ($type == 'winner') {
+        try {
+            $conn->begin_transaction();
+
+            $sql = "SELECT Image FROM notification WHERE NotifiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $data);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $row = $reusalt->fetch_assoc();
+            $url = "../../Dachbord/user_images/winner/" . $row['Image'];
+
+            if (unlink($url)) {
+                $sql = "DELETE FROM notification WHERE NotifiId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $data);
+                $stmt->execute();
+            } else {
+                $respons = "error2";
+            }
+            $conn->commit();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $conn->rollback();
+            $respons = "erro1r" . $e;
+        }
+    } else {
+        $respons = "Undefind";
+    }
+    echo $respons;
+}
+// delete item end
 
 // snippet management end **************
 
@@ -2142,7 +2483,359 @@ if (isset($_POST['aprued'])) {
 }
 // Ignored end
 
-// notification management start ********
+// viewMore start 
+if (isset($_POST['viewMore'])) {
+    $Type = $_POST['type'];
+    $lessonId = $_POST['id'];
+    $htmlHeader = "
+        <div class='modal-header'>
+            <h5 class='modal-title' id='mainModel'>Lesson Details<span class='ModelTitle'></span></h5>
+            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+        <div class='modal-body'>
+            <div class='row'>
+                <div class='col-sm-12 col-12 add-lesson'>
+                    <!-- Card start -->
+                    <div class='card'>
+                        <div class='card-body'>
+                            <form id='addlesson'>
+                                <!-- Row start -->
+                                <div class='row item-center'>";
+    $htmlFooter  = "
+                                </div>
+                                <!-- Row end -->
+                                <!-- Form actions footer start -->
+                                <!-- <div class='form-actions-footer'> -->
+                                    <!-- <button id='cansal' class='btn btn-light'>Cancel</button> -->
+                                    <!-- <button class='btn btn-success' onclick='submitAddLesson()'>Submit</button> -->
+                                <!-- </div> -->
+                                <!-- Form actions footer end -->
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Card end -->
+                </div>
+            </div>
+        </div>
+        <div class='modal-footer'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+            <button type='button' class='btn btn-success' onclick='updateLessonData({} , `{}`)'>Save changes</button>
+        </div>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show py-2'>Successfull add the lesson!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show py-2'>Failed add the lesson</div>
+        </div>";
+    if ($Type == "lesson") {
+
+        // lessson icon
+        $video = "<i class='bi bi-camera-video text-success'></i>";
+        $note  = "<i class='bi bi-file-earmark-text text-success'></i>";
+        $quiz = "<i class='bi bi-check2-circle text-success'></i>";
+        $classwork = "<i class='bi bi-person-video3 text-success'></i>";
+        $upload = "<i class='bi bi-cloud-upload text-success'></i>";
+        $upcomming = "<i class='bi bi-clock-history text-success'></i>";
+
+        $sql = "SELECT * FROM lesson,recaccess WHERE lesson.LesId = ? and recaccess.LesId = ? ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $lessonId, $lessonId);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $LesName = $row['LesName'];
+            $Dict = $row['Dict'];
+            $Month = $row['Month'];
+            $Link = $row['Link'];
+            $LesId = $row['LesId'];
+            $type = $row['Type'];
+
+            if ($type == 'video') {
+                $lesindi = $video;
+            } elseif ($type == 'note') {
+                $lesindi = $note;
+            } elseif ($type == 'quiz') {
+                $lesindi = $quiz;
+            } elseif ($type == 'upload') {
+                $lesindi = $upload;
+            } elseif ($type == 'upcomming') {
+                $lesindi = $upcomming;
+            } else {
+                $lesindi = $classwork;
+            }
+
+            if ($row['Status'] == "active") {
+                $statusindi = "<span class='text-green td-status'><i class='fs-6 bi bi-check-circle'></i></span>";
+            } else {
+                $statusindi = "<span class='text-red td-status'><i class='fs-6 bi bi-x-circle'></i></span>";
+            }
+
+
+            $accessNew = "";
+            $groupNew = "";
+            $access = explode("][", substr($row['ClassId'], 1, -1));
+            $group = explode("][", substr($row['GId'], 1, -1));
+            foreach ($access as $value) {
+                $sql = "SELECT * FROM class WHERE ClassId = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $value);
+                $stmt->execute();
+                $reusalt1 = $stmt->get_result();
+                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                    $accessNew .= "<p>" . $row1['year'] . " " . $row1['ClassName'] . " " . $row1['InstiName'] . "</p>";
+                }
+            }
+            foreach ($group as $value) {
+                $sql = "SELECT MGName FROM grouplist WHERE GId = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $value);
+                $stmt->execute();
+                $reusalt1 = $stmt->get_result();
+                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                    $groupNew .= "<p>" . $row1['MGName'] . "</p>";
+                }
+            }
+
+            $allShowUser = 0;
+            $allRegUsers =  0;
+            $actDoneUser = 0;
+            $sql = "SELECT ClassId,Month FROM recaccess WHERE recaccess.LesId = ? ";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $lessonId);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $access = explode("][", substr($row['ClassId'], 1, -1));
+                $Month = $row['Month'];
+
+                // get lesson viwes 
+                foreach ($access as $value) {
+                    $status = "active";
+                    $sql = "SELECT SUM(CASE WHEN month = ? and ClassId = ? and Status = ? THEN 1 ELSE 0 END) AS allShowUser, SUM(CASE WHEN ClassId = ? and Status = ? THEN 1 ELSE 0 END) AS allRegUsers FROM payment";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sssss", $Month, $value, $status, $value, $status);
+                    $stmt->execute();
+                    $reusalt = $stmt->get_result();
+                    if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                        $allShowUser += $row['allShowUser'];
+                        $allRegUsers += $row['allRegUsers'];
+                    }
+                }
+                $sql = "SELECT SUM(CASE WHEN OtherId = ? THEN 1 ELSE 0 END)AS doneUser FROM activity";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $lessonId);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $actDoneUser += $row['doneUser'];
+                }
+                $viweCompleatePrecentage = $allShowUser == 0 ? "Not Registered User" : $actDoneUser / $allShowUser * 100 . "% is Compleated";
+                // $viweCompleatePrecentage = $actDoneUser/$allShowUser*100;
+            }
+            $tableData = "
+                <div class='col-12'>
+                    <div class='mb-3'>
+                        <div class='table-responsive'>
+                            <table class='table table-bordered m-0'>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>Desctiption </th>
+                                        <th>Access Class</th>
+                                        <th>Show Groups</th>
+                                        <th>Month</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class='text-center'>{$lesindi}</td>
+                                        <td>{$LesId}</td>
+                                        <td>{$LesName}</td>
+                                        <td>{$Dict}</td>
+                                        <td>$accessNew</td>
+                                        <td>{$groupNew}</td>
+                                        <td>{$Month}</td>
+                                        <td class='text-center'>{$statusindi}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>";
+            $type != "note" ? $tableData .= "
+                <div class='col-auto'>
+					<div class='card'>
+						<div class='card-header'>
+							<div class='card-title'>{$LesName} - Summary</div>
+						</div>
+						<div class='card-body'>
+							<div id='lessonSummary' class='chart-height-xl auto-align-graph'></div>
+							<div class='num-stats'>
+                                <h6>{$viweCompleatePrecentage}</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+                <div class='col-auto'>
+					<div class='card'>
+						<div class='card-header'>
+							<div class='card-title'>{$LesName} - Summary</div>
+						</div>
+						<div class='card-body'>
+							<div id='lessonSummary2' class='auto-align-graph'></div>
+							<div class='num-stats'>
+								<h6 class='text-truncate'>$viweCompleatePrecentage</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+                " : null;
+        } else {
+            $tableData = "undefind";
+        }
+        $htmlContent = $htmlHeader . $tableData . $htmlFooter;
+    }
+    echo $htmlContent;
+}
+// viewMore end
+
+// get lessno Viwes start
+if (isset($_POST['getChartVariyable'])) {
+    $type = $_POST['type'];
+    $LessonId = $_POST['id'];
+
+    if ($type == "lessonViwes") {
+        $allShowUser = 0;
+        $allRegUsers =  0;
+        $actDoneUser = 0;
+        try {
+            $sql = "SELECT ClassId,Month FROM recaccess WHERE recaccess.LesId = ? ";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $LessonId);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $access = explode("][", substr($row['ClassId'], 1, -1));
+                $Month = $row['Month'];
+
+                // get lesson viwes 
+                foreach ($access as $value) {
+                    $status = "active";
+                    $sql = "SELECT SUM(CASE WHEN month = ? and ClassId = ? and Status = ? THEN 1 ELSE 0 END) AS allShowUser, SUM(CASE WHEN ClassId = ? and Status = ? THEN 1 ELSE 0 END) AS allRegUsers FROM payment";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sssss", $Month, $value, $status, $value, $status);
+                    $stmt->execute();
+                    $reusalt = $stmt->get_result();
+                    if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                        $allShowUser += $row['allShowUser'];
+                        $allRegUsers += $row['allRegUsers'];
+                    }
+                }
+                $sql = "SELECT SUM(CASE WHEN OtherId = ? THEN 1 ELSE 0 END)AS doneUser FROM activity";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $LessonId);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $actDoneUser += $row['doneUser'];
+                }
+            }
+            $pendingUser = $allShowUser - $actDoneUser;
+            // $pendingUser = $allShowUser - $actDoneUser;
+            // $respons = "{chart: {height: 310,type: 'donut',},labels: ['completed Students', 'All Student'],series: [{$actDoneUser},{$pendingUser}],legend: {position: 'bottom',},dataLabels: {enabled: false},stroke: {width: 8,colors: ['#ffffff'],},colors: ['#30ba55', '#ff0000'],tooltip: {y: {formatter: function (val) {return '$' + val}}},}";
+            $response = array(
+                "lesSummary1" => array(
+                    "chart" => array(
+                        "height" => 270,
+                        "type" => "donut"
+                    ),
+                    "labels" => array("completed", "Not Compleate"),
+                    "series" => array($actDoneUser, $pendingUser),
+                    "legend" => array("position" => "bottom"), // Corrected the structure
+                    "dataLabels" => array("enabled" => false),
+                    "stroke" => array("width" => 3, "colors" => array("#ffffff")),
+                    "colors" => array("#24e398", "#fc4163"),
+                    "tooltip" => array(
+                        "y" => array("formatter" => "function (val) { return '$' + val; }") // Changed the formatter value
+                    )
+                ),
+                "lesSummary2" => array(
+                    'chart' => array(
+                        'height' => 235,
+                        'width' => '75%',
+                        'type' => 'bar',
+                        'toolbar' => array(
+                            'show' => false
+                        )
+                    ),
+                    'plotOptions' => array(
+                        'bar' => array(
+                            'horizontal' => false,
+                            'columnWidth' => '60%',
+                            'borderRadius' => 8
+                        )
+                    ),
+                    'dataLabels' => array(
+                        'enabled' => false
+                    ),
+                    'stroke' => array(
+                        'show' => true,
+                        'width' => 0,
+                        'colors' => array('#435EEF')
+                    ),
+                    'series' => array(
+                        array(
+                            'name' => 'user',
+                            'data' => array($allRegUsers, $allRegUsers - $allShowUser, $allShowUser, $actDoneUser)
+                        )
+                    ),
+                    'legend' => array(
+                        'show' => false
+                    ),
+                    'xaxis' => array(
+                        'categories' => array('All Registered', "Not Pay", 'Show', 'Compleate')
+                    ),
+                    'yaxis' => array(
+                        'show' => false
+                    ),
+                    'fill' => array(
+                        'colors' => array('#4267cd')
+                    ),
+                    'grid' => array(
+                        'show' => false,
+                        'xaxis' => array(
+                            'lines' => array(
+                                'show' => true
+                            )
+                        ),
+                        'yaxis' => array(
+                            'lines' => array(
+                                'show' => false
+                            )
+                        ),
+                        'padding' => array(
+                            'top' => 0,
+                            'right' => 0,
+                            'bottom' => -10,
+                            'left' => 0
+                        )
+                    ),
+                    'colors' => array('#ffffff')
+                )
+            );
+
+            header('Content-Type: application/json');
+            $response = json_encode($response);
+        } catch (Exception $e) {
+            $respons = "undefind";
+        }
+    }
+    echo $response;
+} 
+// get lessno Viwes end
+
+// notification management start *********************
 
 
 

@@ -440,6 +440,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				formData = "updatemainCardContent=" + data;
 				$.post("sql/process.php", formData, function(response, status) {
 					$('#mainCardContent').html(response);
+					prograss_snipper();
 				});
 			}
 		}
@@ -563,6 +564,16 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				loadScript('assets/js/fuleUploader.js');
 			}
 		}
+
+		function markUnCompleate(data) {
+			console.log('mardsifgh');
+			formData = "markUnCompleate" + "&data=" + data;
+			$.post("sql/process.php", formData, function(response, status) {
+				console.log(response);
+				changemainCardContent();
+			});
+		}
+
 
 		function loadScript(url) {
 			const script = document.createElement('script');

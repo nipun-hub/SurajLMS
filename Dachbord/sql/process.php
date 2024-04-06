@@ -406,12 +406,13 @@ try {
             $lock = "lock bi bi-lock";
             $unlock = "bi bi-unlock";
             $complete = "<span class='green'><i class='bi bi-check-circle'></i></i>&nbsp;Complete</span>";
-            $nonecomplete = "<span class='blue'><i class='bi bi-x-circle'></i>&nbsp;Not Complate</span>";
+            $active = "<span class='green'><i class='bi bi-check-circle'></i></i>&nbsp;Active</span>";
+            $nonecomplete = "<span class='blue'>&nbsp;Incomplete</span>";
             $notply = "<span class='red'><i class='bi bi-lock'></i>&nbsp;NotPay</span>";
             $Restricted = "<span class='red'><i class='bi bi-lock'></i>&nbsp;Restricted</span>";
             $pending = "<span class='orange'><i class='bi bi-lock'></i>&nbsp;Pending</span>";
             $success = "<span class='green'><i class='bi bi-unlock'></i>&nbsp;Access available</span>";
-            $lockbtn = "<i class='fs-6 bi bi-lock me-2'></i>NotPay";
+            $lockbtn = "<i class='fs-6 bi bi-lock me-2'></i>Restricted";
             $unlockbtn = "Asign";
 
             if ($maintype == 'lesson') {
@@ -472,7 +473,7 @@ try {
                     if ($status == 'active') {
                         $type = 1;
                         $indigate = $unlock;
-                        $action = $nonecomplete;
+                        $action = $active;
                         $btn = $unlockbtn;
                     } elseif ($status == 'pending') {
                         $type = 0;
@@ -497,16 +498,18 @@ try {
 									<div class='bottom' aria-hidden='true'>{$MonthName}</div>
 								</div>
                             <div class='main-card-details w-100 mt-2'>
-                                <div class='d-flex justify-content-between'>
+                                <div class='d-flex justify-content-between mb-2'>
                                     {$action}
-                                    <!-- <div>20%</div> -->
-									<!-- <div class='circular'> -->
-										<!-- <input type='hidden' value='100'> -->
-										<!-- <div class='circular-progress flex-end'> -->
-										<!-- </div> -->
-									<!-- </div> -->
+                                    <!--<div class='d-flex'>
+                                        <div class='text-dark'><span>20%</span></div>
+                                        <div class='circular'>
+                                            <input type='hidden' value='100'>
+                                            <div class='circular-progress flex-end'>
+                                            </div>
+                                        </div>
+                                    </div>-->
                                 </div>
-                                <div class='name'>{$year} {$MonthName}</div>
+                                <div class='name text-center'>{$year} {$MonthName}</div>
                             </div>
                             <div class='main-card-footer mt-2 h-auto'>
                                 <button onclick='mainCardAction({$Month},`{$maintype}`)' class='btn btn-info py-1 px-3'>{$btn}</button>
@@ -612,6 +615,7 @@ try {
                 $result = $stmt->get_result();
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
+                        $pending = "pending";
                         $Month = $row['Month'];
                         $week = $row['week'];
 
@@ -619,9 +623,9 @@ try {
                         $MonthFomat = explode("-", $MonthFomat);
                         $MonthName = GetMonthName($MonthFomat[1]);
 
-                        $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = Lesson.LesId and activity.Status = ? WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
+                        $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = Lesson.LesId and activity.Status != ? WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
                         $stmt = $conn->prepare($sql1);
-                        $stmt->bind_param("issssss", $UserId, $status, $activeClaId_upd, $GidNew, $Month, $week, $status);
+                        $stmt->bind_param("isssssss", $UserId, $pending, $activeClaId_upd, $GidNew, $Month, $week, $status, $status);
                         $stmt->execute();
                         $result0 = $stmt->get_result();
                         if ($result0->num_rows > 0) {
@@ -629,9 +633,9 @@ try {
                             $viweCompleate = 0;
                             // get compleate lesson count 
                             if (true) {
-                                $sql = "SELECT COUNT(activity.ActId) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note'";
+                                $sql = "SELECT COUNT(activity.ActId)+(SELECT COUNT(lesson.LesId) FROM lesson,recaccess WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type = 'note' and lesson.Status = ?) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status != ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note' and lesson.Status = ?";
                                 $stmt = $conn->prepare($sql);
-                                $stmt->bind_param("issssss", $UserId, $activeClaId_upd, $GidNew, $Month, $week, $status, $status);
+                                $stmt->bind_param("ssssssssssssss", $activeClaId_upd, $GidNew, $Month, $week, $status, $status, $UserId, $activeClaId_upd, $GidNew, $Month, $week, $status, $pending, $status);
                                 $stmt->execute();
                                 $reusaltactivity = $stmt->get_result();
                                 if ($reusaltactivity->num_rows > 0 && $rowactivity = $reusaltactivity->fetch_assoc()) {
@@ -654,7 +658,7 @@ try {
 		                    </div>";
                             $contentRow = "";
                             while ($row0 = $result0->fetch_assoc()) {
-                                $unwatch = "<span onclink=`markUnCompleate({$row0['LesId']})` data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
+                                $unwatch = "<span onclick='markUnCompleate({$row0['LesId']})' data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
                                 $CompleateStatus = $row0['ActId'] != null ? $Compleate : $NonCompleate;
                                 $CompleateStatus = $row0['Type'] == 'note'  ? "" : $CompleateStatus;
                                 $eye = $row0['ActId'] != null && ($row0['Type'] == 'video' || $row0['Type'] == 'quiz') ? $unwatch : "";
@@ -662,7 +666,7 @@ try {
                                 $lessonName = $row0['LesName'];
 
                                 $paymentnotpay = "<span class='alert alert-danger p-0 px-2' onclick='nthj(5,`{$lesMonth}`)'>Not paid&nbsp;<i class='bi bi-lock'></i></span>";
-                                $click =  "onclick='lesEvent(`{$row0['LesId']}`,`{$row0['Type']}`)'";
+                                $click =  "onclick='lesEvent({$row0['LesId']},`{$row0['Type']}`)'";
 
                                 $sql = "SELECT * FROM payment WHERE UserId = ? and ClassId = ? and Month = ? ";
                                 $stmt = $conn->prepare($sql);
@@ -708,8 +712,8 @@ try {
 			                		        <p>{$lessonName}</p>
                                         </div>
                                         <div class='item-center'>
+                                            {$eye}
 			                		        {$StatusIndi}
-			                		        {$eye}
                                         </div>
                                     </div>
                                 </div>";
@@ -738,10 +742,11 @@ try {
                         }
                     }
                     foreach ($GidList as $GId) {
+                        $pending = "pending";
                         $GidNew = "%[{$GId}]%";
-                        $sql1 = "SELECT rac.*,les.*,act.ActId FROM recaccess rac,lesson les LEFT JOIN activity act ON act.UserId = ? and les.LesId = act.OtherId and act.Status = ? WHERE rac.ClassId LIKE ? and rac.GId LIKE ? and rac.Month = ? and rac.Status = ? and rac.LesId = les.LesId  ORDER BY rac.InsDate DESC";
+                        $sql1 = "SELECT rac.*,les.*,act.ActId FROM recaccess rac,lesson les LEFT JOIN activity act ON act.UserId = ? and les.LesId = act.OtherId and act.Status != ? WHERE rac.ClassId LIKE ? and rac.GId LIKE ? and rac.Month = ? and rac.Status = ? and rac.LesId = les.LesId and les.Status = ?  ORDER BY rac.InsDate DESC";
                         $stmt = $conn->prepare($sql1);
-                        $stmt->bind_param("isssss", $UserId, $status, $activeClaId_upd, $GidNew, $data, $status);
+                        $stmt->bind_param("issssss", $UserId, $pending, $activeClaId_upd, $GidNew, $data, $status, $status);
                         $stmt->execute();
                         $result0 = $stmt->get_result();
                         if ($result0->num_rows > 0) {
@@ -756,9 +761,9 @@ try {
                             // $CompleateStatus = $NonCompleate;
                             // les compleate status
                             if (true) {
-                                $sql = "SELECT COUNT(activity.ActId) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note'";
+                                $sql = "SELECT COUNT(activity.ActId)+(SELECT COUNT(lesson.LesId) FROM lesson,recaccess WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.Status = ? and recaccess.LesId = lesson.LesId and lesson.Type = 'note' and lesson.Status = ?) AS countOfCompleate FROM activity,recaccess,lesson WHERE activity.UserId = ? and recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.Status = ? and activity.OtherId = recaccess.LesId and activity.Status != ? and recaccess.LesId = lesson.LesId and lesson.Type != 'note' and lesson.Status = ?";
                                 $stmt = $conn->prepare($sql);
-                                $stmt->bind_param("isssss", $UserId, $activeClaId_upd, $GidNew, $data, $status, $status);
+                                $stmt->bind_param("ssssssssssss", $activeClaId_upd, $GidNew, $data, $status, $status, $UserId, $activeClaId_upd, $GidNew, $data, $status, $pending, $status);
                                 $stmt->execute();
                                 $reusaltactivity = $stmt->get_result();
                                 if ($reusaltactivity->num_rows > 0 && $rowactivity = $reusaltactivity->fetch_assoc()) {
@@ -782,7 +787,7 @@ try {
                             while ($row0 = $result0->fetch_assoc()) {
                                 $lesMonth = $row0['Month'];
                                 $lessonName = $row0['LesName'];
-                                $unwatch = "<span onclink=`markUnCompleate({$row0['LesId']})` data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
+                                $unwatch = "<span onclick='markUnCompleate({$row0['LesId']})' data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
 
                                 $CompleateStatus = $row0['ActId'] != null ? $Compleate : $NonCompleate;
                                 $CompleateStatus = $row0['Type'] == 'note'  ? "" : $CompleateStatus;
@@ -811,7 +816,6 @@ try {
                                     $StatusIndi = $paymentnotpay;
                                     $onclickEvent = "";
                                 }
-                                $eye = "";
                                 if ($row0['Type'] == 'video') {
                                     $lesindi = $video;
                                 } elseif ($row0['Type'] == 'note') {
@@ -836,8 +840,8 @@ try {
                                 <p>{$lessonName}</p>
                                 </div>
                                 <div class='item-center'>
-                                {$StatusIndi}
                                 {$eye}
+                                {$StatusIndi}
                                 </div>
 			                	</div>
 			                </div>";
@@ -1192,7 +1196,11 @@ try {
                 $reusalt = $stmt->get_result();
                 $stmt->close();
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                    $respons = "update";
+                    $status = "active";
+                    $sql = "UPDATE activity SET Status = ? WHERE UserId =  ? and OtherId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sii", $status, $UserId, $LessonId);
+                    $respons = $stmt->execute() ? "update as compleate" : "update error";
                 } else {
                     $conn->begin_transaction();
 
@@ -1232,7 +1240,12 @@ try {
                 $reusalt = $stmt->get_result();
                 $stmt->close();
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                    $respons = "alredy add point";
+                    $status = "active";
+                    $sql = "UPDATE activity SET Status = ? WHERE UserId =  ? and OtherId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sii", $status, $UserId, $LessonId);
+                    $respons = $stmt->execute() ? "update as compleate" : "update error";
+                    // $respons = "alredy add point";
                 } else {
                     $conn->begin_transaction();
 
@@ -1304,6 +1317,18 @@ try {
         echo $respons;
     }
     // add point and activity end 
+
+    // mark as unwatch start
+    if (isset($_POST['markUnCompleate'])) {
+        $status = "pending";
+        $data = $_POST['data'];
+        $sql = "UPDATE activity SET Status = ? WHERE UserId =  ? and OtherId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sii", $status, $UserId, $data);
+        $respons = $stmt->execute() ? "success" : "error";
+        echo $respons;
+    }
+    // mark as unwatch end
 } catch (Exception $e) {
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     fwrite($myfile, $e);

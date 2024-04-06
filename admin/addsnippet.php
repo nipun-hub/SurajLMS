@@ -74,13 +74,13 @@
                     <!-- Row start -->
                     <div class="row my-3 text-center">
                         <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('insti','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0]=='editor') ? null : "disabled"?>><i class="bi bi-plus"></i>&nbsp;Add institute</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('insti','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add institute</button>
                         </div>
                         <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('class','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0]=='editor') ? null : "disabled"?>><i class="bi bi-plus"></i>&nbsp;Add Class</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('class','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add Class</button>
                         </div>
                         <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('group','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0]=='editor') ? null : "disabled"?>><i class="bi bi-plus"></i>&nbsp;Add Group</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('group','insert')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add Group</button>
                         </div>
                         <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
                             <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
@@ -131,7 +131,9 @@
 
                                     </div>
                                 </div>
-                                <div class="card-body" id="table-content-change"><!-- change table content--></div>
+                                <div class="card-body" id="table-content-change"><!-- change table content-->
+                                    <center><img src="assets/img/gif/loding.gif" width="300" alt="" srcset=""></center>
+                                </div>
                             </div>
                             <!-- snippit management table end -->
 
@@ -238,22 +240,22 @@
         //     });
         // }
 
-        function updateModelContent(type, method = null) {
+        function updateModelContent(type, data = null) {
             if (type == 'insti') {
-                formData = method == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (method == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
+                formData = data == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (data == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#modelMainContent').html(response);
                     $('#modelMain').modal('show');
                 });
             } else if (type == 'class') {
-                formData = method == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (method == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
+                formData = data == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (data == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#modelMainContent').html(response);
                     getinstitute();
                     $('#modelMain').modal('show');
                 });
             } else if (type == 'group') {
-                formData = method == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (method == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
+                formData = data == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (data == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#modelMainContent').html(response);
                     getClassList();
@@ -262,9 +264,30 @@
                     $('#modelMain').modal('show');
                 });
             } else if (type == 'winner') {
-                formData = method == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (method == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
+                formData = data == 'insert' ? "loadModelDataInsert=" + "&Type=" + type : (data == 'update' ? "loadModelDataUpdate=" + "&Type=" + type : null);
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#modelMainContent').html(response);
+                    $('#modelMain').modal('show');
+                });
+            } else if (type == 'instiUpdate') {
+                formData = "loadModelDataInsert=" + "&Type=" + type + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#modelMainContent').html(response);
+                    $('#modelMain').modal('show');
+                });
+            } else if (type == 'classUpdate') {
+                formData = "loadModelDataInsert=" + "&Type=" + type + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#modelMainContent').html(response);
+                    $('#modelMain').modal('show');
+                });
+            } else if (type == 'groupUpdate') {
+                formData = "loadModelDataInsert=" + "&Type=" + type + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#modelMainContent').html(response);
+                    getClassList();
+                    loadScript('assets/vendor/bs-select/bs-select.min.js');
+                    loadScript('assets/vendor/bs-select/bs-select-custom.js');
                     $('#modelMain').modal('show');
                 });
             }
@@ -273,6 +296,7 @@
         ShowBody();
 
         function ShowBody(data = null) {
+            $('#table-content-change').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
             var searchval = document.querySelector('.input-group .searchInp').value;
             data = searchval == "" ? null : searchval;
             var checkedinp = document.querySelector('.sub-nav-body input:checked').value;
@@ -297,13 +321,53 @@
             });
         }
 
-        // function serchinp(value) {
-        //     var searchval = document.querySelector('.input-group .searchInp').value;
-        //     formData = "UpdateLessonContent=" + searchval;
-        //     $.post("sql/process.php", formData, function(response, status) {
-        //         $('#table-content-change').html(response);
-        //     });
-        // }
+        function del(self, type) {
+            formData = "deleteWith=" + "&type=" + type + "&data=" + self;
+            $.post("sql/process.php", formData, function(response, status) {
+                console.log(response);
+                ShowBody();
+            });
+        }
+
+        function update(self, type) {
+            updateModelContent(type + 'Update', self);
+        }
+
+        function viweMore(id, type) {
+            var options;
+            var chart;
+            formData = "viewMore=" + "&type=lesson" + '&id=' + id;
+            $.post("sql/process.php", formData, function(response, status) {
+                $('#mainModalAlert').html(response);
+                loadaccess();
+                loadGroup();
+                loadScript('assets/vendor/bs-select/bs-select-custom.js');
+                loadScript('assets/vendor/bs-select/bs-select.min.js');
+                formData = "getChartVariyable=" + "&type=lessonViwes" + '&id=' + id;
+                $.post("sql/process.php", formData, function(response, status) {
+                    if (status) {
+                        var options = response.lesSummary1;
+                        var chart1 = new ApexCharts(
+                            document.querySelector("#lessonSummary"),
+                            options
+                        );
+                        setTimeout(function() {
+                            chart1.render();
+                        }, 500);
+
+                        var options = response.lesSummary2;
+                        var chart2 = new ApexCharts(
+                            document.querySelector("#lessonSummary2"),
+                            options
+                        );
+                        setTimeout(function() {
+                            chart2.render();
+                        }, 500);
+                    }
+                });
+                document.getElementById('clickShowModel').click();
+            });
+        }
 
         $(".cansal").click(function(event) {
             event.preventDefault();
