@@ -592,7 +592,6 @@ function updateLessonData(val1, val2) {
                 console.log(title);
                 grouplist.push(title);
             });
-            // Append each title individually to "grouplist[]"
             grouplist.forEach(function (title) {
                 LessonData.append("grouplist[]", title);
             });
@@ -604,7 +603,6 @@ function updateLessonData(val1, val2) {
                 var title = li.getAttribute('title');
                 accesslist.push(title);
             });
-            // Append each title individually to "accesslist[]"
             accesslist.forEach(function (title) {
                 LessonData.append("accesslist[]", title);
             });
@@ -618,7 +616,6 @@ function updateLessonData(val1, val2) {
                 if (response == ' successfull') {
                     $('.select-multiple').val(null).trigger('change');
                     clearFormData();
-                    // updateModalData('lessonUpdate', val1, val2);
                     loadLessocContent();
                     reusaltLog[0].style.display = "block";
 

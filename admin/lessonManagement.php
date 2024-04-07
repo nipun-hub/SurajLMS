@@ -572,7 +572,6 @@
 
         // load the lesson alert data start 
         function updateModalData(type, data1, data2) {
-            console.log("done function");
             if (type == "lessonUpdate") {
                 formData = "lessonUpdateAlert=" + '&data1=' + data1 + '&data2=' + data2;
                 $.post("sql/process.php", formData, function(response, status) {
