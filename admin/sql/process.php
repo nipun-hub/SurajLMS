@@ -371,7 +371,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $LesId = $row['LesId'];
         $name = $row['LesName'];
-        $dict = $row['Dict'];
+        $dict = empty($row['Dict']) ? "Empty" : $row['Dict'];
         $type = $row['Type'];
         $InsertDate = substr($row['InsertDate'], 0, 10);
         // $InsertDate = DateTime::createFromFormat('Ymd', $InsertDate)->format('Y-m-d');
@@ -813,20 +813,20 @@ if (isset($_POST['updateLessonData'])) {
                     $stmt->bind_param("ssssi", $lesName, $lesdict, $LesLink, $lestype, $lessonId);
                     $stmt->execute();
 
-                    $sql2 = "UPDATE recaccess SET ClassId = ? , GId = ? WHERE LesId = ? and `week` = ?";
+                    $sql2 = "UPDATE recaccess SET ClassId = ? , GId = ? , week = ? WHERE LesId = ?";
                     $stmt = $conn->prepare($sql2);
-                    $stmt->bind_param("ssis", $classNew, $groupNew, $lessonId, $week);
+                    $stmt->bind_param("sssi", $classNew, $groupNew, $week, $lessonId);
                     $stmt->execute();
                     $conn->commit();
 
                     $respons = "successfull";
                 } catch (Exception $e) {
-                    $respons = "error".$e;
+                    $respons = "error" . $e;
                     $conn->rollback();
                 }
             }
-        } else{
-        $respons = "Undefing input";
+        } else {
+            $respons = "Undefing input";
         }
     } catch (Exception $e) {
         $respons = "error";
