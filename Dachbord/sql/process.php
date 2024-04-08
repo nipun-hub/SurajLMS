@@ -310,9 +310,9 @@ try {
             $thisMonth =  GetToday('ym');
             $thisMonth = $data == 'undefined' ? GetToday('ym') : $data;
             $today =  GetToday('ymd');
-            $payActive = "<p>Payment Successfull</p>";
+            $payActive = "<span>Payment Successfull</span>";
             $payDeactive = "<p class='btn btn-info p-0 px-5' onclick = 'nthj(5,{$thisMonth})'>Pay Now</p>";
-            $payPending = "<p>Please wait the until approved</p>";
+            $payPending = "<span>Please wait the until approved</span>";
             $payindiBtnActive = "<span class='alert alert-success'>Active</span>";
             $payindiDeactive = "<span class='alert alert-danger'>Deactive</span>";
             $payindiBtnPending = "<span class='alert alert-warning'>Pending</span>";
@@ -326,19 +326,20 @@ try {
             $result = $stmt->get_result();
             if ($result->num_rows > 0) {
                 if ($row = $result->fetch_assoc()) {
-                    if ($row['Status'] == 'active') {
+                    $paymrntStatus = $row['Status'];
+                    if ($paymrntStatus == 'active') {
                         // $Rr = $RrActive;
                         // $RrBtn = $RrBtnACtive;
                         $PayStatus = $payActive;
                         $payBtn = $payindiBtnActive;
                         $PayImg = $PayImageActive;
-                    } elseif ($row['Status'] == 'pending') {
+                    } elseif ($paymrntStatus == 'pending') {
                         // $RrBtn = $RrBtnDeaCtive;
                         // $Rr = $RrDeactive;
                         $PayStatus = $payPending;
                         $payBtn = $payindiBtnPending;
                         $PayImg = $PayImageDisline;
-                    } elseif ($row['Status'] == 'disline') {
+                    } elseif ($paymrntStatus == 'disline') {
                         // $Rr = $RrDeactive;
                         // $RrBtn = $RrBtnDeaCtive;
                         $PayStatus = $payDeactive;
@@ -353,33 +354,87 @@ try {
                 $payBtn = $payindiDeactive;
                 $PayImg = $PayImageDisline;
             }
-            $Rr = "";
-            $RrBtn = "";
+            // $Rr = "";
+            // $RrBtn = "";
+
+            // check in progress class and viwe it
+            if (true) {
+                $sql = "SELECT * FROM Class WHERE Conducting = 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $className = "{$row['year']} {$row['ClassName']} {$row['InstiName']}";
+                    $decodeDict = json_decode($row['Dict']);
+                    $youtubeLink = empty($decodeDict[3]) ? null : $decodeDict[3];
+                    $zoomlink = empty($decodeDict[4]) ? null : $decodeDict[4];
+                    $dict = empty($decodeDict[5]) ? $className : $decodeDict[5];
+                    if ($paymrntStatus == "active") {
+                        $zoombtn = "<a href='{$zoomlink}'><span class='btn btn-success'>Join</span></a>";
+                        $youBtn = "<a href='{$youtubeLink}'><span class='btn btn-success'>Join</span></a>";
+                    } else {
+                        $zoombtn = "";
+                        $youBtn = "";
+                    }
+
+                    $classindiphy = empty($youtubeLink) && empty($zoomlink) ? "
+                    <div class='col-12 cardHeaderMain'>
+		    	        	<div class=' cardHeaderContent w-100 one item-center'>
+		    	        		<img class='text-red' height='50' width='50' src='assets/img/site use/classphy.png' alt=''>
+		    	        		<div class='headerContentBody w-100'>
+		    	        			<span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+		    	        			<span>{$className}</span>
+		    	        		</div>
+                                <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
+		    	        	</div>
+		    	        </div>" : null;
+
+                    $classindiyou = !empty($youtubeLink) ? "
+                        <div class='col-12 cardHeaderMain'>
+		    	        	<div class=' cardHeaderContent w-100 one item-center'>
+		    	        		<img class='text-red' height='50' width='50' src='assets/img/site use/youtube.png' alt=''>
+		    	        		<div class='headerContentBody w-100'>
+		    	        			<span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+		    	        			<span>{$className}</span>
+		    	        		</div>
+                                <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
+		    	        		{$youBtn}
+		    	        	</div>
+		    	        </div>" : null;
+
+                    $classindizoom =  !empty($zoomlink) ? "
+                        <div class='col-12 cardHeaderMain item-center'>
+		    	        	<div class=' cardHeaderContent w-100 one item-center'>
+                                <img class='text-red' height='50' width='50' src='assets/img/site use/zoom.png' alt=''>
+                                <div class='headerContentBody w-100'>
+                                    <span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+                                    {$PayStatus}
+                                </div>
+                                <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
+		    	        		{$zoombtn}
+		    	        	</div>
+		    	        </div>" : null;
+                }
+            }
 
             $htmlContent = " 
             <div class='col-12 mainGroupOptions'>
                 <div class='card'>
                     <div class='card-body cardHeder row'>
-		    	        <!-- <div class='col-12 cardHeaderMain'>
-		    	        	<div class=' cardHeaderContent one item-center'>
-		    	        		<img class='text-red' height='40' width='40' src='assets/img/site use/add-video.png' alt=''>
-		    	        		<div class='headerContentBody w-100'>
-		    	        			<h4>Lesson Request</h4>
-		    	        			{$RrBtn}
-		    	        		</div>
-		    	        		{$Rr}
-		    	        	</div>
-		    	        </div> -->
 		    	        <div class='col-12 cardHeaderMain item-center'>
-		    	        	<div class=' cardHeaderContent two item-center'>
+		    	        	<div class=' cardHeaderContent w-100 two item-center'>
 		    	        		{$PayImg}
 		    	        		<div class='headerContentBody w-100'>
-		    	        			<h4>Account status</h4>
+		    	        			<h4><span class='fs-6'>Account status</span></h4>
 		    	        			{$PayStatus}
 		    	        		</div>
 		    	        		{$payBtn}
 		    	        	</div>
 		                </div>
+                        {$classindiyou}
+                        {$classindizoom}
+                        {$classindiphy}
                     </div>
                 </div>
             </div>";

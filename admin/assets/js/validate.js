@@ -94,17 +94,16 @@ function submitCurrentClass(val = null) {
     if (val == null) {
         addcurrentclassAttribute();
         if (validatecurrentclass()) {
+            console.log(inputfeelds.length);
             var List = [];
-            var PassData = new FormData();
             inputfeelds.forEach(function (self) {
                 List.push(self.value);
-                // PassData.append(self.name, self.value);
             });
+            var PassData = new FormData();
             var newList = JSON.stringify(List);
             PassData.append("addCurrentClass", newList);
             $.ajax({
                 url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
-                    console.log(response);
                     if (response == ' success') {
                         reusaltLog[0].style.display = 'block';
                         reusaltLog[1].style.display = 'none';
@@ -135,7 +134,7 @@ function submitCurrentClass(val = null) {
 
 function validatecurrentclass() {
     var finaly = true;
-    for (var count = 0; count < inputfeelds.length; count++) {
+    for (var count = 0; count < inputfeelds.length - 3; count++) {
         if (inputfeelds[count].value == null || inputfeelds[count].value == "") {
             inputfeelds[count].classList.toggle("is-valid", false);
             inputfeelds[count].classList.toggle("is-invalid", true);

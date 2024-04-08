@@ -123,7 +123,7 @@
 
 							<div class="form-step row form-step-active ">
 								<div class=" mb-3 col-6 fname">
-									<label class="form-label">First Name)</label>
+									<label class="form-label">First Name</label>
 									<input name="fname" onkeyup="fname_val()" type="text" class="form-control Register_Data" required>
 								</div>
 								<div class=" mb-3 col-6 lname">
@@ -141,7 +141,7 @@
 
 							<div class="row form-step">
 								<div class="mb-3 col-6 nic">
-									<label class="form-label">Nic Number )</label>
+									<label class="form-label">Nic Number </label>
 									<input name="nic" maxlength="10" type="Number" class="form-control Register_Data">
 								</div>
 								<div class="mb-3 col-6 nicpic">
@@ -157,7 +157,7 @@
 									<input name="NumWha" onkeyup="Wn_val()" type="Number" class="form-control Register_Data">
 								</div>
 								<div class="mb-3 dob">
-									<label class="form-label">Date Of Birth)</label>
+									<label class="form-label">Date Of Birth</label>
 									<div class="input-group">
 										<span class="input-group-text">
 											<i class="bi bi-calendar4"></i>
@@ -221,7 +221,7 @@
 
 							<div class="row form-step">
 								<div class="mb-3 address">
-									<label class="form-label">Address)</label>
+									<label class="form-label">Address</label>
 									<input name="address" onkeyup="address_val()" type="Text" class="form-control Register_Data">
 								</div>
 								<div class="mb-3 col-12 dictric">

@@ -120,15 +120,13 @@ if (isset($_POST['addCurrentClass'])) {
         try {
             $data = json_decode($_POST['addCurrentClass']);
             $classId = $data[0];
-            $startTime = $data[1];
-            $endTime = $data[2];
 
             $conn->begin_transaction();
             $sql = "UPDATE class SET Conducting = 0 , Dict = NULL";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
 
-            $dataNew = implode("-", $data);
+            $dataNew = json_encode($data);
             $sql = "UPDATE class SET Conducting = 1 , Dict = ? WHERE ClassId = ? ";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("si", $dataNew, $classId);

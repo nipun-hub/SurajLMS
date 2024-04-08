@@ -12122,8 +12122,9 @@ input[name="sub_nav"][id="sub_nav-2"]:checked ~ .ul label[for="sub_nav-2"]{
 }
 
 .mainGroupOptions .cardHeder .cardHeaderMain{
-    flex: 1;
+    /* flex: 1; */
     margin-bottom: 10px;
+    width: fit-content;
     /* transition: transform 0.5s ease-in-out ; */
 }
 /* .mainGroupOptions .cardHeder .cardHeaderMain:hover{
@@ -12145,11 +12146,11 @@ input[name="sub_nav"][id="sub_nav-2"]:checked ~ .ul label[for="sub_nav-2"]{
     transform: scale(1.05);
 }
 .mainGroupOptions .cardHeder .cardHeaderMain .one{
-    float: inline-end;
+    /* float: inline-end; */
 }
 
 .mainGroupOptions .cardHeder .cardHeaderMain .two{
-    float: inline-start;
+    /* float: inline-start; */
     /* float: left; */
 }
 

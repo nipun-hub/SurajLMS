@@ -68,7 +68,8 @@
 							$reusalt = $stmt->get_result();
 							if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
 								$className = "{$row['year']}  {$row['ClassName']} {$row['InstiName']}";
-								$ending = explode("-", $row['Dict'])[1] . " - " . explode("-", $row['Dict'])[2];
+								$decodeDict = json_decode($row['Dict']);
+								$ending = $decodeDict[1]." - ".$decodeDict[2];
 							?>
 								<div class="stats-tile p-2">
 									<img src="assets/img/site use/acvitating.gif" alt="" width="30">
@@ -145,12 +146,24 @@
 											</select>
 										</div>
 										<div class="col-6 mb-3 currentClassData">
-											<label class="form-label d-flex">start time</label>
+											<label class="form-label d-flex">Start time</label>
 											<input type="time" class="form-control" name="startTime" placeholder="hrs:mins">
 										</div>
 										<div class="col-6 mb-3 currentClassData">
 											<label class="form-label d-flex">End time</label>
 											<input type="time" class="form-control" name="endTime" placeholder="hrs:mins">
+										</div>
+										<div class="col-6 mb-3 currentClassData">
+											<label class="form-label d-flex">Youtube Link</label>
+											<input type="text" class="form-control" name="endTime" placeholder="Youtube Link">
+										</div>
+										<div class="col-6 mb-3 currentClassData">
+											<label class="form-label d-flex">Zoom Link</label>
+											<input type="text" class="form-control" name="endTime" placeholder="Zoom Link">
+										</div>
+										<div class="col-12 mb-3 currentClassData">
+											<label class="form-label d-flex">Title</label>
+											<input type="text" class="form-control" name="endTime" placeholder="Enter Title">
 										</div>
 									</div>
 								</div>
