@@ -215,12 +215,12 @@
 							// $sql = "SELECT c.*,p.Status AS 'payStatus' FROM user u JOIN class c ON u.Year = c.year and u.InstiName = c.InstiName and c.Status = 'active' LEFT JOIN payment p ON u.UserId = p.UserId and c.ClassId = p.ClassId and p.Month = ? WHERE u.UserId = ? ";
 							$sql = "SELECT c.* FROM user u JOIN class c ON u.Year = c.year and u.InstiName = c.InstiName and c.Status = 'active'  WHERE u.UserId = ?";
 							$stmt = $conn->prepare($sql);
-							// $stmt->bind_param("ss", $thisMonth, $UserId);
 							$stmt->bind_param("i", $UserId);
 							$stmt->execute();
 							$reusalt = $stmt->get_result();
-							// $stmt->close();
+							$stmt->close();
 							while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+								$inclassindi = $row['Conducting'] == 1 ? "<span class='alert alert-success p-0 px-2'><img src='assets/img/site use/pending.gif' style='width: 25px; height:25px;'>Now Class in progress</span>" : null ;
 							?>
 								<div class="col-xxl-4 col-sm-6 col-12">
 									<div class="info-tile">
@@ -231,12 +231,10 @@
 										</div>
 										<!-- <center><img class="w-auto" src="assets/img/site use/instiimge/Free Class.jpg"></center> -->
 										<div class="info-details" style="height: 125px;">
-											<span class='alert alert-success'>Actived</span>
-											<?php // echo $row['payStatus'] ==  'active' ? "<span class='alert alert-success'>Active</span>" : ($row['payStatus'] ==  'pending' ? "<span class='alert alert-warning'>Pending</span>" : "<span class='alert alert-danger'>Not Pay</span>"); 
-											?>
-											<!-- <i class='bi bi-lock'></i> -->
-											<?php //echo $indigator; 
-											?>
+											<div class="d-flex justify-content-between">
+												<span class='alert alert-success'>Actived</span>
+												<?php echo $inclassindi; ?>
+											</div>
 											<p class="pt-2 text-center">
 												<?php echo $row['year'] . " " . $row['ClassName'] . " - " . $row['InstiName'] . " " . $row['Type']; ?>
 											</p>
@@ -245,7 +243,7 @@
 											<center>
 												<p>
 													<span class="card__description">
-														<b><?php echo $row['Type']; ?> </b><br><?php echo $row['year']." ".$row['ClassName'].' - '.$row['InstiName']; ?>
+														<b><?php echo $row['Type']; ?> </b><br><?php echo $row['year'] . " " . $row['ClassName'] . ' - ' . $row['InstiName']; ?>
 													</span>
 												</p>
 												<div class="card_btn class_fot">

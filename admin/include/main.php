@@ -31,7 +31,8 @@ if (true) {
     if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $classId = $row['ClassId'];
         $activeClassName = $row['InstiName'];
-        $endTime = explode("-", $row['Dict'])[2];
+        $decodeDict = json_decode($row['Dict']);
+        $endTime = $decodeDict[2];
         $currentTime = GetToday('hi', ':');
         if ($endTime < $currentTime) {
             $sql = "UPDATE class SET Conducting = 0 , Dict  = NULL WHERE ClassId = '$classId'";
