@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/vendor.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/animates-apesial.css">
 
     <!-- script
     ================================================== -->
@@ -36,6 +37,7 @@
     ================================================== -->
     <link rel="shortcut icon" href="assets/images/ict.ico">
     <link rel="icon" href="assets/images/ict.ico">
+    
 
 </head>
 
@@ -242,15 +244,18 @@
         </div>
     </div> -->
     <div id="loading-wrapper">
-			<div class="spinner">
-                <div class="line1"></div>
-				<div class="line2"></div>
-				<div class="line3"></div>
-				<div class="line4"></div>
-				<div class="line5"></div>
-				<div class="line6"></div>
-            </div>
-		</div>
+		<div class="spinner">
+            <div class="line1"></div>
+			<div class="line2"></div>
+			<div class="line3"></div>
+			<div class="line4"></div>
+			<div class="line5"></div>
+			<div class="line6"></div>
+        </div>
+	</div>
+
+    <!-- apecial animated link  -->
+    <?php include_once('include/animated-special.php'); ?>
     
     <!-- Messenger Chat plugin Code start -->
     <div id="fb-root"></div>
