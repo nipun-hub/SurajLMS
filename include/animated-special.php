@@ -1,15 +1,21 @@
-<div class="snowflakes" aria-hidden="true">
-    <div class="snowflake">
-    </div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="25"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="35"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="25"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="35"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="25"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="35"></div>
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="25"></div>
-    <!-- <div class="snowflake"><img src="image/11.png" width="50">8</div> -->
-    <div class="snowflake"><img src="assets/images/Kokis.webp" width="25"></div>
-    <!-- <div class="snowflake"><img src="image/11.png" width="75">10</div> -->
+<div class="" aria-hidden="true">
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="35"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="35"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="35"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="35"></div>
+    <div class="special-animate"><img src="assets/images/Kokis.webp" width="25"></div>
+</div>
 
-  </div
+<script>
+    var specialAnimation = document.querySelectorAll('.special-animate');
+    window.onload = function(){
+        specialAnimation.forEach(function (self) {
+            self.classList.add('snowflake');
+        });
+    }
+</script>
