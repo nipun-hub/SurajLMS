@@ -1,3 +1,4 @@
+
 <!-- database connection include -->
 <?php include('sql/conn.php');
 mysqli_set_charset($conn, "utf8mb4"); ?>
@@ -466,9 +467,10 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		}
 
 		function changemainCardContent(type, data = null) { // respons click group 
+			console.log("done");
 			formData = "changemainCardContent=" + "&type=" + type + "&data=" + data;
 			$.post("sql/process.php", formData, function(response, status) {
-				// console.log(response);
+				console.log(response);
 				$('#mainCardContent').html(response);
 				prograss_snipper();
 			});

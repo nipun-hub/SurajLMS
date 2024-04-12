@@ -369,7 +369,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $LesId = $row['LesId'];
         $name = $row['LesName'];
-        $dict = $row['Dict'];
+        $dict = empty($row['Dict']) ? "Empty" : $row['Dict'];
         $type = $row['Type'];
         $InsertDate = substr($row['InsertDate'], 0, 10);
         // $InsertDate = DateTime::createFromFormat('Ymd', $InsertDate)->format('Y-m-d');
@@ -554,9 +554,9 @@ if (isset($_POST['lessonUpdateAlert'])) {
         $LesId = $_POST['data1'];
         $type = $_POST['data2'];
         if ($type = 'video' || $type = 'note') {
-            $sql = "SELECT * FROM lesson,recaccess WHERE lesson.LesId = ? and recaccess.LesId = ?  ";
+            $sql = "SELECT * FROM lesson,recaccess WHERE lesson.LesId = ? and lesson.LesId = recaccess.LesId ";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $LesId, $LesId);
+            $stmt->bind_param("s", $LesId);
             $stmt->execute();
             $reusalt = $stmt->get_result();
             if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
@@ -564,6 +564,7 @@ if (isset($_POST['lessonUpdateAlert'])) {
                 $Dict = $row['Dict'];
                 $Type = $row['Type'];
                 $Link = $row['Link'];
+                $week = empty($row['week']) ? "Week Not Definnd" : $row['week'];
 
                 $accessNew = "";
                 $groupNew = "";
@@ -599,6 +600,7 @@ if (isset($_POST['lessonUpdateAlert'])) {
                                         <th>Id</th>
                                         <th>Name</th>
                                         <th>Desctiption </th>
+                                        <th>Week</th>
                                         <th>Type</th>
                                         <th>Access Class</th>
                                         <th>Show Groups</th>
@@ -610,6 +612,7 @@ if (isset($_POST['lessonUpdateAlert'])) {
                                         <td>{$row['LesId']}</td>
                                         <td>{$LesName}</td>
                                         <td>{$Dict}</td>
+                                        <td>{$week}</td>
                                         <td>{$Type}</td>
                                         <td>$accessNew</td>
                                         <td>{$groupNew}</td>
@@ -620,102 +623,116 @@ if (isset($_POST['lessonUpdateAlert'])) {
                         </div>
                     </div>
                 </div>";
-            } else {
-                $tableData = "undefind";
-            }
-            $htmlHeader = "
-            <div class='modal-header'>
-                <h5 class='modal-title' id='updateLessonLabel'>Update Lessson <span class='ModelTitle'></span></h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div class='modal-body'>
-                <div class='row'>
-                    <div class='col-sm-12 col-12 add-lesson'>
-                        <!-- Card start -->
-                        <div class='card'>
-                            <div class='card-body'>
-                                <form id='addlesson'>
-                                    <!-- Row start -->
-                                    <div class='row'>
-            ";
-            $htmlcontentForm = "
-            <form id='Formclear'>
-                <div class='col-xl-4 col-sm-6 col-12'>
-                    <div class='mb-3 AddLesSub'>
-                        <label for='inputName' class='form-label'>Lesson Name *</label>
-                        <input name='lesname' type='text' class='form-control' id='inputName' placeholder='Enter Lesson Name' value='{$LesName}'>
-                    </div>
+
+                $htmlHeader = "
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='updateLessonLabel'>Update Lessson <span class='ModelTitle'></span></h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                 </div>
-                <div class='col-xl-4 col-sm-6 col-12'>
-                    <div class='mb-3 AddLesSub'>
-                        <label for='inputIndustryType' class='form-label'>Select Lesson Type *</label>
-                        <select name='lestype' class='form-select' id='inputIndustryType'>
-                            <option value=''>Select Type</option>
-                            <option value='video'" . ($Type == 'video' ? 'selected' : '') . ">Video</option>
-                            <option value='note'" . ($Type == 'note' ? 'selected' : '') . ">Note</option>
-                        </select>
-                    </div>
-                </div>
-                <div class='col-xl-4 col-sm-6 col-12'>
-                    <div class='mb-3 AddLesSub'>
-                        <label for='inputEmail' class='form-label'>Lesson Link *</label>
-                        <input name='leslink' type='text' class='form-control' id='inputEmail' placeholder='Enter Lesson Link' value='{$Link}'>
-                    </div>
-                </div>
-                <div class='col-xl-6 col-sm-12 col-12'>
-                    <div class='mb-3 tags group3'>
-                        <label class='form-label d-flex'>Select show in group</label>
-                        <select id='group3' class='select-multiple js-states form-control' title='Select Product Category' multiple='multiple'>
-                            <option>111111111111111111111111111111111111111111111111</option>
-                        </select>
-                        <div class='invalid-feedback'>Please Select the Group</div>
-                        <div class='valid-feedback'>Done!</div>
-                    </div>
-                </div>
-                <div class='col-xl-6 col-sm-12 col-12'>
-                    <div class='mb-3 tags access3'>
-                        <label class='form-label d-flex'>Select access class</label>
-                        <select id='access3' class='select-multiple js-states form-control' title='Select Product Category' multiple='multiple'>
-                            <option>111111111111111111111111111111111111111111111111111111</option>
-                        </select>
-                        <div class='invalid-feedback'>Please Select the access</div>
-                        <div class='valid-feedback'>Done!</div>
-                    </div>
-                </div>
-                <div class='col-12'>
-                    <div class='mb-3 AddLesSub'>
-                        <label for='inputMessage' class='form-label'>Desctiption ( optional )</label>
-                        <textarea name='lesdict' class='form-control' id='inputMessage' placeholder='Enter Desctiption' rows='3' value='{$Dict}'></textarea>
-                    </div>
-                </div>
-            </form>";
-            $htmlFooter  = "
-                                    </div>
-                                    <!-- Row end -->
-                                    <!-- Form actions footer start -->
-                                    <!-- <div class='form-actions-footer'> -->
-                                        <!-- <button id='cansal' class='btn btn-light'>Cancel</button> -->
-                                        <!-- <button class='btn btn-success' onclick='submitAddLesson()'>Submit</button> -->
-                                    <!-- </div> -->
-                                    <!-- Form actions footer end -->
-                                </form>
-                            </div>
+                <div class='modal-body'>
+                    <div class='row'>
+                        <div class='col-sm-12 col-12 add-lesson'>
+                            <!-- Card start -->
+                            <div class='card'>
+                                <div class='card-body'>
+                                    <form id='addlesson'>
+                                        <!-- Row start -->
+                                        <div class='row'>
+                ";
+                $htmlcontentForm = "
+                <form id='Formclear'>
+                    <div class='col-xl-4 col-sm-6 col-12'>
+                        <div class='mb-3 AddLesSub'>
+                            <label for='inputName' class='form-label'>Lesson Name *</label>
+                            <input name='lesname' type='text' class='form-control' id='inputName' placeholder='Enter Lesson Name' value='{$LesName}'>
                         </div>
-                        <!-- Card end -->
+                    </div>
+                    <div class='col-xl-4 col-sm-6 col-12'>
+                        <div class='mb-3 AddLesSub'>
+                            <label for='inputIndustryType' class='form-label'>Select Lesson Type *</label>
+                            <select name='lestype' class='form-select' id='inputIndustryType'>
+                                <option value=''>Select Type</option>
+                                <option value='video'" . ($Type == 'video' ? 'selected' : '') . ">Video</option>
+                                <option value='note'" . ($Type == 'note' ? 'selected' : '') . ">Note</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='col-xl-4 col-sm-6 col-12'>
+                        <div class='mb-3 AddLesSub'>
+                            <label for='inputEmail' class='form-label'>Lesson Link *</label>
+                            <input name='leslink' type='text' class='form-control' id='inputEmail' placeholder='Enter Lesson Link' value='{$Link}'>
+                        </div>
+                    </div>
+                    <div class='col-xl-4 col-sm-12 col-12'>
+                        <div class='mb-3 AddLesSub'>
+                            <label for='inputweek' class='form-label'>Week of lesson *</label>
+                            <select name='week' class='form-select' id='inputweek'>
+                                <option value='' " . (empty($week) ? "selected" : null) . ">Select the Week</option>
+                                <option value='First week' " . ($week == "First week" ? "selected" : null) . ">First week</option>
+                                <option value='Second week' " . ($week == "Second week" ? "selected" : null) . ">Second week</option>
+                                <option value='Third Week' " . ($week == "Third Week" ? "selected" : null) . ">Third Week</option>
+                                <option value='Fourth week' " . ($week == "Fourth week" ? "selected" : null) . ">Fourth week</option>
+                                <option value='Fifth week' " . ($week == "Fifth week" ? "selected" : null) . ">Fifth week</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class='col-xl-4 col-sm-12 col-12'>
+                        <div class='mb-3 tags group3'>
+                            <label class='form-label d-flex'>Select show in group</label>
+                            <select id='group3' class='select-multiple js-states form-control' title='Select Product Category' multiple='multiple'>
+                                <option>111111111111111111111111111111111111111111111111</option>
+                            </select>
+                            <div class='invalid-feedback'>Please Select the Group</div>
+                            <div class='valid-feedback'>Done!</div>
+                        </div>
+                    </div>
+                    <div class='col-xl-4 col-sm-12 col-12'>
+                        <div class='mb-3 tags access3'>
+                            <label class='form-label d-flex'>Select access class</label>
+                            <select id='access3' class='select-multiple js-states form-control' title='Select Product Category' multiple='multiple'>
+                                <option>111111111111111111111111111111111111111111111111111111</option>
+                            </select>
+                            <div class='invalid-feedback'>Please Select the access</div>
+                            <div class='valid-feedback'>Done!</div>
+                        </div>
+                    </div>
+                    <div class='col-12'>
+                        <div class='mb-3 AddLesSub'>
+                            <label for='inputMessage' class='form-label'>Desctiption ( optional )</label>
+                            <textarea name='lesdict' class='form-control' id='inputMessage' placeholder='Enter Desctiption' rows='3' value='{$Dict}'></textarea>
+                        </div>
+                    </div>
+                </form>";
+                $htmlFooter  = "
+                                        </div>
+                                        <!-- Row end -->
+                                        <!-- Form actions footer start -->
+                                        <!-- <div class='form-actions-footer'> -->
+                                            <!-- <button id='cansal' class='btn btn-light'>Cancel</button> -->
+                                            <!-- <button class='btn btn-success' onclick='submitAddLesson()'>Submit</button> -->
+                                        <!-- </div> -->
+                                        <!-- Form actions footer end -->
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- Card end -->
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class='modal-footer'>
-                <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
-                <button type='button' class='btn btn-success' onclick='updateLessonData({$LesId} , `{$type}`)'>Save changes</button>
-            </div>
-            <div class='my-3 rusaltLog mx-3'>
-                <div class='valid-feedback alert alert-success text-center alert-dismissible fade show py-2'>Successfull add the lesson!</div>
-                <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show py-2'>Failed add the lesson</div>
-            </div>
-            ";
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+                    <button type='button' class='btn btn-success' onclick='updateLessonData({$LesId} , `{$type}`)'>Save changes</button>
+                </div>
+                <div class='my-3 rusaltLog mx-3'>
+                    <div class='valid-feedback alert alert-success text-center alert-dismissible fade show py-2'>Successfull add the lesson!</div>
+                    <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show py-2'>Failed add the lesson</div>
+                </div>
+                ";
+                $htmlContent = $htmlHeader . $tableData . $htmlcontentForm . $htmlFooter;
+            } else {
+                $htmlContent = "<div class='modal-header'>This Lesson Not Found Access</div>";
+            }
         }
-        $htmlContent = $htmlHeader . $tableData . $htmlcontentForm . $htmlFooter;
     } catch (Exception $e) {
         $htmlContent = "undefined";
     }
@@ -724,71 +741,90 @@ if (isset($_POST['lessonUpdateAlert'])) {
 
 if (isset($_POST['updateLessonData'])) {
     try {
-        $lessonId = $_POST['val1'];
-
         $lestype = $_POST['lestype'];
-        $lesdict = $_POST['lesdict'];
+        if ($lestype == "video" || $lestype == "note") {
+            $lessonId = $_POST['val1'];
+            $lestype = $_POST['lestype'];
+            $lesdict = $_POST['lesdict'];
+            $week = $_POST['week'];
+            $lesName = $_POST['lesname'];
+            $leslink = $_POST['leslink'];
+            $groupNew = "";
+            $classNew = "";
 
-        $lesName = ($lestype != 'quiz') ? $_POST['lesname'] : null;
-        // $leslink = ($_POST['AddLessonData'] == 1) ? $_POST['leslink'] : null;
-        $leslink = $_POST['leslink'];
+            $LesLink = ($lestype == 'video') ?  $LesLink = get_youtube_video_id($leslink) : (($lestype == 'note') ? $LesLink = get_google_drive__id($leslink) : null);
 
-        $LesLink = ($lestype == 'video') ?  $LesLink = get_youtube_video_id($leslink) : (($lestype == 'note') ? $LesLink = get_google_drive__id($leslink) : null);
-        $access = explode(",", $_POST['accesslist']);
-        $group = explode(",", $_POST['grouplist']);
-        $groupNew = "";
-        $classNew = "";
-        foreach ($group as $value) {
-            $sql = "SELECT GId FROM grouplist WHERE MGName =  ? ";
+            if (isset($_POST['grouplist'])) {
+                foreach ($_POST['grouplist'] as $value) {
+                    $sql = "SELECT GId FROM grouplist WHERE MGName =  ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("s", $value);
+                    $stmt->execute();
+                    $reusalt = $stmt->get_result();
+                    if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                        $groupNew .= "[{$row['GId']}]";
+                    }
+                    $stmt->close();
+                }
+            }
+
+            if (isset($_POST['accesslist'])) {
+                foreach ($_POST['accesslist'] as $value) {
+                    $classdata = explode("-", $value);
+                    $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sss", $classdata[1], $classdata[2], $classdata[0]);
+                    $stmt->execute();
+                    $reusalt = $stmt->get_result();
+                    if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                        $classNew .= "[{$row['ClassId']}]";
+                    }
+                    $stmt->close();
+                }
+            }
+
+            if (true) {
+                $sql = "SELECT rec.ClassId,rec.GId,les.Dict FROM recaccess rec , lesson les WHERE rec.LesId = ? and les.LesId = rec.LesId";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $lessonId);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $classNew = !isset($_POST['accesslist']) ? $row['ClassId'] : $classNew;
+                    $groupNew = !isset($_POST['grouplist']) ? $row['GId'] : $groupNew;
+                    $lesdict = empty($lesdict) ? $row['Dict'] : $lesdict;
+                }
+            }
+
+            $sql = "SELECT * FROM lesson WHERE Link = ? and Type = ? and LesId != ? ";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $value);
+            $stmt->bind_param("ssi", $LesLink, $lestype, $lessonId);
             $stmt->execute();
             $reusalt = $stmt->get_result();
-            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                $groupNew .= "[{$row['GId']}]";
-            }
-            $stmt->close();
-        }
+            if ($reusalt->num_rows > 0) {
+                $respons = "Alredy add";
+            } else {
+                try {
+                    $conn->begin_transaction();
+                    $sql1 = "UPDATE lesson SET LesName = ? , Dict = ? , Link = ? , Type = ? WHERE LesId = ?";
+                    $stmt = $conn->prepare($sql1);
+                    $stmt->bind_param("ssssi", $lesName, $lesdict, $LesLink, $lestype, $lessonId);
+                    $stmt->execute();
 
-        foreach ($access as $value) {
-            $classdata = explode("-", $value);
-            $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $classdata[1], $classdata[2], $classdata[0]);
-            $stmt->execute();
-            $reusalt = $stmt->get_result();
-            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                $classNew .= "[{$row['ClassId']}]";
-            }
-            $stmt->close();
-        }
+                    $sql2 = "UPDATE recaccess SET ClassId = ? , GId = ? , week = ? WHERE LesId = ?";
+                    $stmt = $conn->prepare($sql2);
+                    $stmt->bind_param("sssi", $classNew, $groupNew, $week, $lessonId);
+                    $stmt->execute();
+                    $conn->commit();
 
-        $sql = "SELECT * FROM lesson WHERE Link = ? and Type = 'video' and LesId != '$lessonId' ";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $LesLink);
-        $stmt->execute();
-        $reusalt = $stmt->get_result();
-        if ($reusalt->num_rows > 0) {
-            $respons = "Alredy add";
+                    $respons = "successfull";
+                } catch (Exception $e) {
+                    $respons = "error" . $e;
+                    $conn->rollback();
+                }
+            }
         } else {
-            try {
-                $conn->begin_transaction();
-                $sql1 = "UPDATE lesson SET LesName = ? , Dict = ? , Link = ? , Type = ? WHERE LesId = ?";
-                $stmt = $conn->prepare($sql1);
-                $stmt->bind_param("ssssi", $lesName, $lesdict, $LesLink, $lestype, $lessonId);
-                $stmt->execute();
-
-                $sql2 = "UPDATE recaccess SET ClassId = ? , GId = ? WHERE LesId = ?";
-                $stmt = $conn->prepare($sql2);
-                $stmt->bind_param("ssi", $classNew, $groupNew, $lessonId);
-                $stmt->execute();
-                $conn->commit();
-
-                $respons = "successfull";
-            } catch (Exception $e) {
-                $respons = "error";
-                $conn->rollback();
-            }
+            $respons = "Undefing input";
         }
     } catch (Exception $e) {
         $respons = "error";
@@ -3684,12 +3720,6 @@ if (isset($_POST['endWith'])) {
 // end with end
 
 // same ad alol site  end *****************
-
-
-
-
-// $conn->close();
-
 function WriteFile($value)
 {
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");

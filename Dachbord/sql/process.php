@@ -682,7 +682,7 @@ try {
                         $MonthFomat = explode("-", $MonthFomat);
                         $MonthName = GetMonthName($MonthFomat[1]);
 
-                        $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = Lesson.LesId and activity.Status != ? WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
+                        $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = lesson.LesId and activity.Status != ? WHERE recaccess.ClassId LIKE ? and recaccess.GId LIKE ? and recaccess.Month = ? and recaccess.week = ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
                         $stmt = $conn->prepare($sql1);
                         $stmt->bind_param("isssssss", $UserId, $pending, $activeClaId_upd, $GidNew, $Month, $week, $status, $status);
                         $stmt->execute();
@@ -785,7 +785,7 @@ try {
                     $allLessonContent .=  $lessonHeader . $contentRow . $htmlContentFooter;
                 }
             } elseif ($type == 'clickMonth') {
-                // $GidNew = "%[{$Gid}]%";
+                $GidNew = "%[{$data}]%";
                 $activeClaId_upd = "%[{$activeClaId}]%";
                 $status = "active";
                 $sql = "SELECT GId FROM recaccess WHERE ClassId LIKE ? and Month LIKE ? and Status = ? GROUP BY GId ORDER BY InsDate DESC";
@@ -834,15 +834,15 @@ try {
                             $viwepresentage = number_format($viwepresentage, 0);
                             $lessonOne = "
                             <div class='table-card-head'>
-		                	<div class='circular'>
-		                		<input type='hidden' value='{$viwepresentage}'>
-		                		<div class='circular-progress'>
-                                <!-- <div class='value-circular'>0%</div> -->
-		                		</div>
+		                	    <div class='circular'>
+		                	    	<input type='hidden' value='{$viwepresentage}'>
+		                	    	<div class='circular-progress'>
+                                        <!-- <div class='value-circular'>0%</div> -->
+		                	    	</div>
                                 </div>
                                 &nbsp;
                                 <p>{$viwepresentage}%&nbsp;&nbsp;{$MGName}</p>
-                                </div>";
+                            </div>";
                             $contentRow = "";
                             while ($row0 = $result0->fetch_assoc()) {
                                 $lesMonth = $row0['Month'];
@@ -1401,3 +1401,9 @@ try {
 // $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
 // fwrite($myfile, $htmlContent);
 // fclose($myfile);
+
+function filrWrite($argument){
+    $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
+    fwrite($myfile, $argument);
+    fclose($myfile); 
+}
