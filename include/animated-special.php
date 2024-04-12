@@ -15,7 +15,7 @@
     var specialAnimation = document.querySelectorAll('.special-animate');
     window.onload = function(){
         specialAnimation.forEach(function (self) {
-            self.classList.add('snowflake');
+            self.classList.add('snowflake')
         });
     }
 </script>

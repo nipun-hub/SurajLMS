@@ -119,7 +119,7 @@ try {
                 $result = $stmt->get_result();
                 if ($result->num_rows < 1) {
                     try {
-                        $fileName = $instiId . "_" . $UserId . ".jpg";
+                        $fileName = str_replace("/", "", $instiId) . "_" . $UserId . ".jpg";
                         $targetFile = "../user_images/instiRegImg/" . $fileName;
 
                         $conn->begin_transaction();
@@ -415,6 +415,10 @@ try {
 		    	        		{$zoombtn}
 		    	        	</div>
 		    	        </div>" : null;
+                } else {
+                    $classindiphy = null;
+                    $classindizoom = null;
+                    $classindiyou = null;
                 }
             }
 
@@ -777,7 +781,8 @@ try {
                         }
                     }
                 } else {
-                    $allLessonContent = "Undefind Content";
+                    $contentRow = "<div class='table-card-head'><p>Undefind Content !</p></div>";
+                    $allLessonContent .=  $lessonHeader . $contentRow . $htmlContentFooter;
                 }
             } elseif ($type == 'clickMonth') {
                 $GidNew = "%[{$data}]%";
@@ -906,11 +911,12 @@ try {
                     }
                 }
             } else {
-                $allLessonContent = "Undefind Content";
+                $contentRow = "<div class='table-card-head'><p>Undefind Content !</p></div>";
+                $allLessonContent .=  $lessonHeader . $contentRow . $htmlContentFooter;
             }
             $htmlFullContent = $htmlContentHeader . $allLessonContent . $htmlContentFooter;
         } catch (Exception $e) {
-            $htmlFullContent = "Undefind DIntent";
+            $htmlFullContent = "Undefind Content !";
         }
 
         echo $htmlFullContent;
