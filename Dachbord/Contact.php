@@ -45,14 +45,14 @@ if (!isset($_SESSION['login'])) {
 
 	<!-- Meta -->
 	<meta name="description" content="Suraj S Kumara - A/L ICT - Online">
-    <meta name="keywords" content="surajskumara , suraj s kumara , A/L ict , Online">
-    <title>Surajskumara.lk | Contact</title>
-    <meta property="og:site_name" content="surajskumara.lk">
-    <meta property="og:title" content="Suraj S Kumara" />
-    <meta property="og:description" content="Suraj S Kumara - A/L ICT - Online" />
-    <meta property="og:image" itemprop="image" content="https://surajskumara.lk/assets/images/suraj-imge-01.jpg">
-    <meta property="og:type" content="website" />
-    <meta name="author" content="Suraj S Kumara">
+	<meta name="keywords" content="surajskumara , suraj s kumara , A/L ict , Online">
+	<title>Surajskumara.lk | Contact</title>
+	<meta property="og:site_name" content="surajskumara.lk">
+	<meta property="og:title" content="Suraj S Kumara" />
+	<meta property="og:description" content="Suraj S Kumara - A/L ICT - Online" />
+	<meta property="og:image" itemprop="image" content="https://surajskumara.lk/assets/images/suraj-imge-01.jpg">
+	<meta property="og:type" content="website" />
+	<meta name="author" content="Suraj S Kumara">
 	<link rel="shortcut icon" href="../assets/images/ict.ico">
 
 	<?php include('include/header.php'); ?>
@@ -126,6 +126,8 @@ if (!isset($_SESSION['login'])) {
 
 	<!-- alert include -->
 	<?php include('include/alert.php'); ?>
+	<?php include('include/animated-special.php'); ?>
+
 
 	<!-- *************
 			************ Required JavaScript Files *************
@@ -162,6 +164,12 @@ if (!isset($_SESSION['login'])) {
 
 	<script>
 		window.onload = function() {
+			var specialAnimation = document.querySelectorAll('.special-animate');
+			console.log('success');
+			specialAnimation.forEach(function(self) {
+				self.classList.add('snowflake');
+			});
+
 			url_data = window.location.search;
 			if (url_data == '?success_login') {
 				history.pushState({

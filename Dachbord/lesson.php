@@ -337,6 +337,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 
 	<!-- alert include -->
 	<?php include('include/alert.php'); ?>
+	<?php include('include/animated-special.php'); ?>
 	<?php // include('include/alertNthj.php'); 
 	?>
 
@@ -585,6 +586,13 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 
 	<script>
 		window.onload = function() {
+			// special animatioin 
+			var specialAnimation = document.querySelectorAll('.special-animate');
+			console.log('success');
+			specialAnimation.forEach(function(self) {
+				self.classList.add('snowflake');
+			});
+
 			url_data = window.location.search;
 			if (url_data == '?success_login') {
 				history.pushState({

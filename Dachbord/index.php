@@ -39,6 +39,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 
+	<link rel="stylesheet" href="assets/css/animates-apesial.css">
+
+
 	<style>
 		.StylingText01 {
 			/* height: 150px; */
@@ -220,7 +223,7 @@
 							$reusalt = $stmt->get_result();
 							$stmt->close();
 							while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-								$inclassindi = $row['Conducting'] == 1 ? "<span class='alert alert-success p-0 px-2'><img src='assets/img/site use/pending.gif' style='width: 25px; height:25px;'>Now Class in progress</span>" : null ;
+								$inclassindi = $row['Conducting'] == 1 ? "<span class='alert alert-success p-0 px-2'><img src='assets/img/site use/pending.gif' style='width: 25px; height:25px;'>Now Class in progress</span>" : null;
 							?>
 								<div class="col-xxl-4 col-sm-6 col-12">
 									<div class="info-tile">
@@ -290,6 +293,8 @@
 
 	</div>
 
+	<?php include('include/animated-special.php'); ?>
+
 
 	<!-- alert include -->
 	<?php include('include/alert.php'); ?>
@@ -300,6 +305,13 @@
 
 	<script>
 		window.onload = function() {
+			var specialAnimation = document.querySelectorAll('.special-animate');
+			console.log('success');
+			specialAnimation.forEach(function(self) {
+				self.classList.add('snowflake');
+			});
+
+
 			url_data = window.location.search;
 			if (url_data == '?success_login') {
 				history.pushState({
