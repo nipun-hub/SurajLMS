@@ -12197,6 +12197,38 @@ input[name="sub_nav"][id="sub_nav-2"]:checked ~ .ul label[for="sub_nav-2"]{
     overflow: visible;
     transform: scale(1.1);
 }
+
+/* ranking navbar css start  */
+input[name="sub_nav_rank"][id="sub_nav_rank-0"]:checked ~ .ul label[for="sub_nav_rank-0"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}
+input[name="sub_nav_rank"][id="sub_nav_rank-1"]:checked ~ .ul label[for="sub_nav_rank-1"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}
+input[name="sub_nav_rank"][id="sub_nav_rank-2"]:checked ~ .ul label[for="sub_nav_rank-2"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}input[name="sub_nav_rank"][id="sub_nav_rank-3"]:checked ~ .ul label[for="sub_nav_rank-3"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}input[name="sub_nav_rank"][id="sub_nav_rank-4"]:checked ~ .ul label[for="sub_nav_rank-4"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}
+/* ranking navbar css end */
+
 @media(max-width: 576px){
     .sub-nav .sub-nav-body{
         padding: 10px;

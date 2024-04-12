@@ -873,6 +873,735 @@ if (isset($_POST['AddQuiz'])) {
 
 // lesson management sestion end **************
 
+
+// peaper management sestion start **************
+if (isset($_POST['peaperManage'])) {
+    $type = $_POST['type'];
+    // if ($type == "selectActivePeaper") { 
+    // $PeaperName = $_POST['data'];
+    // $_SESSION['activePeaper'] = $PeaperName;
+    // $respons = "success";
+    // } else
+    // if ($type == "updateSelectPeaper") {
+    //     try {
+    //         $respons = "";
+    //         $respons .= "<option value=''>Select The Peaper1</option>";
+    //         $sql = "SELECT peaperName FROM peaper WHERE Status = 'active' ";
+    //         $stmt = $conn->prepare($sql);
+    //         $stmt->execute();
+    //         $reusalt = $stmt->get_result();
+    //         $stmt->close();
+    //         while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+    //             $respons .= "<option value='{$row['peaperName']}'" . (isset($_SESSION['activePeaper']) ? ($_SESSION['activePeaper'] == $row['peaperName'] ? "selected" : null) : null) . ">{$row['peaperName']}</option>";
+    //         }
+    //         $respons = ($reusalt->num_rows > 0) ? $respons : "<option value=''>Peaper Not Found</option>";
+    //     } catch (Exception $th) {
+    //         $respons = "error";
+    //     }
+    // } else
+    if ($type === "addPeaperData") {
+        try {
+            $PeaperType = $_POST['PeaperType'];
+            $peaperName = $_POST['peaperName'];
+            $dict = empty($_POST['dict']) ? null : $_POST['dict'];
+            // $group = $_POST['group'];
+            // $class = $_POST['class'];
+
+            $access = explode(",", $_POST['class']);
+            $group = explode(",", $_POST['group']);
+            $groupNew = "";
+            $classNew = "";
+            $groupSql = "";
+            $classSql = "";
+
+            $i = 1;
+            foreach ($group as $value) {
+                $sql = "SELECT GId FROM grouplist WHERE MGName =  ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $value);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $groupSql .= $i == 1 ? " AND ( " : "";
+                    $groupSql .= " GId LIKE '%[{$row['GId']}]%' ";
+                    $groupSql .= $i < sizeof($group) ? " OR " : " ) ";
+                    $groupNew .= "[{$row['GId']}]";
+                }
+                $i++;
+            }
+
+            $i = 1;
+            foreach ($access as $value) {
+                $classdata = explode("-", $value);
+                $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sss", $classdata[1], $classdata[2], $classdata[0]);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $classSql .= $i == 1 ? " AND ( " : "";
+                    $classSql .= " GId LIKE '%[{$row['ClassId']}]%' ";
+                    $classSql .= $i < sizeof($access) ? " OR " : " ) ";
+                    $classNew .= "[{$row['ClassId']}]";
+                }
+                $i++;
+            }
+
+            $conn->begin_transaction();
+            $sql = "SELECT PeaperId FROM peaper WHERE peaperName = ? and type = ? " . $classSql . $groupSql;
+            // echo $sql;
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $peaperName, $PeaperType);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if (!$reusalt->num_rows > 0) {
+
+                $sql = "INSERT INTO peaper(peaperName,type,ClassId,GId,Dict) VALUES(?,?,?,?,?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssss", $peaperName, $PeaperType, $classNew, $groupNew, $dict);
+                $stmt->execute();
+
+                $conn->commit();
+                $respons = "success";
+            } else {
+                $respons = "Alredy Added";
+            }
+            // $respons = "success";
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } else {
+        $respons = "not Mtch";
+    }
+    echo $respons;
+}
+
+if (isset($_POST['loadModelDataPeaper'])) {
+    $type = $_POST['type'];
+    if ($type == 'uploadMarks' || $type == 'uploadMarkNotReg' || $type == 'loadModelDataPeaperTable') {
+        $modelFooter = "
+        <div class='modal-footer pt-3'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+        </div>";
+    } else {
+        $modelFooter = "
+        <div class='modal-footer pt-3'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+            <button type='button' class='btn btn-success' onclick='submitModelPeaper(`{$type}`)'>Finish</button>
+        </div>";
+    }
+    if ($type == 'addPeaper') {
+        $PeaperList = "";
+        $PeaperList .= "<option value = ''>Select The Lesson</option>";
+        $sql = "SELECT LesName FROM lesson WHERE Type = 'upload' and Status != 'disable'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $conn->close();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $PeaperList .= "<option value='{$row['LesName']}'>{$row['LesName']}</option>";
+        }
+        $modelHead = "
+        <div class='modal-header'>
+            <h5 class='modal-title' id='modelMainLabel'>Add Peaper</h5>
+            <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+        <div class='modal-body bg-light'>";
+        $modelBody = "
+        <form class='addpeaper' id='Formclear'>
+            <!-- Row start -->
+            <div class='row'>
+                <div class='col-xl-6 col-sm-12 col-12'>
+                    <div class='mb-3'>
+                        <label for='PeaperType' class='form-label'>Select the peaper Type *</label>
+                        <Select name='PeaperType' id='PeaperType' class='form-select  physical online' onchange='peaperType(this.value)'>
+                            <option value='' selected>Select The Peaper Type</option>
+                            <option value='online'>Only Online Peaper</option>
+                            <option value='physical'>Only Physical Peaper</option>
+                            <option value='both'>Physical and Online Peaper</option>
+                        </Select>
+                    </div>
+                </div>
+                <div class='col-xl-6 col-sm-12 col-12'>
+                    <div class='mb-3'>
+                        <label for='peaperName' class='form-label'>Select the peaper Name *</label>
+                        <Select name='peaperName' id='peaperName' class='form-select online' disabled>
+                            {$PeaperList}
+                        </Select>
+                        <input name='peaperName' type='text' class='form-control physical' id='peaperName' placeholder='Enter Peaper Name' hidden>
+                    </div>
+                </div>
+                <div class='col-xl-6 col-sm-12 col-12'>
+                    <div class='mb-3 tags w-100 class'>
+                        <label class='form-label d-flex'>Select The Class *</label>
+                        <select name='class' id='class' class='is-valid select-multiple js-states form-control w-100' title='Select the class *' multiple='multiple' disabled>
+                            <option>111111111111111111111111111111111111111111111111111</option>
+                        </select>
+                    </div>
+                </div>
+                <div class='col-xl-6 col-sm-12 col-12'>
+                    <div class='mb-3 tags w-100 group'>
+                        <label class='form-label d-flex'>Select The Group*</label>
+                        <select name='group' id='group' class='is-valid select-multiple js-states form-control w-100' title='Select Group *' multiple='multiple' disabled>
+                            <option>111111111111111111111111111111111111111111111111111</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class='col-12'>
+                    <div class='mb-3'>
+                        <label for='inputMessage' class='form-label'>Description</label>
+                        <textarea name='dict' class='form-control online physical' id='inputMessage' placeholder='Write Description' rows='3' disabled></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- Row end -->
+        </form>
+        <div class='my-3 rusaltLog mx-3'>
+            <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the peaper!</div>
+            <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the peaper</div>
+        </div>";
+        $modelContent = $modelHead . $modelBody . $modelFooter;
+    } elseif ($type == 'uploadMarks' || $type == 'uploadMarkNotReg') {
+        $sql = "SELECT * FROM peaper WHERE Status = 'active'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+            $modelHead = "
+            <div class='modal-header'>
+                <h5 class='modal-title' id='modelMainLabel'>Add Peaper - ( {$rowMain['peaperName']} )</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body bg-light'>";
+            $modelBody = "
+            <!-- Row start -->
+            <div class='row'>
+                <div class='col-xl-12 col-sm-12 col-12'>
+                    <div class='card'>
+                        <div class='card-header'>
+                            <div class='card-title'></div>
+                            <div class='search-container'>
+                                <div class='input-group'>" . ($type == 'uploadMarks' ?
+                "<input type='text' class='form-control searchInp' style='background-color: #dae0e9;' placeholder='Search anything' onkeyup='updateModelContent(`uploadMarksTableData`,this.value)'>"
+                :
+                "<input type='text' class='form-control searchInp' style='background-color: #dae0e9;' placeholder='Search anything' onkeyup='updateModelContent(`uploadMarkNotRegTableData`,this.value)'>"
+            ) . "
+                                    <button class='btn' type='button'>
+                                        <i class='bi bi-search'></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='card-body' id='model-table-content-change'><!-- change table content-->
+                            <center><img src='assets/img/gif/loding.gif' width='200' alt='' srcset=''></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row end -->
+            <div class='my-3 rusaltLog mx-3'>
+                <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the peaper!</div>
+                <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the peaper</div>
+            </div>";
+            $modelContent = $modelHead . $modelBody . $modelFooter;
+        } else {
+            $modelContent = 'not active peaper';
+        }
+    } elseif ($type == 'loadModelDataPeaperTable') {
+        $sql = "SELECT * FROM peaper WHERE Status = 'active'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+            $PeaperId = $rowMain['PeaperId'];
+            $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+            $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+            $tMiddle = "
+            </thead>
+            <tbody>";
+            $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+            $tHead = "
+            <tr>
+                <th>Student Name</th>
+                <th>Instute</th>
+                <th>Institute Id</th>
+                <th>Marks</th>
+                <th>Action</th>
+            </tr>";
+            $tBody = "";
+            $sql_with_data = "SELECT * FROM user WHERE ( UserName LIKE ? or InstiId LIKE ?  or RegCode LIKE ? ) and Status = 'active' LIMIT 5";
+            $sql_without_data = "SELECT * FROM user WHERE Status = 'active' LIMIT 5";
+
+            if ($data != null) {
+                $stmt = $conn->prepare($sql_with_data);
+                $stmt->bind_param("sss", $data, $data, $data);
+            } else {
+                $stmt = $conn->prepare($sql_without_data);
+            }
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $PeaperuserId = $row['UserId'];
+                $marks = '';
+                if (true) { // get marks
+                    $sql = "SELECT Marks FROM marksofpeaper WHERE PeaperId = '$PeaperId' and UserId = '$PeaperuserId' ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute();
+                    $reusaltMarks = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltMarks->num_rows > 0 && $rowMarks = $reusaltMarks->fetch_assoc()) {
+                        $marks = $rowMarks['Marks'];
+                    }
+                }
+                $tBody .= "
+                <tr>
+                    <td>{$row['UserName']}</td>
+                    <td>{$row['InstiName']}</td>
+                    <td>{$row['InstiId']}</td>
+                    <td><input type='number' name='marks' class='form-input w-100' placeholder='Enter Marks' id='{$row['UserId']}{$rowMain['PeaperId']}' value='{$marks}'></input></td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='update(this.id,`addmarks`)' id='{$row['UserId']} {$rowMain['PeaperId']}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+            }
+            if (!$reusalt->num_rows > 0) {
+                $tBody = "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
+        }
+        $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
+    } elseif ($type == 'loadModelDataPeaperNotRegTable') { // search not register student
+        $sql = "SELECT * FROM peaper WHERE Status = 'active'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+            $PeaperId = $rowMain['PeaperId'];
+            $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+            $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+            $tMiddle = "
+            </thead>
+            <tbody>";
+            $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+            $tHead = "
+            <tr>
+                <th>Student Name</th>
+                <th>Instute</th>
+                <th>Institute Id</th>
+                <th>Marks</th>
+                <th>Action</th>
+            </tr>";
+            $tBody = "";
+            $sql_with_data = "SELECT * FROM unreguser WHERE Name LIKE ? GROUP BY Name,Year,InstiName LIMIT 5";
+            $sql_without_data = "SELECT * FROM unreguser GROUP BY Name,Year,InstiName LIMIT 5 ";
+
+            if ($data != null) {
+                $stmt = $conn->prepare($sql_with_data);
+                $stmt->bind_param("s", $data);
+            } else {
+                $stmt = $conn->prepare($sql_without_data);
+            }
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $stmt->close();
+            while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $URGId = $row['URGId'];
+                $Marks = '';
+                if (true) { // get marks
+                    $sql = "SELECT Marks FROM marksofpeaper WHERE URGId = ? and PeaperId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ss", $URGId, $PeaperId);
+                    $stmt->execute();
+                    $reusaltMarks = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltMarks->num_rows > 0 && $rowMarks = $reusaltMarks->fetch_assoc()) {
+                        $Marks =  $rowMarks['Marks'];
+                    }
+                }
+                $tBody .= "
+                <tr>
+                    <td>{$row['Name']}</td>
+                    <td>{$row['InstiName']}</td>
+                    <td>{$row['Year']}</td>
+                    <td><input type='number' name='marks' class='form-input w-100' placeholder='Enter Marks' id='_{$row['URGId']}{$PeaperId}' value='{$Marks}'></input></td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='update(this.id,`addmarksNotReg`)' id='{$row['URGId']} {$PeaperId}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+            }
+            if (!$reusalt->num_rows > 0) {
+                $InstiList = '';
+                $InstiList .= "<option value=''>Select the Institute</option>";
+                if (true) { // get marks
+                    $sql = "SELECT InstiName FROM insti";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute();
+                    $reusaltInsti = $stmt->get_result();
+                    $stmt->close();
+                    while ($reusaltInsti->num_rows > 0 && $rowInsti = $reusaltInsti->fetch_assoc()) {
+                        $InstiList .=  "<option value='{$rowInsti['InstiName']}' >{$rowInsti['InstiName']}</option>";
+                    }
+                }
+                $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+                $tBody .= "
+                <tr>
+                <form id='Formclear'>
+                    <td><input type='text' name='name' class='form-control w-100' placeholder='Enter Name' id='addNewStu' value=''></input></td>
+                    <td><select class='form-select' name='insti' id='addNewStu'>{$InstiList}</select></td>
+                    <td>
+                        <select class='form-select' name='year' id='addNewStu'>
+                            <option value=''>Select year</option>
+                            <option value='2024'>2024</option>
+                            <option value='2025'>2025</option>
+                            <option value='2026'>2026</option>
+                            <option value='2027'>2027</option>
+                            <option value='2028'>2028</option>
+                        </select>
+                    </td>
+                    <td><input type='number' name='marks' class='form-control w-100' placeholder='Enter Marks' id='addNewStu'></input></td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='update(this.id,`addmarksNotReg`)' id='addNewStu {$PeaperId}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </form>
+                </tr>";
+            }
+        }
+        $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
+        WriteFile($modelContent);
+    } else {
+        $modelContent = 'invalied inputs ' . $type;
+    }
+    echo $modelContent;
+}
+
+if (isset($_POST['changePeaperManageTable'])) {
+    $type = $_POST['changePeaperManageTable'];
+    $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+    $tFirst = "
+    <div class='table-responsive'>
+        <table class='table table-bordered m-0'>
+            <thead>";
+    $tMiddle = "
+    </thead>
+    <tbody>";
+    $tEnd = "
+            </tbody>
+        </table>
+    </div>";
+    if ($type == 'PeaperManage') {
+        $tHead = "
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Discription</th>
+            <th>Aprued Class</th>
+            <th>Aprued Group</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>";
+        $tBody = "";
+        $sql = $data != null ? "SELECT * FROM peaper WHERE ( peaperName LIKE ? or type LIKE ? or ClassId LIKE ? or GId LIKE ? or Dict LIKE ? or Status LIKE ? ) AND Status != 'finished' " : "SELECT * FROM peaper WHERE Status != 'finished' ";
+        $stmt = $conn->prepare($sql);
+        $data != null ? $stmt->bind_param("ssssss", $data, $data, $data, $data, $data, $data) : null;
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $PeaperId = $row['PeaperId'];
+            $action = $row['Status'] == 'active' ? "<a onclick='disable(this.id,`peaper`)' id='{$PeaperId}'><i class='bi bi-x-circle text-red fs-6'></i></a>" : "<a onclick='enable(this.id,`peaper`)' id='{$PeaperId}'><i class='bi bi-check-circle text-green fs-6'></i></a>";
+            $actionFinished = $row['Status'] == 'active' ? "<a onclick='end(this.id,`peaper`)' id='{$PeaperId}'><i class='bi bi-explicit text-info fs-6'></i></a>" : "";
+            $Status = $row['Status'] == 'active' ? "<span class='text-green fs-6'><i class='bi bi-check-circle'></i></span>" : "<span class='text-red fs-6'><i class='bi bi-x-circle'></i></span>";
+
+            if ($row['ClassId'] == !null) {
+                $ClassNameList = "";
+                $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));
+                foreach ($ClassIdList as $value) {
+                    $sql = "SELECT * FROM class WHERE ClassId = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $value);
+                    $stmt->execute();
+                    $reusalt1 = $stmt->get_result();
+                    if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                        $ClassNameList .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
+                    }
+                }
+            } else {
+                $ClassNameList = "Not a Class";
+            }
+
+            if ($row['GId'] == !null) {
+                $groupNameList = "";
+                $groupIdList = explode("][", substr($row['GId'], 1, -1));
+                foreach ($groupIdList as $value) {
+                    $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $value);
+                    $stmt->execute();
+                    $reusalt1 = $stmt->get_result();
+                    if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                        $groupNameList .= "{$row1['MGName']}" . "<br>";
+                    }
+                }
+            } else {
+                $groupNameList = "Not a Class";
+            }
+
+            $tBody .= "
+            <tr>
+                <td>{$row['peaperName']}</td>
+                <td>{$row['type']}</td>
+                <td>" . (empty($row['Dict']) ? "Not Discription" :  $row['Dict']) . "</td>
+                <td>{$ClassNameList}</td>
+                <td>{$groupNameList}</td>
+                <td class='text-center'>{$Status}</td>
+                <td>
+                    <div class='actions item-center'>
+                        {$action}&nbsp;{$actionFinished}
+                        &nbsp;
+                        <!--<a onclick='update(this.id,`peaper`)' id='{$PeaperId}'><i class='bi bi-pencil-square text-green fs-6'></i></a>-->
+                    </div>
+                </td>
+            </tr>";
+        }
+        $htmlContent = ($reusalt->num_rows > 0) ?  $tFirst . $tHead . $tMiddle . $tBody . $tEnd : $tFirst . $tHead . $tMiddle . "<tr><td colspan='7'  class='text-info text-center'><i class='bi bi-search'>&nbsp;</i>Not A Peaper</td></tr>" . $tEnd;
+    } elseif ($type == 'rankingManage') {
+        $sql = "SELECT SUM(CASE WHEN marksofpeaper.Marks >=75 THEN 1 ELSE 0 END)AS Apass,SUM(CASE WHEN 75 > marksofpeaper.Marks >=65 THEN 1 ELSE 0 END)AS Bpass,SUM(CASE WHEN 65 > marksofpeaper.Marks >=55 THEN 1 ELSE 0 END)AS Cpass,SUM(CASE WHEN 55 > marksofpeaper.Marks >=45 THEN 1 ELSE 0 END)AS Spass,SUM(CASE WHEN 45 > marksofpeaper.Marks THEN 1 ELSE 0 END)AS Fpass,COUNT(marksofpeaper.MOPId) AS doneStu,SUM(CASE WHEN marksofpeaper.UserId IS NOT NULL THEN 1 ELSE 0 END)AS Compsite,SUM(CASE WHEN marksofpeaper.URGId IS NOT NULL THEN 1 ELSE 0 END)AS CompNotReg,peaper.* FROM peaper,marksofpeaper WHERE peaper.Status = 'active' and peaper.PeaperId = marksofpeaper.PeaperId ";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $stmt->close();
+        $row = $reusalt->fetch_assoc();
+
+        // access class
+        if ($row['ClassId'] == !null) {
+            $ClassNameList = "";
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));
+            foreach ($ClassIdList as $value) {
+                $sql = "SELECT * FROM class WHERE ClassId = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $value);
+                $stmt->execute();
+                $reusalt1 = $stmt->get_result();
+                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                    $ClassNameList .= "• {$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
+                }
+            }
+        } else {
+            $ClassNameList = "Not a Class";
+        }
+
+        // get group access
+        if ($row['GId'] == !null) {
+            $groupNameList = "";
+            $groupIdList = explode("][", substr($row['GId'], 1, -1));
+            foreach ($groupIdList as $value) {
+                $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $value);
+                $stmt->execute();
+                $reusalt1 = $stmt->get_result();
+                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                    $groupNameList .= "• {$row1['MGName']}" . "<br>";
+                }
+            }
+        } else {
+            $groupNameList = "Not a Group";
+        }
+
+        // totle student count 
+        if ($row['ClassId'] == !null) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));
+            $totleStudent = 0;
+            foreach ($ClassIdList as $value) {
+                $sql = "SELECT COUNT(DISTINCT UserId) AS userCount FROM payment WHERE ClassId = ? and Status = 'active'";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $value);
+                $stmt->execute();
+                $reusalt1 = $stmt->get_result();
+                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                    $totleStudent = $row1['userCount'];
+                }
+            }
+        } else {
+            $totleStudent = "Not Calculate";
+        }
+
+        // get insti radio 
+        if (true) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));
+            $radioList = "";
+            $radioLable = "";
+            $sql = "SELECT InstiName FROM insti ";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusalt1 = $stmt->get_result();
+            $i = 2;
+            while ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                $radioList .= "<input type='radio' name='sub_nav_rank' id='sub_nav_rank-{$i}' value='{$row1['InstiName']}' onclick='ShowRankBody()'>";
+                $radioLable .= "<label class='text-overflow' for='sub_nav_rank-{$i}'>{$row1['InstiName']} Rank</label>";
+                $i++;
+            }
+        }
+
+        $htmlContent = "
+            <div class='accordion mb-3' id=''>
+                <div class='accordion-item'>
+                    <h2 class='accordion-header' id='headingOneLight'>
+                        <button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#collapseOneLight' aria-expanded='true' aria-controls='collapseOneLight'>Peaper Details</button>
+                    </h2>
+                    <div id='collapseOneLight' class='accordion-collapse collapse' aria-labelledby='headingOneLight' data-bs-parent='#accordionExample2'>
+                        <div class='accordion-body'>
+                            <strong>{$row['peaperName']}</strong>
+                            <div class='row'>
+                                <div class='col-5 border border-1 m-2 p-2'>
+                                    <span class='text-dark'>Access Class</span><br>
+                                    {$ClassNameList}</div>
+                                <div class='col-5 border border-1 m-2 p-2'>
+                                    <span class='text-dark'>Access Group</span><br>
+                                    {$groupNameList}</div>
+                            </div>
+                            <div class='row'>
+                                <span class='col-auto alert alert-success m-2 p-0 px-2'>All Compleated : {$row['doneStu']}</span>
+                                <span class='col-auto alert alert-success m-2 p-0 px-2'>Compleated Site User : {$row['Compsite']} / {$totleStudent}</span>
+                                <span class='col-auto alert alert-success m-2 p-0 px-2'>Compleated Not Register User : {$row['CompNotReg']}</span>
+                                <span class='col-auto alert alert-info m-2 p-0 px-2'>A pass : {$row['Apass']}</span>
+                                <span class='col-auto alert alert-info m-2 p-0 px-2'>B pass : {$row['Bpass']}</span>
+                                <span class='col-auto alert alert-info m-2 p-0 px-2'>C pass : {$row['Cpass']}</span>
+                                <span class='col-auto alert alert-info m-2 p-0 px-2'>S pass : {$row['Spass']}</span>
+                                <span class='col-auto alert alert-info m-2 p-0 px-2'>F pass : {$row['Fpass']}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='row item-center'>
+                <div class='sub-nav'>
+                    <div class='sub-nav-body' id='sub-nav-body2'>
+                        <div class='radio-btn notifiradio'>
+                            <input type='radio' name='sub_nav_rank' id='sub_nav_rank-1' value='iland' onclick='ShowRankBody()' checked>
+                            {$radioList}
+                            <div class='ul'>
+                                <label class='text-overflow' for='sub_nav_rank-1'>ILand Rank</label>
+                                {$radioLable}
+                            </div>
+                        </div
+                    </div>
+                </div>
+            </div>
+            <div id='rank_Body'><center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center></div>
+            ";
+    }
+    echo $htmlContent;
+}
+
+if (isset($_POST['changeRankingData'])) {
+    $type = $_POST['type'];
+    if (true) {
+        $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+        $limit = $_POST['limit'] == 'all' ? "" : " LIMIT " . $_POST['limit'];
+        $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+        $tMiddle = "
+            </thead>
+            <tbody>";
+        $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+        $tHead = "
+            <tr>
+                <th>Name</th>
+                <th>Institute Id</th>
+                <th>Institute</th>
+                <th>Marks</th>
+                <th></th>
+            </tr>";
+        $tBody = "";
+        $sql = isset($_POST['data']) ? "SELECT * FROM peaper,marksofpeaper LEFT JOIN user ON marksofpeaper.UserId = user.UserId LEFT JOIN unreguser ON marksofpeaper.URGId = unreguser.URGId WHERE ( user.UserName LIKE ? or unreguser.Name LIKE ? or user.InstiId LIKE ? ) AND peaper.Status = 'active' and peaper.PeaperId = marksofpeaper.PeaperId ORDER BY marksofpeaper.Marks DESC $limit" : "SELECT * FROM peaper,marksofpeaper WHERE peaper.Status = 'active' and peaper.PeaperId = marksofpeaper.PeaperId ORDER BY marksofpeaper.Marks DESC $limit";
+        $stmt = $conn->prepare($sql);
+        isset($_POST['data']) ? $stmt->bind_param("sss", $data, $data, $data) : null;
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+            // $PeaperId = $rowMain['PeaperId'];
+            $URGId = $rowMain['URGId'];
+            $UserId = $rowMain['UserId'];
+            if ($UserId != null) {
+                $sql = "SELECT UserName,InstiId,InstiName FROM user WHERE UserId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $UserId);
+                $stmt->execute();
+                $reusaltUserData = $stmt->get_result();
+                $stmt->close();
+                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                    $UserName =  $rowUserData['UserName'];
+                    $InstiId =  $rowUserData['InstiId'];
+                    $InstiName =  $rowUserData['InstiName'];
+                }
+            } else {
+                $sql = "SELECT Name,InstiName FROM unreguser WHERE URGId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $URGId);
+                $stmt->execute();
+                $reusaltUserData = $stmt->get_result();
+                $stmt->close();
+                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                    $UserName =  $rowUserData['Name'];
+                    $InstiId =  "Not Registerd";
+                    $InstiName =  $rowUserData['InstiName'];
+                }
+            }
+
+            if ($type != 'iland' && $type != $InstiName) {
+                continue;
+            }
+
+            $tBody .= "
+                <tr>
+                    <td>{$UserName}</td>
+                    <td>{$InstiId}</td>
+                    <td>{$InstiName}</td>
+                    <td>{$rowMain['Marks']}</td>
+                    <td class='text-center'>" . (($rowMain['Marks'] >= 74) ? "A" : (($rowMain['Marks'] > 64) ? "B"  : (($rowMain['Marks'] > 54) ? "C" : (($rowMain['Marks'] > 44) ? "S" : "F")))) . "</td>
+                </tr>";
+        }
+        if (!$reusaltMain->num_rows > 0) {
+            $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+        }
+        $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
+    }
+    echo $modelContent;
+}
+
+// peaper management sestion end **************
+
+
 // add isnippet management start **************
 
 // add insti sestion start
@@ -1751,145 +2480,6 @@ if (isset($_POST['changeSnippitManageTable'])) {
     echo $htmlContent;
 }
 
-if (isset($_POST['enableWith'])) {
-    $type = $_POST['type'];
-    $data = $_POST['data'];
-    $status = "active";
-    if ($type == 'insti') {
-        try {
-            $sql = "UPDATE insti SET Status = ? WHERE InstiId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'class') {
-        try {
-            $sql = "UPDATE class SET Status = ? WHERE ClassId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'group') {
-        try {
-            $sql = "UPDATE grouplist SET Status = ? WHERE GId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'winner') {
-        try {
-            $sql = "UPDATE notification SET Status = ? WHERE NotifiId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } else {
-        $respons = "error";
-    }
-    echo $respons;
-}
-
-if (isset($_POST['disableWith'])) {
-    $type = $_POST['type'];
-    $data = $_POST['data'];
-    $status = "disable";
-    if ($type == 'insti') {
-        try {
-            $sql = "UPDATE insti SET Status = ? WHERE InstiId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'class') {
-        try {
-            $sql = "UPDATE class SET Status = ? WHERE ClassId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'group') {
-        try {
-            $sql = "UPDATE grouplist SET Status = ? WHERE GId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } elseif ($type == 'winner') {
-        try {
-            $sql = "UPDATE notification SET Status = ? WHERE NotifiId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $status, $data);
-            $stmt->execute();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $respons = "error";
-        }
-    } else {
-        $respons = "error";
-    }
-    echo $respons;
-}
-
-// update snppet checked table content end
-
-// delete item start 
-if (isset($_POST['deleteWith'])) {
-    $type = $_POST['type'];
-    $data = $_POST['data'];
-    if ($type == 'winner') {
-        try {
-            $conn->begin_transaction();
-
-            $sql = "SELECT Image FROM notification WHERE NotifiId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $data);
-            $stmt->execute();
-            $reusalt = $stmt->get_result();
-            $row = $reusalt->fetch_assoc();
-            $url = "../../Dachbord/user_images/winner/" . $row['Image'];
-
-            if (unlink($url)) {
-                $sql = "DELETE FROM notification WHERE NotifiId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $data);
-                $stmt->execute();
-            } else {
-                $respons = "error2";
-            }
-            $conn->commit();
-            $respons = 'Success';
-        } catch (Exception $e) {
-            $conn->rollback();
-            $respons = "erro1r" . $e;
-        }
-    } else {
-        $respons = "Undefind";
-    }
-    echo $respons;
-}
-// delete item end
-
 // snippet management end **************
 
 // notification management start ********
@@ -1937,27 +2527,10 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
         $sql = $data == null ? "SELECT user.RegCode,user.UserName,class.*,payment.*,userdata.WhaNum,userdata.MobNum FROM payment INNER JOIN user ON payment.UserId = user.UserId INNER JOIN userdata ON userdata.UserId = payment.UserId INNER JOIN class ON payment.ClassId = class.ClassId  WHERE payment.status = ?" . $addsql : "SELECT user.RegCode,user.UserName,class.*,payment.*,userdata.MobNum,userdata.WhaNum FROM payment INNER JOIN user ON payment.UserId = user.UserId INNER JOIN userdata ON userdata.UserId = user.UserId INNER JOIN class ON payment.ClassId = class.ClassId WHERE ( payment.status = ? and payment.UserId = user.UserId and payment.ClassId = class.ClassId ) and (user.RegCode LIKe ? or user.UserName LIKE ? or payment.Name LIKE ? or class.ClassName LIKE ? or class.year LIKE ? or class.InstiName LIKE ?)" . $addsql;
         $stmt = $conn->prepare($sql);
         $data !=  null ? $stmt->bind_param("sssssss", $status, $data, $data, $data, $data, $data, $data) : $stmt->bind_param("s", $status);
-        // if ($response == "") {
-        //     $sql = "SELECT user.RegCode,user.UserName,class.*,payment.* FROM payment,user,class WHERE payment.status = ? and payment.UserId = user.UserId and payment.ClassId = class.ClassId";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("s", $status);
-        // } else {
-        //     $response = "%{$response}%";
-        //     $sql = "SELECT user.RegCode,user.UserName,class.*,payment.* FROM payment,user,class WHERE ( payment.status = ? and payment.UserId = user.UserId and payment.ClassId = class.ClassId ) and (user.RegCode LIKe ? or payment.Name LIKE ? or class.ClassName LIKE ? or class.year LIKE ? or class.InstiName LIKE ?)";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("ssssss", $status, $response, $response, $response, $response, $response);
-        // }
         $stmt->execute();
         $reusalt = $stmt->get_result();
         while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
             $payId = $row['PayId'];
-            // $regcode = $row['RegCode'];
-            // $price = $row['Price'];
-            // $name = $row['UserName'];
-            // $type = $row['Type'];
-            // $year = $row['year'];
-            // $ClassName = $row['ClassName'];
-            // $InstiName = $row['InstiName'];
             $image = $row['Slip'];
             $ClassName = $row['year'] . "-" . $row['ClassName'] . "-" . $row['InstiName'];
             $month = substr($row['Month'], 0, 3) . " " . GetMonthName(substr($row['Month'], 4, 5));
@@ -1984,6 +2557,9 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
                 </td>
             </tr>
             ";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $htmlContent =  "<tr><td colspan='10' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
         }
         $htmlAllContent = $htmlContentHeader . $htmlContent . $htmlContentFooter;
     } elseif ($type == 'updateInstiReg') {
@@ -2022,29 +2598,11 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
         $sql = $data != null ? "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ? or user.InstiName LIKE ? ) $addsql" : "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status,userdata.MobNum,userdata.WhaNum FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId $addsql";
         $stmt = $conn->prepare($sql);
         $data != null ? $stmt->bind_param("sssss", $status, $data, $data, $data, $data) : $stmt->bind_param("s", $status);
-        // if ($respons == "" || $respons = null) {
-        //     $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("s", $status);
-        // } else {
-        //     $respons = "%{$respons}%";
-        //     $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status FROM user,userdata WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ?)";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("ssss", $status, $respons, $respons, $respons);
-        // }
-        // $stmt = $conn->prepare($sql);
-        // $stmt->bind_param("s", $status);
         $stmt->execute();
         $reusalt = $stmt->get_result();
         while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-            // $regcode = $row['RegCode'];
-            // $name = $row['UserName'];
-            // $InstiName = $row['InstiName'];
             $InstiId = $row['InstiId'];
             $InstiPic = $row['InstiPic'];
-            // $status1 = $row['Status'];
-            // $type = $row['Type'];
-            // $month = substr($row['Month'], 0, 3) . " " . GetMonthName(substr($row['Month'], 4, 5));
             $htmlContent .= "
             <tr>
                 <td>{$row['UserName']}</td>
@@ -2069,6 +2627,9 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
                 </td>
             </tr>
             ";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $htmlContent =  "<tr><td colspan='8' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
         }
         $htmlAllContent = $htmlContentHeader . $htmlContent . $htmlContentFooter;
     } elseif ($type = "updateAdminReg") {
@@ -2096,25 +2657,10 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
         $sql = $data != null ? "SELECT * FROM adminuser WHERE (UName LIKE ? or Email LIKE ? or MobNum LIKE ? or Access LIKE ? or Type LIKE ?) and Status = ?" : "SELECT * FROM adminuser WHERE Status = ?";
         $stmt = $conn->prepare($sql);
         $data != null ? $stmt->bind_param("ssssss", $data, $data, $data, $data, $data, $status) : $stmt->bind_param("s", $status);
-        // if ($respons == "" || $respons = null) {
-        //     $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status FROM user,userdata WHERE user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("s", $status);
-        // } else {
-        //     $respons = "%{$respons}%";
-        //     $sql = "SELECT user.RegCode,user.UserName,user.InstiName,user.InstiId,userdata.InstiPic,user.Status FROM user,userdata WHERE (user.InstiName IS NOT NULL and user.status = ? and user.UserId = userdata.UserId ) and (user.UserName LIKE ? or user.RegCode LIKE ? or userdata.InstiId LIKE ?)";
-        //     $stmt = $conn->prepare($sql);
-        //     $stmt->bind_param("ssss", $status, $respons, $respons, $respons);
-        // }
-        // $stmt = $conn->prepare($sql);
-        // $stmt->bind_param("s", $status);
         $stmt->execute();
         $reusalt = $stmt->get_result();
         while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
             $adminId = $row['AdminId'];
-            // $status1 = $row['Status'];
-            // $type = $row['Type'];
-            // $month = substr($row['Month'], 0, 3) . " " . GetMonthName(substr($row['Month'], 4, 5));
             $htmlContent .= "
             <tr>
                 <td>{$row['UName']}</td>
@@ -2134,6 +2680,9 @@ if (isset($_POST['UpdateNotifiTableContent'])) {
                 </td>
             </tr>
             ";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $htmlContent =  "<tr><td colspan='7' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
         }
         $htmlAllContent = $htmlContentHeader . $htmlContent . $htmlContentFooter;
     } else {
@@ -2830,19 +3379,320 @@ if (isset($_POST['getChartVariyable'])) {
         }
     }
     echo $response;
-} 
+}
 // get lessno Viwes end
 
 // notification management start *********************
+
+
+// same ad alol site  stast *****************
+if (isset($_POST['enableWith'])) {
+    $type = $_POST['type'];
+    $data = $_POST['data'];
+    $status = "active";
+    if ($type == 'insti') {
+        try {
+            $sql = "UPDATE insti SET Status = ? WHERE InstiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'class') {
+        try {
+            $sql = "UPDATE class SET Status = ? WHERE ClassId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'group') {
+        try {
+            $sql = "UPDATE grouplist SET Status = ? WHERE GId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'winner') {
+        try {
+            $sql = "UPDATE notification SET Status = ? WHERE NotifiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'peaper') {
+        try {
+            $statusDisable = "disable";
+            $conn->begin_transaction();
+            $sql = "UPDATE peaper SET Status = ? WHERE Status = ? ";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $statusDisable, $status);
+            $stmt->execute();
+
+            $sql = "UPDATE peaper SET Status = ? WHERE PeaperId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $conn->commit();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $conn->rollback();
+            $respons = "error";
+        }
+    } else {
+        $respons = "error";
+    }
+    echo $respons;
+}
+
+if (isset($_POST['disableWith'])) {
+    $type = $_POST['type'];
+    $data = $_POST['data'];
+    $status = "disable";
+    if ($type == 'insti') {
+        try {
+            $sql = "UPDATE insti SET Status = ? WHERE InstiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'class') {
+        try {
+            $sql = "UPDATE class SET Status = ? WHERE ClassId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'group') {
+        try {
+            $sql = "UPDATE grouplist SET Status = ? WHERE GId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'winner') {
+        try {
+            $sql = "UPDATE notification SET Status = ? WHERE NotifiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } elseif ($type == 'peaper') {
+        try {
+            $sql = "UPDATE peaper SET Status = ? WHERE PeaperId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    } else {
+        $respons = "error";
+    }
+    echo $respons;
+}
+
+// update snppet checked table content end
+
+// delete item start 
+if (isset($_POST['deleteWith'])) {
+    $type = $_POST['type'];
+    $data = $_POST['data'];
+    if ($type == 'winner') {
+        try {
+            $conn->begin_transaction();
+
+            $sql = "SELECT Image FROM notification WHERE NotifiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $data);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $row = $reusalt->fetch_assoc();
+            $url = "../../Dachbord/user_images/winner/" . $row['Image'];
+
+            if (unlink($url)) {
+                $sql = "DELETE FROM notification WHERE NotifiId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $data);
+                $stmt->execute();
+            } else {
+                $respons = "error2";
+            }
+            $conn->commit();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $conn->rollback();
+            $respons = "erro1r" . $e;
+        }
+    } else {
+        $respons = "Undefind";
+    }
+    echo $respons;
+}
+// delete item end
+
+// update with start 
+if (isset($_POST['updateWith'])) {
+    $type = $_POST['type'];
+    $id = $_POST['data'];
+    if ($type == 'addmarksUpdate') {
+        try {
+            $userId = explode(" ", $id)[0];
+            $PeaperId = explode(" ", $id)[1];
+            $marks = $_POST['marks'];
+
+            $conn->begin_transaction();
+            $sql = "SELECT PeaperId FROM marksofpeaper WHERE UserId = ? and PeaperId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $userId, $PeaperId);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $stmt->close();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $sql = "UPDATE marksofpeaper SET Marks = ? WHERE UserId = ? and PeaperId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iii", $marks, $userId, $PeaperId);
+                $stmt->execute();
+            } else {
+                $sql = "INSERT INTO marksofpeaper (PeaperId, Type, UserId, Marks) SELECT ?, type, ?, ? FROM peaper WHERE PeaperId = ? ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssss", $PeaperId, $userId, $marks, $PeaperId);
+                $stmt->execute();
+            }
+            $respons = "success";
+            $conn->commit();
+        } catch (Exception $e) {
+            $respons = 'error ' . $e;
+            $conn->rollback();
+        }
+    } elseif ($type == 'addmarksNotRegUpdate') {
+        if ($_POST['methord'] == 'insert') {
+            try {
+                $URGId = explode(" ", $id)[0];
+                $PeaperId = explode(" ", $id)[1];
+                $name = $_POST['name'];
+                $insti = $_POST['insti'];
+                $year = $_POST['year'];
+                $marks = $_POST['marks'];
+
+                $conn->begin_transaction();
+
+                $sql = "SELECT * FROM unreguser WHERE Name = ? and Year = ? and InstiName = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sss", $name, $year, $insti);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $respons = "alredy added";
+                } else {
+                    $sql = "INSERT INTO unreguser(Name,InstiName,Year) VALUE(?,?,?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sss", $name, $insti, $year);
+                    $stmt->execute();
+                    $inserted_id = $stmt->insert_id;
+
+                    $sql = "INSERT INTO marksofpeaper (PeaperId, Type, URGId, Marks) SELECT ?, type, ?, ? FROM peaper WHERE PeaperId = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssss", $PeaperId, $inserted_id, $marks, $PeaperId);
+                    $stmt->execute();
+                    $respons = "success";
+                }
+                $conn->commit();
+            } catch (Exception $e) {
+                $respons = "error";
+            }
+        } elseif ($_POST['methord'] == 'update') {
+            try {
+                $URGId = explode(" ", $id)[0];
+                $peaperId = explode(" ", $id)[1];
+                $marks = $_POST['marks'];
+
+                $conn->begin_transaction();
+
+                $sql = "SELECT MOPId FROM marksofpeaper WHERE URGId = ? and PeaperId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ss", $URGId, $peaperId);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $thisId = $row['MOPId'];
+                    $sql = "UPDATE marksofpeaper SET Marks = ? WHERE MOPId = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ss", $marks, $thisId);
+                    $stmt->execute();
+                } else {
+                    $sql = "INSERT INTO marksofpeaper(PeaperId,URGId,Type,Marks) SELECT ?,?,type,? FROM peaper WHERE PeaperId = ? ";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssss", $peaperId, $URGId, $marks, $peaperId);
+                    $stmt->execute();
+                }
+                $respons = "success";
+                $conn->commit();
+            } catch (Exception $e) {
+                $respons = "error ";
+            }
+        }
+    } else {
+        $respons = "invalied type";
+    }
+    echo $respons;
+}
+// update with end
+
+// end with start 
+if (isset($_POST['endWith'])) {
+    $type = $_POST['type'];
+    $data = $_POST['data'];
+    $status = "finished";
+    if ($type == 'peaper') {
+        try {
+            $sql = "UPDATE peaper SET Status = ? WHERE PeaperId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $status, $data);
+            $stmt->execute();
+            $respons = 'Success';
+        } catch (Exception $e) {
+            $respons = "error";
+        }
+    }
+}
+// end with end
+
+// same ad alol site  end *****************
 
 
 
 
 // $conn->close();
 
-
-
-// file write 
-// $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
-// fwrite($myfile, $key);
-// fclose($myfile);
+function WriteFile($value)
+{
+    $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
+    fwrite($myfile, $value);
+    fclose($myfile);
+}

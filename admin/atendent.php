@@ -10,9 +10,11 @@
 
 <?php
 $adminTypenew = empty($adminType[1]) || $adminType[1] == "undefined" ? null : $adminType[1];
-if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
-    header('location:./');
-    exit;
+if (isset($activeClassName)) {
+    if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
+        header('location:./');
+        exit;
+    }
 }
 ?>
 
@@ -79,20 +81,20 @@ if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
                             $reusalt = $stmt->get_result();
                             if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                                 $className = "{$row['year']}  {$row['ClassName']} {$row['InstiName']}";
+                                $decodeDict = json_decode($row['Dict']);
+                                $ending = $decodeDict[1] . " - " . $decodeDict[2];
                             ?>
                                 <div class="stats-tile p-2">
                                     <img src="assets/img/site use/acvitating.gif" alt="" width="30">
-                                    <!-- <div class="sale-icon-bdr">
-								</div> -->
                                     <div class="sale-details ms-3">
                                         <h5 class="alert alert-success p-1 ps-2">Now Class in progress</h5><i onclick="submitCurrentClass('del')" class="bi bi-trash text-dark position-absolute top-0 end-0 m-2"></i>
                                         <h6 class="text-dark"><?php echo $className; ?></h6>
-                                        <p class="">Ending with 17.00 pm</p>
+                                        <p class="">Class time with <?php echo $ending; ?></p>
                                     </div>
                                 </div>
                             <?php
                             } else { ?>
-                                <div class="stats-tile p-2" data-bs-toggle="modal" data-bs-target="#setcurrentclass" onclick="addcurrentclassAttribute()">
+                                <div class="stats-tile p-2" data-bs-toggle="modal" data-bs-target="#setcurrentclass">
                                     <img src="assets/img/site use/notfound.jpg" alt="" width="50">
                                     <!-- <div class="sale-icon-bdr">
 								</div> -->
@@ -107,60 +109,40 @@ if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
                     </div>
                     <!-- Row end -->
 
-
-                    <?php
-                    $sql = "SELECT ClassId FROM class WHERE Conducting = 1";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->execute();
-                    $reusalt = $stmt->get_result();
-                    if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                        $classId = $row['ClassId'];
-                        $_SESSION['ClassId'] = $classId;
-                    ?>
-                        <!-- Row start -->
-                        <div class="row">
-                            <div class="col-sm-12 col-12">
-                                <!-- Card start -->
-                                <div class="card createclass">
-                                    <!-- <div class="card-header">
-                                    <div class="card-title">Create the new Group</div>
-                                </div> -->
-                                    <div class="card-body item-center">
-                                        <div class="qrscanner">
-                                            <!-- <h1>Scan QR Codes</h1> -->
-                                            <div class="section">
-                                                <div id="my-qr-reader">
-                                                </div>
-                                                <!-- Modal 4 -->
-                                                <button id="qrresponsalert" type="button" class="btn btn-info d-none" data-bs-toggle="modal" data-bs-target="#verticallyCentered">
-                                                    Vertically Centered Modal
-                                                </button>
-                                            </div>
-                                        </div>
+                    <!-- Row start -->
+                    <div class="row">
+                        <?php
+                        $sql = "SELECT InstiName FROM insti WHERE Status = 'active'";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute();
+                        $reusalt = $stmt->get_result();
+                        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                            $instiName = $row['InstiName'];
+                            $sql = "SELECT COUNT(UserId) AS numofrows FROM user WHERE InstiName = '$instiName' and Status = 'active'";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->execute();
+                            $reusalt1 = $stmt->get_result();
+                            if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                                $numofrows = $row1['numofrows'];
+                            }
+                        ?>
+                            <div class="col-xxl-3 col-sm-6 col-12">
+                                <div class="stats-tile p-2">
+                                    <div class="sale-icon-bdr">
+                                        <i class="bi bi-person-check-fill fs-5"></i>
+                                    </div>
+                                    <div class="sale-details">
+                                        <h5><?php echo $instiName; ?>Registered student</h5>
+                                        <!-- <h3 class="text-blue">2,567</h3> -->
+                                        <p class="growth text-center"><?php echo $numofrows; ?></p>
                                     </div>
                                 </div>
-                                <!-- Card end -->
-
                             </div>
-                        </div>
-                        <!-- Row end -->
-                    <?php } else {
-                        $_SESSION['ClassId'] = 'undefind'; ?>
-                        <!-- Row start -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="stats-tile p-2 item-center">
-                                    <img src="assets/img/site use/notfound.jpg" alt="" srcset="" width="500">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Row end -->
-                    <?php } ?>
-
+                        <?php } ?>
+                    </div>
+                    <!-- Row end -->
 
                     <!-- model section start  -->
-
-                    <!-- set class model  -->
                     <div class="modal fade" id="setcurrentclass" tabindex="-1" aria-labelledby="setcurrentclassLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content addcurrentclass">
@@ -177,12 +159,24 @@ if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
                                             </select>
                                         </div>
                                         <div class="col-6 mb-3 currentClassData">
-                                            <label class="form-label d-flex">start time</label>
+                                            <label class="form-label d-flex">Start time</label>
                                             <input type="time" class="form-control" name="startTime" placeholder="hrs:mins">
                                         </div>
                                         <div class="col-6 mb-3 currentClassData">
                                             <label class="form-label d-flex">End time</label>
                                             <input type="time" class="form-control" name="endTime" placeholder="hrs:mins">
+                                        </div>
+                                        <div class="col-6 mb-3 currentClassData">
+                                            <label class="form-label d-flex">Youtube Link</label>
+                                            <input type="text" class="form-control" name="endTime" placeholder="Youtube Link">
+                                        </div>
+                                        <div class="col-6 mb-3 currentClassData">
+                                            <label class="form-label d-flex">Zoom Link</label>
+                                            <input type="text" class="form-control" name="endTime" placeholder="Zoom Link">
+                                        </div>
+                                        <div class="col-12 mb-3 currentClassData">
+                                            <label class="form-label d-flex">Title</label>
+                                            <input type="text" class="form-control" name="endTime" placeholder="Enter Title">
                                         </div>
                                     </div>
                                 </div>
@@ -200,6 +194,7 @@ if (!($activeClassName == $adminTypenew || $adminType[0] == 'owner')) {
                             </div>
                         </div>
                     </div>
+                    <!-- model section end  -->
 
                     <!-- scan qr respons data -->
                     <div class="modal fade" id="verticallyCentered" tabindex="-1" aria-labelledby="verticallyCenteredLabel" aria-hidden="true">

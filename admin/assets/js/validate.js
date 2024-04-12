@@ -87,6 +87,13 @@ function getaddWinnerAttribute() {
     reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
 }
 
+function getaddpeaperAttribute() {
+    inputfeelds = document.querySelectorAll('.modelMain .online');
+    inputfeelds2 = document.querySelectorAll('.modelMain .physical');
+    tags = document.querySelectorAll('.modelMain .tags select');
+    reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
+}
+
 
 // add current class start 
 function submitCurrentClass(val = null) {
@@ -670,6 +677,177 @@ function lesAction(val1, val2) {
 
 
 // lesson management end   *********************
+
+// peaper management start
+function peaperType(value) {
+    getaddpeaperAttribute();
+    if (value == 'online' || value == 'both') {
+        console.log('select Online');
+        inputfeelds2[1].hidden = true;
+        inputfeelds.forEach(function (self) {
+            self.disabled = false;
+            self.hidden = false;
+        });
+        tags.forEach(function (self) {
+            self.disabled = false;
+        });
+    } else if (value == 'physical') {
+        console.log('select physical');
+        inputfeelds[1].hidden = true;
+        inputfeelds2.forEach(function (self) {
+            self.disabled = false;
+            self.hidden = false;
+        });
+        tags.forEach(function (self) {
+            self.disabled = false;
+        });
+    } else {
+        inputfeelds.forEach(function (self) {
+            self.disabled = true;
+        });
+        inputfeelds2.forEach(function (self) {
+            self.disabled = true;
+        });
+        tags.forEach(function (self) {
+            self.disabled = true;
+        });
+        inputfeelds[0].disabled = false;
+        inputfeelds2[0].disabled = false;
+    }
+
+}
+
+function submitModelPeaper(type, method = null) {
+    event.preventDefault();
+    if (type == 'addPeaper') {
+        getaddpeaperAttribute();
+        if (validateaddpeaper()) {
+            console.log('done');
+            var PeaperData = new FormData();
+            PeaperData.append("peaperManage", "");
+            PeaperData.append("type", "addPeaperData");
+            if (inputfeelds[0].value == 'online' || inputfeelds[0].value == 'both') {
+                for (var count = 0; count < inputfeelds.length; count++) {
+                    PeaperData.append(inputfeelds[count].name, inputfeelds[count].value);
+                }
+            } else if (inputfeelds[0].value == 'physical') {
+                for (var count = 0; count < inputfeelds2.length; count++) {
+                    PeaperData.append(inputfeelds2[count].name, inputfeelds2[count].value);
+                }
+            } else {
+                console.log('not oooo ' + inputfeelds[0].value);
+            }
+            if (true) {
+                var ligroup = document.querySelectorAll('#modelMainContent .group .select2-selection__rendered li');
+                var liaccess = document.querySelectorAll('#modelMainContent .class .select2-selection__rendered li');
+                const grouplist = [];
+                const accesslist = [];
+                ligroup.forEach(function (li) {
+                    var title = li.getAttribute('title');
+                    grouplist.push(title);
+                });
+                liaccess.forEach(function (li) {
+                    var title = li.getAttribute('title');
+                    accesslist.push(title);
+                });
+                PeaperData.append('group', grouplist);
+                PeaperData.append('class', accesslist);
+
+                // PeaperData.forEach(function (key, value) {
+                //     console.log("key : " + key + "   value : " + value);
+                // })
+            }
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PeaperData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    if (response == " success") {
+                        // clearFormData();
+                        // reusaltLog[1].style.display = "none";
+                        // reusaltLog[0].style.display = "block";
+                        // setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                        ShowBody('addPeaper');
+                        $('#modelMain').modal('hide');
+                        nTost({ type: 'success', titleText: 'SuccessFully add the peaper' });
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' Alredy Added' ? 'Failed Alredy add this peaper' : 'Failed add the peaper';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+        } else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
+    }
+
+}
+
+function validateaddpeaper() {
+    finaly = true;
+    // console.log(inputfeelds[0].value);
+    if (inputfeelds[0].value == 'online' || inputfeelds[0].value == 'both') {
+        finaly = validateinputfeelds(1) && validatetags(0);
+    } else if (inputfeelds[0].value == 'physical') {
+        finaly = validateinputfeelds2(1) && validatetags(0);
+    } else {
+        finaly = false;
+    }
+    return finaly;
+}
+
+function validateinputfeelds(decre = 0) {
+    var finaly = true;
+    for (let index = 0; index < inputfeelds.length - decre; index++) {
+        if (inputfeelds[index].value == "") {
+            inputfeelds[index].classList.toggle("is-valid", false);
+            inputfeelds[index].classList.toggle("is-invalid", true);
+            // console.log('false is ' + inputfeelds[index].name);
+            finaly = false;
+        } else {
+            inputfeelds[index].classList.toggle("is-valid", true);
+            inputfeelds[index].classList.toggle("is-invalid", false);
+        }
+    }
+    return finaly;
+}
+
+function validateinputfeelds2(decre = 0) {
+    var finaly = true;
+    for (let index = 0; index < inputfeelds2.length - decre; index++) {
+        if (inputfeelds2[index].value == "") {
+            inputfeelds2[index].classList.toggle("is-valid", false);
+            inputfeelds2[index].classList.toggle("is-invalid", true);
+            console.log('false is ' + inputfeelds2[index].name);
+            finaly = false;
+        } else {
+            inputfeelds2[index].classList.toggle("is-valid", true);
+            inputfeelds2[index].classList.toggle("is-invalid", false);
+        }
+    }
+    return finaly;
+}
+
+function validatetags(decre = 0) {
+    for (let index = 0; index < tags.length; index++) {
+        // var errormsg = tags[count].parentNode.querySelector('.invalid-feedback');
+        // var successmsg = tags[count].parentNode.querySelector('.valid-feedback');
+        if (tags[index].value == "") {
+            // errormsg.style.display = "block";
+            // successmsg.style.display = 'none';
+            finaly = false;
+        } else {
+            // errormsg.style.display = "none";
+            // successmsg.style.display = "block";
+        }
+    }
+    return finaly;
+}
+
+// peaper management end
 
 // snippit management start   *********************
 

@@ -67,12 +67,10 @@
                                     <input type="radio" name="sub_nav" id="sub_nav-1" value="1" onclick="showBody()" checked>
                                     <input type="radio" name="sub_nav" id="sub_nav-2" value="2" onclick="showBody()">
                                     <?php echo $adminType[0] == "owner" || $adminType[0] == 'developer' ? "<input type='radio' name='sub_nav' id='sub_nav-3' value='3' onclick='showBody()'>" : null; ?>
-                                    <!-- <input type="radio" name="sub_nav" onchange="" id="sub_nav-2" value="2" onclick="showBody(2)"> -->
                                     <div class="ul">
                                         <label class="text-overflow" for="sub_nav-1">Payment Request </label>
                                         <label class="text-overflow" for="sub_nav-2">Insti Register Request</label>
                                         <?php echo $adminType[0] == "owner" || $adminType[0] == 'developer' ? "<label class='text-overflow' for='sub_nav-3'>Admin Register Request</label>" : null; ?>
-                                        <!-- <label class='text-overflow' for='sub_nav-2'>Lesson Request </label> -->
                                     </div>
                                 </div>
 
@@ -181,6 +179,7 @@
         showBody();
 
         function showBody(data = null) {
+            $('#table-content-change').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
             var radinpval = document.querySelector('.radio-btn input[type=radio]:checked').value;
             formData = radinpval == 1 ? (data != null ? "UpdateNotifiTableContent=" + "&type=" + "updatePayment" + "&data=" + data : "UpdateNotifiTableContent=" + "&type=" + "updatePayment") : (radinpval == 2 ? (data != null ? "UpdateNotifiTableContent=" + "&type=" + "updateInstiReg" + "&data=" + data : "UpdateNotifiTableContent=" + "&type=" + "updateInstiReg") : (radinpval == 3 ? (data != null ? "UpdateNotifiTableContent=" + "&type=" + "updateAdminReg" + "&data=" + data : "UpdateNotifiTableContent=" + "&type=" + "updateAdminReg") : null));
             $.post("sql/process.php", formData, function(response, status) {
