@@ -344,6 +344,7 @@ if (isset($_POST['UpdateLessonContent'])) {
                     <th>Name</th>
                     <th>Dict</th>
                     <th>Type</th>
+                    <th>Institutes</th>
                     <th>Insert Date</th>
                     <th>Status</th>
                     <th {$hiddenStatus}>Action</th>
@@ -356,11 +357,11 @@ if (isset($_POST['UpdateLessonContent'])) {
     </div>";
     $tableBodyContent = "";
     if ($search == '') {
-        $sql = "SELECT * FROM lesson";
+        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess";
         $stmt = $conn->prepare($sql);
     } else {
         $search = "%" . $search . "%";
-        $sql = "SELECT * FROM lesson WHERE LesName LIKE ? or Type LIKE ?";
+        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess WHERE ( lesson.LesName LIKE ? or lesson.Type LIKE ? ) and lesson.LesId = recaccess.LesId";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $search, $search);
     }
@@ -369,7 +370,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $LesId = $row['LesId'];
         $name = $row['LesName'];
-        $dict = $row['Dict'];
+        $dict = empty($row['Dict']) ? "Not Found" : $row['Dict'];
         $type = $row['Type'];
         $InsertDate = substr($row['InsertDate'], 0, 10);
         // $InsertDate = DateTime::createFromFormat('Ymd', $InsertDate)->format('Y-m-d');
@@ -383,11 +384,25 @@ if (isset($_POST['UpdateLessonContent'])) {
         } else {
             $statusindi = "<span class='text-blue td-status'><i class='bi bi-clock-history'></i> Awaiting</span>";
         }
+
+        $InstiNames = "";
+        $access = explode("][", substr($row['ClassId'], 1, -1));
+        foreach ($access as $value) {
+            $sql = "SELECT * FROM class WHERE ClassId = ? ";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $value);
+            $stmt->execute();
+            $reusalt1 = $stmt->get_result();
+            if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+                $InstiNames .= "<p>" . $row1['InstiName'] . "</p>";
+            }
+        }
         $tableBodyContent .= "
         <tr>
             <td>{$name}</td>
             <td>{$dict}</td>
             <td>{$type}</td>
+            <td>{$InstiNames}</td>
             <td>{$InsertDate}</td>
             <td>{$statusindi}</td>
             <td class='item-center' {$hiddenStatus}>
