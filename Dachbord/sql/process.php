@@ -324,6 +324,7 @@ try {
             $stmt->bind_param("sss", $UserId, $activeClaId, $thisMonth);
             $stmt->execute();
             $result = $stmt->get_result();
+            $paymrntStatus = "";
             if ($result->num_rows > 0) {
                 if ($row = $result->fetch_assoc()) {
                     $paymrntStatus = $row['Status'];
@@ -359,7 +360,7 @@ try {
 
             // check in progress class and viwe it
             if (true) {
-                $sql = "SELECT * FROM Class WHERE Conducting = 1";
+                $sql = "SELECT * FROM class WHERE Conducting = 1";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
                 $reusalt = $stmt->get_result();

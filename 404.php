@@ -1,93 +1,93 @@
-<!doctype html>
+<!-- database connection include -->
+<?php include("./Dachbord/sql/conn.php"); ?>
+
+<!DOCTYPE html>
 <html lang="en">
 
-	<head>
-		<!-- Required meta tags -->
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+    <meta charset="utf-8">
+    <title>Suraj s kumara | 404</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
 
-		<!-- Meta -->
-		<meta name="description" content="Best Bootstrap Admin Dashboards">
-		<meta name="author" content="Bootstrap Gallery" />
-		<link rel="canonical" href="https://www.bootstrap.gallery/">
-		<meta property="og:url" content="https://www.bootstrap.gallery">
-		<meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
-		<meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
-		<meta property="og:type" content="Website">
-		<meta property="og:site_name" content="Bootstrap Gallery">
-		<link rel="shortcut icon" href="assets/images/favicon.svg">
+    <!-- Favicon -->
+    <link href="Dashbord/img/favicon.ico" rel="icon">
 
-		<!-- Title -->
-		<title>SurajSKumara | 404</title>
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- Libraries Stylesheet -->
+    <link href="Dashbord/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="Dashbord/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
 
-		<!-- *************
-			************ Common Css Files *************
-		************ -->
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="Dashbord/css/bootstrap.min.css" rel="stylesheet">
 
-		<!-- Animated css -->
-		<link rel="stylesheet" href="Dachbord/assets/css/animate.css">
+    <!-- Template Stylesheet -->
+    <link href="Dashbord/css/style.css" rel="stylesheet">
+</head>
 
-		<!-- Bootstrap font icons css -->
-		<link rel="stylesheet" href="Dachbord/assets/fonts/bootstrap/bootstrap-icons.css">
+<body>
+    <div class="container-fluid position-relative d-flex p-0">
+        
 
-		<!-- Main css -->
-		<link rel="stylesheet" href="Dachbord/assets/css/main.min.css">
+        <!-- include Spinner -->
+        <?php include("Dashbord/include/Spinner.php"); ?>
 
-		<!-- Particles CSS -->
-		<link rel="stylesheet" href="Dachbord/assets/vendor/particles/particles.css">
+        
 
-	</head>
+        <!-- Content Start -->
+        <div class="w-100">
 
-	<body class="maintenance-page">
+            <!-- nav bar include -->
+            <?php // include("include/nav_bar.php") ?>
 
-		<!-- Countdown -->
-		<div id="particles-js"></div>
-		<div class="countdown-bg"></div>
-		<!-- /Countdown -->
-
-		<!-- Maintenance screen start -->
-		<div class="container">
-
-			<!-- Row start -->
-			<div class="row justify-content-center align-items-center">
-				<div class="col-lg-5 col-sm-6 col-12">
-					<div class="maintenance-message">
-						<div class="message-title-block">
-							<h1>OOPS!</h1>
-							<h4>Page Not Found</h4>
-						</div>
-						<p>We’re sorry, the page you have looked for does not exist in our website!
+            <!-- 404 Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+                    <div class="col-md-6 text-center p-4">
+                        <i class="bi bi-exclamation-triangle display-1 text-primary"></i>
+                        <h1 class="display-1 fw-bold">404</h1>
+                        <h1 class="mb-4">Page Not Found</h1>
+                        <p class="mb-4">We’re sorry, the page you have looked for does not exist in our website!
                             Maybe go to our home page or try to use a search?</p>
-						<div class="mt-3">
-							<a href="index.php" class="btn btn-info">Back to Home Page</a>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Row end -->
+                        <a class="btn btn-primary rounded-pill py-3 px-5" href="index.php">Go Back To Home</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 404 End -->
 
-		</div>
-		<!-- Maintenance screen end -->
-
-		<!-- *************
-			************ Required JavaScript Files *************
-		************* -->
-		<!-- Required jQuery first, then Bootstrap Bundle JS -->
-		<script src="Dachbord/assets/js/jquery.min.js"></script>
-		<script src="Dachbord/assets/js/bootstrap.bundle.min.js"></script>
-		<script src="Dachbord/assets/js/modernizr.js"></script>
-		<script src="Dachbord/assets/js/moment.js"></script>
-
-		<!-- *************
-			************ Vendor Js Files *************
-		************* -->
-
-		<!-- Particles JS -->
-		<script src="Dachbord/assets/vendor/particles/particles.min.js"></script>
-		<script src="Dachbord/assets/vendor/particles/particles-custom.js"></script>
+            <!-- footer incluse -->
+            <?php // include("include/footer.php") ?>
+            
+        </div>
+        <!-- Content End -->
 
 
-	</body>
+        <!-- Back to Top -->
+        <!--<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>-->
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Dashbord/lib/chart/chart.min.js"></script>
+    <script src="Dashbord/lib/easing/easing.min.js"></script>
+    <script src="Dashbord/lib/waypoints/waypoints.min.js"></script>
+    <script src="Dashbord/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="Dashbord/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="Dashbord/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="Dashbord/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="Dashbord/js/main.js"></script>
+</body>
 
 </html>
