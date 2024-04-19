@@ -357,7 +357,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     </div>";
     $tableBodyContent = "";
     if ($search == '') {
-        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess and lesson.LesId =recaccess.LesId";
+        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess WHERE lesson.LesId = recaccess.LesId";
         $stmt = $conn->prepare($sql);
     } else {
         $search = "%" . $search . "%";
