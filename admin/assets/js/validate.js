@@ -59,9 +59,9 @@ function getlessonAttribute() {
 }
 
 function getUpdateLessonAttribute() {
-    inputfeelds = document.querySelectorAll('#updateLessonAlert input[type=text] , #updateLessonAlert select , #updateLessonAlert textarea');
-    tags = document.querySelectorAll('#updateLessonAlert .tags');
-    reusaltLog = document.querySelectorAll('#updateLessonAlert .rusaltLog div');
+    inputfeelds = document.querySelectorAll('#mainModalAlert .AddLesSub input[type=text] , #mainModalAlert .AddLesSub select , #mainModalAlert .AddLesSub textarea');
+    tags = document.querySelectorAll('#mainModalAlert .tags');
+    reusaltLog = document.querySelectorAll('#mainModalAlert .rusaltLog div');
 }
 
 function getadclassAttribute() {
@@ -577,41 +577,54 @@ function updateLessonData(val1, val2) {
     getUpdateLessonAttribute();
     if (validUpdateLessonVal()) {
         console.log(1);
-        var ligroup = document.querySelectorAll('#updateLessonAlert .group3 .select2-selection__rendered li');
-        var liaccess = document.querySelectorAll('#updateLessonAlert .access3 .select2-selection__rendered li');
-        const grouplist = [];
-        const accesslist = [];
-        ligroup.forEach(function (li) {
-            var title = li.getAttribute('title');
-            grouplist.push(title);
-        });
-        liaccess.forEach(function (li) {
-            var title = li.getAttribute('title');
-            accesslist.push(title);
-        });
-
-        // append data in varitable
+        var tag1 = tags[0].querySelector('select');
+        var tag2 = tags[1].querySelector('select');
+        var liaccess = document.querySelectorAll('#mainModalAlert .access3 .select2-selection__rendered li');
+        
         var LessonData = new FormData();
+        
+        // append data in varitable
         LessonData.append("updateLessonData", "");
         LessonData.append("val1", val1);
         for (var count = 0; count < inputfeelds.length; count++) {
             LessonData.append(inputfeelds[count].name, inputfeelds[count].value);
         }
-        LessonData.append("grouplist", grouplist);
-        LessonData.append("accesslist", accesslist);
+        
+        if (tag1.value != "") {
+            var ligroup = document.querySelectorAll('#mainModalAlert .group3 .select2-selection__rendered li');
+            const grouplist = [];
+            ligroup.forEach(function (li) {
+                var title = li.getAttribute('title');
+                console.log(title);
+                grouplist.push(title);
+            });
+            grouplist.forEach(function (title) {
+                LessonData.append("grouplist[]", title);
+            });
+        }
 
-
+        if (tag2.value != "") {
+            const accesslist = [];
+            liaccess.forEach(function (li) {
+                var title = li.getAttribute('title');
+                accesslist.push(title);
+            });
+            accesslist.forEach(function (title) {
+                LessonData.append("accesslist[]", title);
+            });
+        }
 
         // pass php page data
         $.ajax({
             url: "sql/process.php", type: "POST", data: LessonData, processData: false, contentType: false, success: function (response, status) {
-                console.log(2);
+                console.log(status);
                 console.log(response);
                 if (response == ' successfull') {
                     $('.select-multiple').val(null).trigger('change');
                     clearFormData();
+                    loadLessocContent();
                     reusaltLog[0].style.display = "block";
-                    setTimeout(function () { reusaltLog[0].style.display = "none"; location.reload(); }, 5000);
+
                 } else {
                     reusaltLog[1].style.display = "block";
                     reusaltLog[1].innerHTML = (response == ' Alredy add') ? "Failed add the lesson because alredy add this lesson!" : "Failed add the lesson";
@@ -639,25 +652,6 @@ function validUpdateLessonVal() {
         }
     }
 
-    for (let count = 0; count < tags.length; count++) {
-        // if (inputfeelds3[0].value == "quiz") {
-        var tag = tags[count].querySelector('select');
-        var errormsg = tags[count].querySelector('.invalid-feedback');
-        var successmsg = tags[count].querySelector('.valid-feedback');
-        if (tag.value == null || tag.value == "") {
-            tags[count].classList.toggle("is-valid", false);
-            tags[count].classList.toggle("is-invalid", true);
-            errormsg.style.display = 'block';
-            successmsg.style.display = 'none';
-            return_data = false;
-            // (inputfeelds3[0].value != 'quiz' && count == 0) ? return_data = true : return_data = false;
-        } else {
-            tags[count].classList.toggle("is-valid", true);
-            tags[count].classList.toggle("is-invalid", false);
-            errormsg.style.display = 'none';
-            successmsg.style.display = 'block';
-        }
-    }
     return return_data;
 }
 
@@ -669,7 +663,7 @@ function lesAction(val1, val2) {
     PassData.append('val1', val1);
     $.ajax({
         url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
-            console.log(response);
+            // console.log(response);
             loadLessocContent();
         }
     });

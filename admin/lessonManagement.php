@@ -570,6 +570,21 @@
         }
         // load lessod data end
 
+        // load the lesson alert data start 
+        function updateModalData(type, data1, data2) {
+            if (type == "lessonUpdate") {
+                formData = "lessonUpdateAlert=" + '&data1=' + data1 + '&data2=' + data2;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#mainModalAlert').html(response);
+                    loadGroup();
+                    loadaccess();
+                    loadScript('assets/vendor/bs-select/bs-select-custom.js');
+                    loadScript('assets/vendor/bs-select/bs-select.min.js');
+                });
+            }
+        }
+        // load the lesson alert data end 
+
         // load group data options start 
         loadGroup();
 
@@ -625,15 +640,8 @@
         function update(value) {
             var data1 = value.split(' ')[0];
             var data2 = value.split(' ')[1];
-            formData = "lessonUpdateAlert=" + '&data1=' + data1 + '&data2=' + data2;
-            $.post("sql/process.php", formData, function(response, status) {
-                $('#mainModalAlert').html(response);
-                loadaccess();
-                loadGroup();
-                loadScript('assets/vendor/bs-select/bs-select-custom.js');
-                loadScript('assets/vendor/bs-select/bs-select.min.js');
-                document.getElementById('clickShowModel').click();
-            });
+            updateModalData("lessonUpdate", data1, data2);
+            document.getElementById('clickShowModel').click();
         }
         //  lesson update data end
 
