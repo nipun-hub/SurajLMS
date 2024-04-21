@@ -1,3 +1,7 @@
+<!-- nTost alert section start  -->
+<div id='ntostDisplay'></div>
+<!-- nTost alert section emd -->
+
 <!-- alert section Start -->
 <section>
 	<div class="popup-overlay"></div>

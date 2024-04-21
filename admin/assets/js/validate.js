@@ -94,6 +94,25 @@ function getaddpeaperAttribute() {
     reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
 }
 
+// snippit update 
+function getUpdateInstiAttribute() {
+    inputfeelds = document.querySelectorAll('#modelMainContent input[type=text] , #modelMainContent textarea');
+    inputfeelds2 = document.querySelector('#modelMainContent input[type=file]');
+    reusaltLog = document.querySelectorAll('#modelMainContent .rusaltLog div');
+}
+
+function getUpdateClasspAttribute() {
+    inputfeelds = document.querySelectorAll('#modelMainContent input[type=text] , #modelMainContent textarea');
+    reusaltLog = document.querySelectorAll('#modelMainContent .rusaltLog div');
+}
+
+function getUpdateGroupAttribute() {
+    inputfeelds = document.querySelector('#modelMainContent textarea');
+    inputfeelds2 = document.querySelector('#modelMainContent input[type=file]');
+    tags = document.querySelector('#modelMainContent .tags select');
+    reusaltLog = document.querySelectorAll('#modelMainContent .rusaltLog div');
+}
+
 
 // add current class start 
 function submitCurrentClass(val = null) {
@@ -580,16 +599,16 @@ function updateLessonData(val1, val2) {
         var tag1 = tags[0].querySelector('select');
         var tag2 = tags[1].querySelector('select');
         var liaccess = document.querySelectorAll('#mainModalAlert .access3 .select2-selection__rendered li');
-        
+
         var LessonData = new FormData();
-        
+
         // append data in varitable
         LessonData.append("updateLessonData", "");
         LessonData.append("val1", val1);
         for (var count = 0; count < inputfeelds.length; count++) {
             LessonData.append(inputfeelds[count].name, inputfeelds[count].value);
         }
-        
+
         if (tag1.value != "") {
             var ligroup = document.querySelectorAll('#mainModalAlert .group3 .select2-selection__rendered li');
             const grouplist = [];
@@ -989,6 +1008,176 @@ function submitModelSnippet(type, method) {
 }
 
 // insert data end
+
+// update data start 
+function submitModelSnippetUpdate(type, id) {
+    event.preventDefault();
+    if (type == 'instiUpdate') {
+        getUpdateInstiAttribute();
+        if (validatetext()) {
+            var PassData = new FormData();
+            PassData.append("updateInsti", "");
+            PassData.append("id", id);
+            for (var count = 0; count < inputfeelds.length; count++) {
+                PassData.append(inputfeelds[count].name, inputfeelds[count].value);
+            }
+            inputfeelds2.value !== "" ? PassData.append("instiImage", inputfeelds2.files[0]) : null;
+            // PassData.forEach((value, key) => {
+            //     console.log("name  : " + key + " value : " + value);
+            // });
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    // updateModelContent('instiUpdate', id);
+                    ShowBody();
+                    if (response == " success") {
+                        reusaltLog[1].style.display = "none";
+                        reusaltLog[0].style.display = "block";
+                        setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' alredy added' ? 'Failed Alredy create this insti' : 'Failed create the insti';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+        } else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
+    } else if (type == 'classUpdate') {
+        getUpdateClasspAttribute();
+        if (validatetext()) {
+            var PassData = new FormData();
+            PassData.append("updateClass", "");
+            PassData.append("id", id);
+            for (var count = 0; count < inputfeelds.length; count++) {
+                PassData.append(inputfeelds[count].name, inputfeelds[count].value);
+            }
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    ShowBody();
+                    if (response == " success") {
+                        // clearFormData();
+                        reusaltLog[1].style.display = "none";
+                        reusaltLog[0].style.display = "block";
+                        // location.reload();
+                        setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' alredy added' ? 'Failed Alredy create this class' : 'Failed create the class';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+            // PassData.append()
+        } else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
+    } else if (type == 'groupUpdate') {
+        getUpdateGroupAttribute();
+        if (inputfeelds.value !== "") {
+            var PassData = new FormData();
+            PassData.append("id", id);
+            if (tags.value !== "") {
+                var ligroup = document.querySelectorAll('.grouphideclass .select2-selection__rendered li');
+                const HideList = [];
+                ligroup.forEach(function (li) {
+                    var title = li.getAttribute('title');
+                    HideList.push(title);
+                });
+                PassData.append("HideList", HideList);
+            }
+            PassData.append("updateGroup", "");
+            PassData.append(inputfeelds.name, inputfeelds.value);
+            PassData.append("groupimg", inputfeelds2.files[0]);
+
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    // response = errorHadel(response);
+                    ShowBody();
+                    if (response == " success") {
+                        // clearFormData();
+                        reusaltLog[1].style.display = "none";
+                        reusaltLog[0].style.display = "block";
+                        setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' alredy added' ? 'Failed Alredy create this group' : 'Failed create the group';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+        } else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
+    }
+    // else if (method == 'winner') {
+    //     getaddWinnerAttribute();
+    //     if (validateaddwinner()) {
+    //         reusaltLog[1].style.display = 'none';
+    //         var PassData = new FormData();
+    //         PassData.append('addwinner', 'insert');
+    //         var list = [];
+    //         for (let index = 0; index < inputfeelds.length; index++) {
+    //             index == 5 ? PassData.append(inputfeelds[5].name, inputfeelds[5].value) : list.push(inputfeelds[index].name, inputfeelds[index].value);
+    //         }
+    //         PassData.append('dataList', JSON.stringify(list));
+    //         PassData.append('winnerImage', inputfeelds2.files[0]);
+
+    //         $.ajax({
+    //             url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
+    //                 // response = errorHadel(response);
+    //                 if (response == " success") {
+    //                     reusaltLog[0].style.display = "block";
+    //                     clearFormData();
+    //                     setTimeout(function () { reusaltLog[0].style.display = "none"; }, 10000);
+    //                     console.log(response);
+    //                 } else {
+    //                     console.log(response);
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         reusaltLog[1].innerHTML = 'Pleace complete everything';
+    //         reusaltLog[1].style.display = 'block';
+    //         setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+    //     }
+    // }
+
+}
+// update data end
+
+// update data valied start 
+
+function validatetext() {
+    var finaly = true;
+    for (var count = 0; count < inputfeelds.length; count++) {
+        if (inputfeelds[count].value.length > 2) {
+            inputfeelds[count].classList.toggle("is-valid", true);
+            inputfeelds[count].classList.toggle("is-invalid", false);
+        } else {
+            inputfeelds[count].classList.toggle("is-valid", false);
+            inputfeelds[count].classList.toggle("is-invalid", true);
+            finaly = false;
+        }
+    }
+    return finaly; s
+}
+// update data valied end
 
 // insert insti validate start
 

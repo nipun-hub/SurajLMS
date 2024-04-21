@@ -68,7 +68,7 @@
 							$reusalt = $stmt->get_result();
 							if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
 								$className = "{$row['year']}  {$row['ClassName']} {$row['InstiName']}";
-								$decodeDict = json_decode($row['Dict']);
+								$decodeDict = json_decode($row['Dict'],true);
 								$ending = $decodeDict[1]." - ".$decodeDict[2];
 							?>
 								<div class="stats-tile p-2">
