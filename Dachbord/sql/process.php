@@ -1002,14 +1002,14 @@ try {
             if ($result->num_rows < 1) {
 
                 $conn->begin_transaction();
-                $sql = "INSERT INTO Payment(UserId, Name, ClassId, Price, Type, Month, Slip, InsDate) VALUE(?,?,?,?,?,?,?,?)";
+                $sql = "INSERT INTO payment(UserId, Name, ClassId, Price, Type, Month, Slip, InsDate) VALUES(?,?,?,?,?,?,?,?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssssss", $UserId, $UserName, $classid, $price, $paymethod, $Month, $fileName, $today);
                 $stmt->execute();
                 $inserted_id = $stmt->insert_id;
                 move_uploaded_file($fileTemp, $targetFile . $fileName);
 
-                $sql = "INSERT INTO paydata(PayId, Address, Tel1, Tel2, TelW, Distric, City, Dict) VALUE(?,?,?,?,?,?,?,?)";
+                $sql = "INSERT INTO paydata(PayId, Address, Tel1, Tel2, TelW, Distric, City, Dict) VALUES(?,?,?,?,?,?,?,?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssssss", $inserted_id, $address, $num01, $num02, $numwha, $distric, $city, $dict);
                 $stmt->execute();

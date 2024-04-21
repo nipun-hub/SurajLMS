@@ -218,10 +218,6 @@
     </div>
     <!-- model Section end -->
 
-    <!-- nTost alert section start  -->
-    <div id='ntostDisplay'></div>
-    <!-- nTost alert section emd -->
-
 
     <!-- alert include -->
     <?php include('include/alert.php'); ?>

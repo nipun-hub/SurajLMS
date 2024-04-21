@@ -194,6 +194,7 @@
     <script src="assets/js/alert.js"></script>
     <script src="assets/js/error.js"></script>
     <script src="assets/js/validate.js"></script>
+    <script src="assets/js/nTost.js"></script>
 
     <script>
         function showImage(src) {

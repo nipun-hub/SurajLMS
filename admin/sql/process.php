@@ -338,7 +338,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     $htmlAllContent = "";
     $tableHeaderContent = "
     <div class='table-responsive'>
-        <table class='table v-middle'>
+        <table class='table table-bordered  v-middle'>
             <thead>
                 <tr>
                     <th>Name</th>
@@ -1821,7 +1821,7 @@ if (isset($_POST['updateInsti'])) {
         $place = $_POST['place'];
         $dict = $_POST['dict'];
         $subDict = $_POST['subDict'];
-        $imageData = isset($_FILES['instiImage']) ? $_FILES['instiImage'] : null;
+        $imageData = isset($_FILES['inatiImage']) ? $_FILES['inatiImage'] : null;
 
         $sql = "SELECT InstiName FROM insti WHERE InstiId = '$id'";
         $stmt = $conn->prepare($sql);
@@ -1835,7 +1835,9 @@ if (isset($_POST['updateInsti'])) {
         $stmt = $conn->prepare($sql);
         isset($_FILES['instiImage']) ?  $stmt->bind_param("sssss", $place, $dict, $subDict, $picName, $id) :  $stmt->bind_param("ssss", $place, $dict, $subDict, $id);
         if ($stmt->execute()) {
+            // echo isset($_FILES['inatiImage'])  ?  "uploaded" : "not uploaded";
             isset($_FILES['instiImage'])  ? move_uploaded_file($_FILES['instiImage']['tmp_name'], "../../Dachbord/assets/img/site use/instiimge/" . $picName) : null;
+            // echo isset($_FILES['instiImage'])  ?  : null;
         }
 
         $respons = "success";
@@ -1845,7 +1847,7 @@ if (isset($_POST['updateInsti'])) {
     echo $respons;
 }
 // update insti Data end
-if (isset($_POST['classUpdate'])) {
+if (isset($_POST['updateClass'])) {
     try {
         $id = $_POST['id'];
         $className = $_POST['className'];
@@ -1864,7 +1866,7 @@ if (isset($_POST['classUpdate'])) {
 // update class data start 
 
 // group update start 
-if (isset($_POST['groupUpdate'])) {
+if (isset($_POST['updateGroup'])) {
     try {
         $id = $_POST['id'];
         $groupName = $_POST['groupName'];
@@ -1880,9 +1882,9 @@ if (isset($_POST['groupUpdate'])) {
             $HideFrom = $row['HideFrom'];
         }
 
-        if (isset($_POST['hideList'])) {
+        if (isset($_POST['HideList'])) {
             $hideList = "";
-            $listinhide = explode(",", $_POST['hideList']);
+            $listinhide = explode(",", $_POST['HideList']);
             foreach ($listinhide as $value) {
                 $classdata = explode("-", $value);
                 $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
@@ -1927,7 +1929,7 @@ if (isset($_POST['loadModelDataInsert'])) {
         $modelFooter = "
         <div class='modal-footer pt-3'>
             <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
-            <button type='button' class='btn btn-success' onclick='submitModelSnippet(`{$type}`,{$data})'>Update</button>
+            <button type='button' class='btn btn-success' onclick='submitModelSnippetUpdate(`{$type}`,{$data})'>Update</button>
         </div>";
     } else {
         $modelFooter = "
@@ -2159,38 +2161,36 @@ if (isset($_POST['loadModelDataInsert'])) {
         $subDict = explode("-", $row['SubDict'])[0];
         $modelBody = "
         <form id='Formclear' class='item-center'>
-        <div class='col-xxl-6 col-sm-10 col-12'>
-        <div class='info-tile'>
-            <center>
-                <label for='imgInp'><img id='image-preview' class='w-auto' src='../Dachbord/assets/img/site use/instiimge/{$image}' alt='insti Image'></label>
-            </center>
-            <div class='info-details' style='height: 125px;'>
-                <span class='green w-50'><input name='place' type='text' class='w-75 bg-transparent border-none' value = '{$row['InstiPlace']}'></span><i class='bi bi-check2-circle'></i>
-                <p class='pt-2'><textarea name = 'dict' class='border-none w-100 h-auto'>{$row['Dict']}</textarea></p>
-            </div>
-            <div class='card__data'>
-                <center>
-                    <p>
-                        <span class='card__description'><b>
-                                {$row['InstiName']}
-                            </b><br>
-                            <input name='subDict' type='text' class=' border-none ' value = '{$subDict}'>
-                        </span>
-                    </p>
-                    <div class='card_btn'>
-                        <p class='btn btn-info mt-3 p-2'><span class='icon'><i class='bi bi-arrow-right-circle'></i> Login</span></p>
+            <div class='col-xxl-6 col-sm-10 col-12'>
+                <div class='info-tile'>
+                    <center>
+                        <label for='imgInp'><img id='image-preview' class='w-auto' src='../Dachbord/assets/img/site use/instiimge/{$image}' alt='insti Image'></label>
+                    </center>
+                    <div class='info-details' style='height: 125px;'>
+                        <span class='green w-50'><input name='place' type='text' class='w-75 bg-transparent border-none' value = '{$row['InstiPlace']}'></span><i class='bi bi-check2-circle'></i>
+                        <p class='pt-2'><textarea name = 'dict' class='border-none w-100 h-auto'>{$row['Dict']}</textarea></p>
                     </div>
-                </center>
-
+                    <div class='card__data'>
+                        <center>
+                            <p>
+                                <span class='card__description'><b>
+                                        {$row['InstiName']}
+                                    </b><br>
+                                    <input name='subDict' type='text' class=' border-none ' value = '{$subDict}'>
+                                </span>
+                            </p>
+                            <div class='card_btn'>
+                                <p class='btn btn-info mt-3 p-2'><span class='icon'><i class='bi bi-arrow-right-circle'></i> Login</span></p>
+                            </div>
+                        </center>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
         </form>
         <form runat='server' id='Formclear' class='pb-4'>
-            <!-- <input type='file' class='form-control' id='inputGroupFile02'> -->
             <div class='mb-3 d-none'>
                 <label class='form-label'>Select Winner Image</label>
-                <input name='winnerImage' accept='image/*' type='file' id='imgInp' class='form-control' onchange='changeImage()' />
+                <input name='instiImage' accept='image/*' type='file' id='imgInp' class='form-control' onchange='changeImage()' />
             </div>
         </form>
         <div class='my-3 rusaltLog mx-3'>
@@ -3584,14 +3584,13 @@ if (isset($_POST['deleteWith'])) {
             $row = $reusalt->fetch_assoc();
             $url = "../../Dachbord/user_images/winner/" . $row['Image'];
 
-            if (unlink($url)) {
-                $sql = "DELETE FROM notification WHERE NotifiId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $data);
-                $stmt->execute();
-            } else {
-                $respons = "error2";
-            }
+            file_exists($url) ? unlink($url) : null;
+
+            $sql = "DELETE FROM notification WHERE NotifiId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $data);
+            $stmt->execute();
+
             $conn->commit();
             $respons = 'Success';
         } catch (Exception $e) {
