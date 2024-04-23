@@ -1391,6 +1391,315 @@ try {
         echo $respons;
     }
     // mark as unwatch end
+
+    // profile sections start ********************
+    if (isset($_POST['loadModel'])) {
+        $type = $_POST['type'];
+        if ($type == 'editInfo') {
+            $id = $_POST['id'];
+            $sql = "SELECT * FROM user,userdata WHERE user.UserId = ? and userdata.UserId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $UserId, $UserId);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            $stmt->close();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                if (empty($row['Year'])) {
+                    $year = "
+                    <div class='p-3 col-sm-6 col-12'>
+                        <label for='' class='form-label'>Select the exam year</label>
+                        <select name='year' class='form-select'>
+                            <option value='' selected>Select the exam year</option>
+                            <option value='2024'>2024</option>
+                            <option value='2025'>2025</option>
+                            <option value='2026'>2026</option>
+                        </select>
+                    </div>";
+                } else {
+                    $year = "
+                    <div class='p-3 col-sm-6 col-12'>
+                        <label for='' class='form-label'>Select the exam year</label>
+                        <select name='year' class='form-select'>
+                            <option value='{$row['Year']}'>{$row['Year']}</option>
+                        </select>
+                    </div>";
+                }
+                $respons = "
+                <div class='modal-header'>
+					<h5 class='modal-title' id='editInfoModelLabel'>Edit user Information</h5>
+					<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+				</div>
+				<div class='modal-body' >
+                <p class='text-dark'>Student Information</p>
+			    <div class='table-responsive d-none d-lg-block'>
+			    	<table class='table table-bordered m-0'>
+			    		<thead>
+			    			<tr>
+			    				<th>User Name</th>
+			    				<th>Emali</th>
+			    				<th>Register Code</th>
+			    				<th>Insti Id</th>
+			    				<th>Institute</th>
+			    			</tr>
+			    		</thead>
+			    		<tbody>
+			    			<tr>
+			    				<td>{$row['UserName']}</td>
+			    				<td>{$row['Email']}</td>
+			    				<td>{$row['RegCode']}</td>
+			    				<td>{$row['InstiId']}</td>
+			    				<td>{$row['InstiName']}</td>
+			    			</tr>
+			    		</tbody>
+			    	</table>
+			    </div>
+			    <div class='table-responsive d-block d-lg-none'>
+			    	<table class='table table-bordered m-0'>
+			    		<tbody>
+			    			<tr>
+			    				<td><b>Name</b></td>
+			    				<td>{$row['UserName']}</td>
+			    			</tr>
+			    			<tr>
+			    				<td><b>Email</b></td>
+			    				<td>{$row['Email']}</td>
+			    			</tr>
+			    			<tr>
+			    				<td><b>Register Code</b></td>
+			    				<td>{$row['RegCode']}</td>
+			    			</tr>
+			    			<tr>
+			    				<td><b>Institute Id</b></td>
+			    				<td>{$row['InstiId']}</td>
+			    			</tr>
+			    			<tr>
+			    				<td><b>Institute</b></td>
+			    				<td>{$row['InstiName']}</td>
+			    			</tr>
+			    		</tbody>
+			    	</table>
+			    </div>
+			    <div id='Formclear'>
+			    	<div class='row m-1 editInfor mt-4 pt-0'>
+			    		<p class='text-dark mb-2'>Change your information and after save changes.</p>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 pt-0'>
+			    				<label for='' class='form-label'>Enter First Name</label>
+			    				<input value='{$row['Fname']}' type='text' name='fname' class='form-control' placeholder='Enter First Name'>
+			    			</div>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 pt-0'>
+			    				<label for='' class='form-label'>Enter Last Name</label>
+			    				<input value='{$row['Lname']}' type='text' name='lname' class='form-control' placeholder='Enter Last Name'>
+			    			</div>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 '>
+			    				<label for='' class='form-label'>Enter Nic Number</label>
+			    				<input value='{$row['Nic']}' type='number' name='nicNum' class='form-control ' placeholder='Enter Nic Number'>
+			    			</div>
+			    		</div>
+			    		<div class='col-6 '>
+			    			<label class='form-label'>Nic Picture</label>
+			    			<input name='nic_pic' type='file' name='nicPic' class='form-control' accept='.jpeg, .jpg, .png, .tiff'>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 '>
+			    				<label for='' class='form-label'>Enter Mobile Number</label>
+			    				<input value='{$row['MobNum']}' type='number' name='num01' class='form-control ' placeholder='Enter Mobile Number'>
+			    			</div>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 '>
+			    				<label for='' class='form-label'>Enter Whatsapp Number</label>
+			    				<input value='{$row['WhaNum']}' type='number' name='num02' class='form-control ' placeholder='Enter Whatsapp Number'>
+			    			</div>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2'>
+			    				<!-- <label class='d-block d-sm-none form-label' for='dob'>Select the birthday</label> -->
+			    				<label for='' class='form-label'>Select the birthday</label>
+			    				<input value='{$row['Dob']}' type='date' id='dob' name='dob' class='form-control ' placeholder='Select the birthday'>
+			    			</div>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 '>
+			    				<label for='' class='form-label'>Enter School Name</label>
+			    				<input value='{$row['SchName']}' type='text' name='schyName' class='form-control ' placeholder='Enter School Name'>
+			    			</div>
+			    		</div>
+                        {$year}
+			    		<div class='p-3 col-sm-6 col-12'>
+			    			<label for='' class='form-label'>Select subject stream</label>
+			    			<select name='streem' class='form-select'>
+			    				<option value='' " . ($row['Streem'] == '' ? "selected" : "") . ">Select subject stream</option>
+			    				<option value='Maths' " . ($row['Streem'] == 'Maths' ? "selected" : "") . ">Maths</option>
+			    				<option value='Bio' " . ($row['Streem'] == 'Bio' ? "selected" : "") . ">Bio</option>
+			    				<option value='Tec' " . ($row['Streem'] == 'Tec' ? "selected" : "") . ">Tec</option>
+			    				<option value='Art' " . ($row['Streem'] == 'Art' ? "selected" : "") . ">Art</option>
+			    				<option value='Commers' " . ($row['Streem'] == 'Commers' ? "selected" : "") . ">Commerce</option>
+			    			</select>
+			    		</div>
+			    		<div class='p-3 col-sm-6 col-12'>
+			    			<label for='' class='form-label'>Select Shy</label>
+			    			<select name='shy' class='form-select'>
+			    				<option value='' " . ($row['Shy'] == '' ? "selected" : "") . ">Select Shy</option>
+			    				<option value='1' " . ($row['Shy'] == '1' ? "selected" : "") . ">1'st shy</option>
+			    				<option value='2' " . ($row['Shy'] == '2' ? "selected" : "") . ">2'nd shy</option>
+			    				<option value='3' " . ($row['Shy'] == '3' ? "selected" : "") . ">3'rd shy</option>
+			    			</select>
+			    		</div>
+			    		<div class='p-3 col-sm-6 col-12'>
+			    			<label for='' class='form-label'>Select Medium</label>
+			    			<select name='medium' class='form-select'>
+			    				<option value='' " . ($row['Medium'] == '' ? "selected" : "") . ">Select Medium</option>
+			    				<option value='Sinhala' " . ($row['Medium'] == 'Sinhala' ? "selected" : "") . ">Sinhala</option>
+			    				<option value='English' " . ($row['Medium'] == 'English' ? "selected" : "") . ">English</option>
+			    			</select>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0 pb-3'>
+			    			<div class='card-body p-2'>
+			    				<label for='' class='form-label'>Enter address</label>
+			    				<input value='{$row['Address']}' type='text' name='address' class='form-control ' placeholder='Enter address'>
+			    			</div> 
+			    		</div>
+			    		<div class='mb-3 col-sm-6 col-12'>
+			    			<label for='' class='form-label'>Select District</label>
+			    			<select name='dictric' class='form-select'>
+			    				<option value='' " . ($row['Distric'] == '' ? "selected" : "") . ">Select District</option>
+			    				<option value='Ampara' " . ($row['Distric'] == 'Ampara' ? "selected" : "") . ">Ampara</option>
+			    				<option value='Anuradhapura' " . ($row['Distric'] == 'Anuradhapura' ? "selected" : "") . ">Anuradhapura</option>
+			    				<option value='Badulla' " . ($row['Distric'] == 'Badulla' ? "selected" : "") . ">Badulla</option>
+			    				<option value='Batticaloa' " . ($row['Distric'] == 'Batticaloa' ? "selected" : "") . ">Batticaloa</option>
+			    				<option value='Colombo' " . ($row['Distric'] == 'Colombo' ? "selected" : "") . ">Colombo</option>
+			    				<option value='Galle' " . ($row['Distric'] == 'Galle' ? "selected" : "") . ">Galle</option>
+			    				<option value='Gampaha' " . ($row['Distric'] == 'Gampaha' ? "selected" : "") . ">Gampaha</option>
+			    				<option value='Hambantota' " . ($row['Distric'] == 'Hambantota' ? "selected" : "") . ">Hambantota</option>
+			    				<option value='Jaffna' " . ($row['Distric'] == 'Jaffna' ? "selected" : "") . ">Jaffna</option>
+			    				<option value='Kalutara' " . ($row['Distric'] == 'Kalutara' ? "selected" : "") . ">Kalutara</option>
+			    				<option value='Kandy' " . ($row['Distric'] == 'Kandy' ? "selected" : "") . ">Kandy</option>
+			    				<option value='Kegalle' " . ($row['Distric'] == 'Kegalle' ? "selected" : "") . ">Kegalle</option>
+			    				<option value='Kilinochchi' " . ($row['Distric'] == 'Kilinochchi' ? "selected" : "") . ">Kilinochchi</option>
+			    				<option value='Kurunegala' " . ($row['Distric'] == 'Kurunegala' ? "selected" : "") . ">Kurunegala</option>
+			    				<option value='Mannar' " . ($row['Distric'] == 'Mannar' ? "selected" : "") . ">Mannar</option>
+			    				<option value='Matale' " . ($row['Distric'] == 'Matale' ? "selected" : "") . ">Matale</option>
+			    				<option value='Matara' " . ($row['Distric'] == 'Matara' ? "selected" : "") . ">Matara</option>
+			    				<option value='Moneragala' " . ($row['Distric'] == 'Moneragala' ? "selected" : "") . ">Moneragala</option>
+			    				<option value='Mullaitivu' " . ($row['Distric'] == 'Mullaitivu' ? "selected" : "") . ">Mullaitivu</option>
+			    				<option value='Nuwara Eliya' " . ($row['Distric'] == 'Nuwara Eliya' ? "selected" : "") . ">Nuwara Eliya</option>
+			    				<option value='Polonnaruwa' " . ($row['Distric'] == 'Polonnaruwa' ? "selected" : "") . ">Polonnaruwa</option>
+			    				<option value='Puttalam' " . ($row['Distric'] == 'Puttalam' ? "selected" : "") . ">Puttalam</option>
+			    				<option value='Ratnapura' " . ($row['Distric'] == 'Ratnapura' ? "selected" : "") . ">Ratnapura</option>
+			    				<option value='Trincomalee' " . ($row['Distric'] == 'Trincomalee' ? "selected" : "") . ">Trincomalee</option>
+			    				<option value='Vavuniya' " . ($row['Distric'] == 'Vavuniya' ? "selected" : "") . ">Vavuniya</option>
+			    			</select>
+			    		</div>
+			    		<div class='col-sm-6 col-12  m-0'>
+			    			<div class='card-body p-2 '>
+			    				<label for='' class='form-label'>Enter City</label>
+			    				<input value='{$row['City']}' type='text' name='city' class='form-control ' placeholder='Enter City'>
+			    			</div>
+			    		</div>
+			    	</div>
+			    </div>
+                </div>
+				<div class='modal-footer'>
+					<button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+					<button type='button' class='btn btn-success' Onclick='modelSubmit(`editInfo`)'>Save changes</button>
+				</div>
+                <div class='my-3 rusaltLog mx-3'>
+                    <div class='valid-feedback alert alert-success text-center alert-dismissible fade show py-2'>Successfull add the lesson!</div>
+                    <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show py-2' >Failed add the lesson</div>
+                </div>";
+            }
+        }
+        echo $respons;
+    }
+
+    // profile model submit section start 
+    if (isset($_POST['profileModelSubmit'])) {
+        $type = $_POST['type'];
+        if ($type == 'editInfo') {
+            try {
+                // get data 
+                $fname = $_POST['fname'];
+                $lname = $_POST['lname'];
+                $uNameNew = $fname . " " . $lname;
+                $nicNum = $_POST['nicNum'];
+                $num01 = $_POST['num01'];
+                $num02 = $_POST['num02'];
+                $dob = $_POST['dob'];
+                $schyName = $_POST['schyName'];
+                $year = $_POST['year'];
+                $streem = $_POST['streem'];
+                $shy = $_POST['shy'];
+                $medium = $_POST['medium'];
+                $address = $_POST['address'];
+                $dictric = $_POST['dictric'];
+                $city = $_POST['city'];
+                $updateSql = empty($nicNum) ? "" : " ,Nic = '$nicNum' ";
+
+                if (true) {
+                    try {
+                        $sql = "SELECT NicPic FROM userdata WHERE UserId = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("i", $UserId);
+                        $stmt->execute();
+                        $reusalt = $stmt->get_result();
+                        $stmt->close();
+                        $row = $reusalt->fetch_assoc();
+                    } catch (Exception $e) {
+                        null;
+                    } finally {
+                        $nicPicName = empty($row['NicPic']) || !isset($row['NicPic']) ? "Nic-{$UserId}-" . GetToday('ymd') . ".jpg" : $row['NicPic'];
+                    }
+                }
+                $nicPicTmp_name = isset($_FILES['nicPic']) ? $_FILES['nicPic']['tmp_name'] : null;
+
+                // update table 
+                $sql = "SELECT user.UserId FROM user,userdata WHERE user.UserId = ? and userdata.UserId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ii", $UserId, $UserId);
+                $stmt->execute();
+                $reusalt = $stmt->get_result();
+                $stmt->close();
+                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                    $conn->begin_transaction();
+
+                    $sql = "UPDATE user SET UserName = ? , Year = ? WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sii", $uNameNew, $year, $UserId);
+                    $stmt->execute();
+
+                    $sql = "UPDATE userdata SET Fname=? ,Lname=? ,NicPic=? ,MobNum=? ,WhaNum=? ,Dob=? ,SchName=? ,Year=? ,Streem=? ,Shy=? ,Medium=? ,Address=? ,Distric=? ,City=? $updateSql WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssssssssssssssi", $fname, $lname, $nicPicName, $num01, $num02, $dob, $schyName, $year, $streem, $shy, $medium, $address, $dictric, $city, $UserId);
+                    $stmt->execute();
+
+                    try {
+                        empty($nicPicTmp_name) ? move_uploaded_file($nicPicTmp_name, "../user_images/nic_pic/" . $nicPicName) : null;
+                    } catch (Exception $e) {
+                        null;
+                    }
+
+                    $conn->commit();
+                    $respons = "success";
+                } else {
+                    $respons = "undefind";
+                }
+            } catch (Exception $e) {
+                $conn->rollback();
+                $respons = "error " . $e;
+            }
+        } else {
+            $respons = "Undefind";
+        }
+        echo $respons;
+    }
+    // profile model submit section end
+
+    // profile sections end **********************
 } catch (Exception $e) {
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     fwrite($myfile, $e);
@@ -1403,8 +1712,9 @@ try {
 // fwrite($myfile, $htmlContent);
 // fclose($myfile);
 
-function filrWrite($argument){
+function filrWrite($argument)
+{
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     fwrite($myfile, $argument);
-    fclose($myfile); 
+    fclose($myfile);
 }

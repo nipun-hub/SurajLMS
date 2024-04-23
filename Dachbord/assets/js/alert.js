@@ -13,6 +13,7 @@ const section = document.querySelector("section"),
     btn_span = document.querySelector('.modal-box .buttons span');
 var inputfeelds;
 var inputfeelds2;
+var reusaltLog;
 
 
 function getpayphyinputs() {
@@ -22,6 +23,12 @@ function getpayphyinputs() {
 function getpayOnlInputs() {
     inputfeelds = document.querySelectorAll(".PaymentOnl input[type=text] , .PaymentOnl input[type=number] , .PaymentOnl input[type=radio]:checked , .PaymentOnl textarea");
     inputfeelds2 = document.querySelectorAll(".PaymentOnl input[type=radio]");
+}
+
+function getModelSubmitEditInfo() {
+    inputfeelds = document.querySelectorAll('#model-edit-info input[type=text] , #model-edit-info input[type=number] , #model-edit-info input[type=date], #model-edit-info select');
+    inputfeelds2 = document.querySelector('#model-edit-info input[type=file]');
+    reusaltLog = document.querySelectorAll('.rusaltLog div');
 }
 
 function nthj(type, val = null) {
@@ -383,6 +390,69 @@ function Pay(type, val = null, val2 = null) {
         return valid;
 
     }
+}
+
+// prifile js sectuon start
+function modelSubmit(type) {
+    if (type == 'editInfo') {
+        getModelSubmitEditInfo();
+        // console.log(validateText());
+        if (validateText()) {
+            var PassData = new FormData;
+            PassData.append('profileModelSubmit', "");
+            PassData.append('type', type);
+            for (var count = 0; count < inputfeelds.length; count++) {
+                PassData.append(inputfeelds[count].name, inputfeelds[count].value);
+            }
+            inputfeelds2.value.length > 2 ? PassData.append(inputfeelds2.namem, inputfeelds2.files[0]) : null;
+            // PassData.forEach((key, value) => {
+            //     console.log("key " + value + "  value " + key);
+            // });
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PassData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    if (response == " success") {
+                        // clearFormData();
+                        reusaltLog[1].style.display = "none";
+                        reusaltLog[0].style.display = "block";
+                        // location.reload();
+                        setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' undefind' ? 'Undefind User' : 'Failed Update user Details';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+
+        } else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please complete the everything";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
+    }
+}
+
+// prifile js sectuon end
+
+function validateText() {
+    var finaly = true;
+    for (var count = 0; count < inputfeelds.length; count++) {
+        if (inputfeelds[count].value == '' && inputfeelds[count.name !== 'nicNum']) {
+            inputfeelds[count].classList.toggle("is-valid", false);
+            inputfeelds[count].classList.toggle("is-invalid", true);
+            finaly = false;
+            // finaly = inputfeelds[count].name == 'nicNum' ? true : finaly;
+        } else {
+            if (inputfeelds[count].name !== 'nicNum') {
+                inputfeelds[count].classList.toggle("is-valid", true);
+                inputfeelds[count].classList.toggle("is-invalid", false);
+            }
+        }
+    }
+    return finaly;
 }
 
 // payment details
