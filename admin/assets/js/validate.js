@@ -791,7 +791,7 @@ function submitModelPeaper(type, method = null) {
             });
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -896,7 +896,7 @@ function submitModelSnippet(type, method) {
             // PassData.append()
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -930,7 +930,7 @@ function submitModelSnippet(type, method) {
             // PassData.append()
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -968,7 +968,7 @@ function submitModelSnippet(type, method) {
             });
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -1044,7 +1044,7 @@ function submitModelSnippetUpdate(type, id) {
             });
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -1078,7 +1078,7 @@ function submitModelSnippetUpdate(type, id) {
             // PassData.append()
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -1120,7 +1120,7 @@ function submitModelSnippetUpdate(type, id) {
             });
         } else {
             reusaltLog[0].style.display = "none";
-            reusaltLog[1].innerHTML = "Please Fil The All Inputs";
+            reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
@@ -1183,7 +1183,7 @@ function validatetext() {
 
 function validateaddwinner() {
     var finaly = true;
-    for (var count = 0; count < inputfeelds.length - 1; count++) {
+    for (var count = 0; count < inputfeelds.length - 2; count++) {
         if (inputfeelds[count].value.length > 2) {
             inputfeelds[count].classList.toggle("is-valid", true);
             inputfeelds[count].classList.toggle("is-invalid", false);
