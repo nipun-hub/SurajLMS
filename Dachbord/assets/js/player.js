@@ -10,7 +10,7 @@ currentVidTime = container.querySelector(".current-time"),
     skipBackward = container.querySelector(".skip-backward i"),
     skipForward = container.querySelector(".skip-forward i"),
     playPauseBtn = container.querySelector(".play-pause i"),
-    speedBtn = container.querySelector(".playback-speed span"),
+    speedBtn = container.querySelector(".playback-speed"),
     speedOptions = container.querySelector(".speed-options"),
     qualityBtn = container.querySelector(".playback-quality span"),
     qualityOptions = container.querySelector(".quality-options"),
@@ -243,7 +243,7 @@ speedOptions.querySelectorAll("li").forEach(option => {
 });
 
 document.addEventListener("click", e => {
-    if (e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-rounded") {
+    if (e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-outlined") {
         speedOptions.classList.remove("show");
     }
 });
@@ -270,7 +270,7 @@ document.addEventListener("click", e => {
 // });
 
 // document.addEventListener("click", e => {
-//     if(e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-rounded") {
+//     if(e.target.tagName !== "SPAN" || e.target.className !== "material-symbols-outlined") {
 //         qualityOptions.classList.remove("show");
 //     }
 // });
