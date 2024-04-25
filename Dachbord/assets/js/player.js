@@ -287,8 +287,8 @@ fullScreenBtn.addEventListener("click", () => {
 });
 
 // container.addEventListener("click", () => togglePlayPause());
-// speedBtn.addEventListener("click", () => speedOptions.classList.toggle("show"));
-// qualityBtn.addEventListener("click", () => qualityOptions.classList.toggle("show"));
+speedBtn.addEventListener("click", () => speedOptions.classList.toggle("show"));
+qualityBtn.addEventListener("click", () => qualityOptions.classList.toggle("show"));
 pipBtn.addEventListener("click", () => mainVideo.requestPictureInPicture());
 skipBackward.addEventListener("click", () => player.seekTo(player.getCurrentTime() - 5));
 skipForward.addEventListener("click", () => player.seekTo(player.getCurrentTime() + 5));

@@ -1032,61 +1032,69 @@ try {
             if ($type == 'video') {
                 $htmlContent = "
                 <div class='col-12 position-relative mainGroup animiZoom' style='--index:1;'>
-                    <div class='container_player show-controls'>
-                        <div class='wrapper'>
-                            <div class='video-timeline'>
-                                <div class='progress-area mx-4'>
-                                    <span>00:00</span>
-                                    <div class='progress-bar'></div>
+        <div class='container-fluid pt-4 px-4'>
+            <div class='row g-4'>
+                <div class='col-sm-12 col-xl-12' >
+                    <div class='bg-secondary text-center rounded p-4'>
+                        <div class='container_player show-controls'>
+                            <div class='wrapper'>
+                                <div class='video-timeline'>
+                                    <div class='progress-area mx-4'>
+                                        <span>00:00</span>
+                                        <div class='progress-bar'></div>
+                                    </div>
                                 </div>
+                                <ul class='video-controls'>
+                                    <li class='options left'>
+                                        <button id='mute' class='volume'><i class='fa-solid fa-volume-high'></i></button>
+                                        <input id='volume-bar' type='range' min='0' max='100' step='any'>
+                                        <div class='video-timer'>
+                                            <p class='current-time'>00:00</p>
+                                            <p>&nbsp;/&nbsp;</p>
+                                            <p class='video-duration'>00:00</p>
+                                        </div>
+                                    </li>
+                                    <li class='options center'>
+                                        <button class='skip-backward'><i class='fas fa-backward'></i></button>
+                                        <button id='play-pause' class='play-pause'><i class='fas fa-play'></i></button>
+                                        <button class='skip-forward'><i class='fas fa-forward'></i></button>
+                                    </li>
+                                    <li class='options right'>
+                                        <div class='playback-content'>
+                                            <button class='playback-speed'><span class='material-symbols-rounded'>slow_motion_video</span></button>
+                                            <ul class='speed-options'>
+                                                <li data-speed='2.0'>2x</li>
+                                                <li data-speed='1.5'>1.5x</li>
+                                                <li data-speed='1.0' class='active'>Normal</li>
+                                                <li data-speed='0.75'>0.75x</li>
+                                                <li data-speed='0.5'>0.5x</li>
+                                            </ul>
+                                        </div>
+                                        <div class='quality-content' hidden>
+                                            <button class='playback-quality'><span class='fa fa-sliders'></span></button>
+                                            <ul class='quality-options'>
+                                                <li data-speed='highres'>Higher</li>
+                                                <li data-speed='hd1080'>1080p</li>
+                                                <li data-speed='hd720'>720p</li>
+                                                <li data-speed='large'>480p</li>
+                                                <li data-speed='medium' class='active'>360p</li>
+                                                <li data-speed='small'>240p</li>
+                                            </ul>
+                                        </div>
+                                        <button class='pic-in-pic'><span class='material-icons'>picture_in_picture_alt</span></button>
+                                        <button class='fullscreen'><i class='fa-solid fa-expand'></i></button>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul class='video-controls'>
-                                <li class='options left'>
-                                    <button id='mute' class='volume'><i class='fa-solid fa-volume-high'></i></button>
-                                    <input id='volume-bar' type='range' min='0' max='100' step='any'>
-                                    <div class='video-timer'>
-                                        <p class='current-time'>00:00</p>
-                                        <p>&nbsp;/&nbsp;</p>
-                                        <p class='video-duration'>00:00</p>
-                                    </div>
-                                </li>
-                                <li class='options center'>
-                                    <button class='skip-backward'><i class='fas fa-backward'></i></button>
-                                    <button id='play-pause' class='play-pause'><i class='fas fa-play'></i></button>
-                                    <button class='skip-forward'><i class='fas fa-forward'></i></button>
-                                </li>
-                                <li class='options right'>
-                                    <div class='playback-content' hidden>
-                                        <button class='playback-speed'><span class='material-symbols-outlined'>slow_motion_video</span></button>
-                                        <ul class='speed-options'>
-                                            <li data-speed='2.0'>2x</li>
-                                            <li data-speed='1.5'>1.5x</li>
-                                            <li data-speed='1.0' class='active'>Normal</li>
-                                            <li data-speed='0.75'>0.75x</li>
-                                            <li data-speed='0.5'>0.5x</li>
-                                        </ul>
-                                    </div>
-                                    <div class='quality-content' hidden>
-                                        <button class='playback-quality'><span class='fa fa-sliders'></span></button>
-                                        <ul class='quality-options'>
-                                            <li data-speed='highres'>Higher</li>
-                                            <li data-speed='hd1080'>1080p</li>
-                                            <li data-speed='hd720'>720p</li>
-                                            <li data-speed='large'>480p</li>
-                                            <li data-speed='medium' class='active'>360p</li>
-                                            <li data-speed='small'>240p</li>
-                                        </ul>
-                                    </div>
-                                    <button class='pic-in-pic'><span class='material-icons'>picture_in_picture_alt</span></button>
-                                    <button class='fullscreen'><i class='fa-solid fa-expand'></i></button>
-                                </li>
-                            </ul>
+                            <div style='position: absolute;' id='player'></div>
+                            <video style='position:relative; width:100%;height: 100%; opacity: 0;'></video>
+                            <!-- <div style='position:relative; width:100%;height: 100%;'>k</div> -->
                         </div>
-                        <div style='position: absolute;' id='player'></div>
-                        <video style='position:relative; width:100%;height: 100%; opacity: 0;'></video>
-                        <!-- <div style='position:relative; width:100%;height: 100%;'>k</div> -->
                     </div>
-                </div>";
+                </div>
+            </div>
+        </div>
+    </div>";
             } elseif ($type == 'quiz') {
                 $lessonId = $_POST['LessonData'];
                 $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
@@ -1355,7 +1363,7 @@ try {
                         $stmt->execute();
                         $stmt->close();
 
-                        $sql = "INSERT INTO peaper(UserId,LesId,Url) VALUES(?,?,?)";
+                        $sql = "INSERT INTO uploadpeaper(UserId,LesId,Url) VALUES(?,?,?)";
                         $stmt = $conn->prepare($sql);
                         $stmt->bind_param("sss", $UserId, $LessonId, $fileName);
                         $stmt->execute();
@@ -1369,12 +1377,16 @@ try {
                         $respons = "success";
                     } catch (Exception $e) {
                         $conn->rollback();
-                        $respons = "error";
+                        $respons = "error " . $e;
+                    } finally {
+                        // $respons = "fine";
                     }
                 }
             } else {
                 $respons = "this is time  out";
             }
+        } else {
+            $respons = "not";
         }
         echo $respons;
     }
