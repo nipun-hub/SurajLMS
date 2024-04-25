@@ -1061,7 +1061,9 @@ try {
                                     </li>
                                     <li class='options right'>
                                         <div class='playback-content'>
-                                            <button class='playback-speed'><span class='material-symbols-rounded'>slow_motion_video</span></button>
+                                            <button class='playback-speed'><span class='material-symbols-outlined'>
+                                            slow_motion_video
+                                            </span></button>
                                             <ul class='speed-options'>
                                                 <li data-speed='2.0'>2x</li>
                                                 <li data-speed='1.5'>1.5x</li>
