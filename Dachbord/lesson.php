@@ -516,6 +516,10 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 			script.src = url; // Set the script source
 			document.head.appendChild(script); // Append the script to the head
 		}
+
+		function clodeLesModel(){
+			$('#lessonModelContent').html('');
+		}
 	</script>
 
 

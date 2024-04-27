@@ -519,7 +519,7 @@ try {
                     $status = "active";
                     $pending = "pending";
 
-                    $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = lesson.LesId and activity.Status != ?  WHERE recaccess.ClassId LIKE ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
+                    $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = lesson.LesId and activity.Status != ?  WHERE recaccess.ClassId LIKE ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC LIMIT 3";
                     $stmt = $conn->prepare($sql1);
                     $stmt->bind_param("issss", $UserId, $pending, $activeClaId_upd, $status, $status);
                     $stmt->execute();
@@ -1168,7 +1168,7 @@ try {
             $respons = "
             <div class='modal-header'>
                     <h5 class='modal-title' id='lessonModelLabel'>{$LesName}</h5>
-                    <button type='button' class='btn-close' data-bs-dismiss='modal'><b><i class='bi bi-x-lg'></i></b></button>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' onclick='clodeLesModel()'><b><i class='bi bi-x-lg'></i></b></button>
                 </div>
 				<div class='modal-body row'>
                     <div class='col-12 position-relative mainGroup animiZoom m-0 p-0' style='--index:1;'>
@@ -1251,8 +1251,8 @@ try {
             $respons = "
             <div class='modal-header'>
                 <h5 class='modal-title' id='lessonModelLabel'>Upload Peaper ( peaper Name )</h5>
-                </div>
-                <button type='button' class='btn-close' data-bs-dismiss='modal'><b><i class='bi bi-x-lg'></i></b></button>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' onclick='clodeLesModel()'><b><i class='bi bi-x-lg'></i></b></button>
+            </div>
             <div class='modal-body row'>
                 <div class='mainGroupOptions'>
                     <div class='card item-center m-1 p-2'>
