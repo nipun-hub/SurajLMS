@@ -1,4 +1,3 @@
-
 <!-- database connection include -->
 <?php include('sql/conn.php');
 mysqli_set_charset($conn, "utf8mb4"); ?>
@@ -193,83 +192,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 					<!-- row end -->
 
 					<!-- Row start -->
-					<div class="row" id="mainCardContent">
-
-
-						<?php if (false) { ?>
-							<!-- quiz section start -->
-							<div class="mainGroupOptions">
-								<div class="card item-center m-1 p-2">
-
-									<div class="quiz_content col-xxl-6 col-sm-10 col-md-8 col-12">
-										<!-- start Quiz button -->
-										<div class="start_btn"><button>Start Now</button></div>
-
-										<!-- Info Box -->
-										<div class="info_box w-100">
-											<div class="info-title"><span>Some Rules of this Quiz</span></div>
-											<div class="info-list">
-												<div class="info">1. You will have only <span>15 seconds</span> per each question.</div>
-												<div class="info">2. Once you select your answer, it can't be undone.</div>
-												<div class="info">3. You can't select any option once time goes off.</div>
-												<div class="info">4. You can't exit from the Quiz while you're playing.</div>
-												<div class="info">5. You'll get points on the basis of your correct answers.</div>
-											</div>
-											<div class="buttons">
-												<button class="quit">Exit Quiz</button>
-												<button class="restart">Continue</button>
-											</div>
-										</div>
-
-										<!-- Quiz Box -->
-										<div class="quiz_box w-100">
-											<header>
-												<div class="title">Information and communication tecnollagy</div>
-												<div class="timer">
-													<div class="time_left_txt">Time Left</div>
-													<div class="timer_sec">--:--</div>
-												</div>
-												<div class="time_line"></div>
-											</header>
-											<div class="section">
-												<div class="que_text">
-													<!-- Here I've inserted question from JavaScript -->
-												</div>
-												<div class="option_list">
-													<!-- Here I've inserted options from JavaScript -->
-												</div>
-											</div>
-
-											<!-- footer of Quiz Box -->
-											<footer>
-												<div class="total_que">
-													<!-- Here I've inserted Question Count Number from JavaScript -->
-												</div>
-												<button class="next_btn">Next Que</button>
-											</footer>
-										</div>
-
-										<!-- Result Box -->
-										<div class="result_box w-100">
-											<div class="icon">
-												<i class="fas fa-crown"></i>
-											</div>
-											<div class="complete_text">You've completed the Quiz!</div>
-											<div class="score_text">
-												<!-- Here I've inserted Score Result from JavaScript -->
-											</div>
-											<div class="buttons">
-												<button class="restart">Replay Quiz</button>
-												<button class="quit">Quit Quiz</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<!-- quiz section end -->
-						<?php } ?>
-
-					</div>
+					<div class="row" id="mainCardContent"></div>
 					<!-- Row end -->
 
 					<!-- video player start -->
@@ -305,9 +228,10 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 			<div class="modal-content" id="uploadPdfAlertContent">
 				<div class="modal-header">
 					<h5 class="modal-title" id="uploadPdfLabel">Upload Peaper ( peaper Name )</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"><b><i class="bi bi-x-lg"></i></b></button>
 				</div>
 				<div class="modal-body">
+					<p class="text-dark mb-3">Upload කිරීමට අවශ්‍ය Photo සියල්ලම එකවර Select කර Upload කරන්න .</p>
 					<form id="Formclear">
 						<div class="peaperUploader">
 							<input type="file" id="file-input" accept="image/*,.pdf" multiple />
@@ -330,6 +254,13 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 					<div class="valid-feedback alert alert-info text-center alert-dismissible fade show py-2"></div>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<!-- lesson model  -->
+	<div class="modal fade" id="lessonModel" tabindex="-1" aria-labelledby="lessonModelLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-centered">
+			<div class="modal-content" id="lessonModelContent"></div>
 		</div>
 	</div>
 
@@ -467,10 +398,10 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		}
 
 		function changemainCardContent(type, data = null) { // respons click group 
-			console.log("done");
+			// console.log("done");
 			formData = "changemainCardContent=" + "&type=" + type + "&data=" + data;
 			$.post("sql/process.php", formData, function(response, status) {
-				console.log(response);
+				// console.log(response);
 				$('#mainCardContent').html(response);
 				prograss_snipper();
 			});
@@ -526,25 +457,28 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		function lesEvent(value, type) {
 			PaymentStatus('empty');
 			if (type == 'video') {
-				changePageControlesLec(value);
-				PassData = "LessonData=" + "&type=" + type;
+
+				// changePageControlesLec(value);
+				PassData = "loadLessonModel=" + "&type=" + type + "&data=" + value;
 				$.post("sql/process.php", PassData, function(response, status) {
+					$('#lessonModelContent').html(response);
 					PassData = "lesRespons=" + "&value=" + value + "&type=" + type;
 					$.post("sql/process.php", PassData, function(data, status) {
 						if (response != " undefind") {
 							data = data.replace(" ", "");
 							videoId = data;
 							Lesid = value;
-							$('#mainCardContent').html(response);
+							$('#lessonModel').modal('show');
 							loadScript('assets/js/player.js');
 							onYouTubeIframeAPIReady();
 						}
 					});
 				});
 			} else if (type == 'quiz') {
-				changePageControlesLec(value);
-				PassData = "LessonData=" + value + "&type=" + type;
+				// changePageControlesLec(value);
+				PassData = "loadLessonModel=" + "&type=" + type  + "&data=" + value;
 				$.post("sql/process.php", PassData, function(response, status) {
+					$('#lessonModelContent').html(response);
 					// console.log(response);
 					// response == ' success' ? console.log('prepare quiz successfull') : console.log('failed prepare the quiz');
 					PassData = "lesRespons=" + "&value=" + value + "&type=" + type;
@@ -554,7 +488,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 							data = data.replace(" ", "");
 							// videoId = data;
 							Lesid = value;
-							$('#mainCardContent').html(response);
+							$('#lessonModel').modal('show');
 							loadScript('assets/js/quiz/quction.js');
 							loadScript('assets/js/quiz/quiz.js');
 						}
@@ -569,10 +503,9 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		}
 
 		function markUnCompleate(data) {
-			console.log('mardsifgh');
 			formData = "markUnCompleate" + "&data=" + data;
 			$.post("sql/process.php", formData, function(response, status) {
-				console.log(response);
+				// console.log(response);
 				changemainCardContent();
 			});
 		}
@@ -589,11 +522,11 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 	<script>
 		window.onload = function() {
 			// special animatioin 
-			var specialAnimation = document.querySelectorAll('.special-animate');
-			console.log('success');
-			specialAnimation.forEach(function(self) {
-				self.classList.add('snowflake');
-			});
+			// var specialAnimation = document.querySelectorAll('.special-animate');
+			// console.log('success');
+			// specialAnimation.forEach(function(self) {
+			// 	self.classList.add('snowflake');
+			// });
 
 			url_data = window.location.search;
 			if (url_data == '?success_login') {

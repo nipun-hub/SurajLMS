@@ -475,6 +475,132 @@ try {
             $lockbtn = "<i class='fs-6 bi bi-lock me-2'></i>Restricted";
             $unlockbtn = "Asign";
 
+            if (true) {
+                mysqli_set_charset($conn, "utf8mb4");
+                // $type = $_POST['type'];
+                // $type =  ($type == 'undefined') ? (explode("-", $_SESSION['clz'])[2] == 'lesson' ? 'clickGroup' : 'clickMonth') : $type;
+                // $getData = $_POST['data'];
+                // $activeClaId = explode("-", $_SESSION['clz'])[1];
+                // $Insti =  explode("-", $_SESSION['clz'])[0];
+                // $data = isset(explode("-", $_SESSION['clz'])[3]) ? explode("-", $_SESSION['clz'])[3] : ($getData == 'null' || $getData == null ? null : $getData);
+
+                // $htmlContentBodyFirst = ""; //paymentindi($conn, $UserId);
+
+                // lessson data
+                $video = "<i class='bi bi-camera-video text-success'></i>";
+                $note  = "<i class='bi bi-file-earmark-text text-success'></i>";
+                $quiz = "<i class='bi bi-check2-circle text-success'></i>";
+                $classwork = "<i class='bi bi-person-video3 text-success'></i>";
+                $upload = "<i class='bi bi-cloud-upload text-success'></i>";
+                $upcomming = "<i class='bi bi-clock-history text-success'></i>";
+
+                $paymentnotpay = "";
+                $paymentPending = "<span class='alert alert-warning p-0 px-2'>Payment Pending&nbsp;<i class='bi bi-lock'></i></span>";
+                $Compleate = "<span class='alert alert-success p-0 px-2'>Complete&nbsp;<i class='bi bi-check2-circle'></i></span>";
+                $NonCompleate = "<span class='alert alert-info p-o px-2'>None complete&nbsp;</span>";
+                $upcommingindi = "<span class='alert alert-danger p-0 px-2' >Upcomming&nbsp;<i class='bi bi-clock-history'></i></i></span>";
+
+                $htmlFullContent = "";
+                $htmlContentHeader = "
+                    `<div class='col-12 mainGroupOptions'>
+                    `<div class='card'>";
+                $htmlContentFooter = "
+                    </div>
+                    </div>";
+
+                $lessonHeader = "
+                    <div class='card-body m-0 p-0'>
+		            	<div class='table-card'>";
+                $allLessonContent = "";
+
+                if (true) {
+                    // $GidNew = "%[{$data}]%";
+                    $activeClaId_upd = "%[{$activeClaId}]%";
+                    $status = "active";
+                    $pending = "pending";
+
+                    $sql1 = "SELECT recaccess.*,lesson.*,activity.ActId FROM recaccess,lesson LEFT JOIN activity ON UserId = ? and activity.OtherId = lesson.LesId and activity.Status != ?  WHERE recaccess.ClassId LIKE ? and recaccess.Status = ? and lesson.Status = ? and recaccess.LesId = lesson.LesId ORDER BY recaccess.InsDate DESC";
+                    $stmt = $conn->prepare($sql1);
+                    $stmt->bind_param("issss", $UserId, $pending, $activeClaId_upd, $status, $status);
+                    $stmt->execute();
+                    $result0 = $stmt->get_result();
+                    if ($result0->num_rows > 0) {
+                        $lessonOne = "
+                                    <div class='table-card-head'>
+		                	            &nbsp;
+		                	            <p>Latest Lessons</p>
+		                            </div>";
+                        $contentRow = "";
+                        while ($row0 = $result0->fetch_assoc()) {
+                            $unwatch = "<span onclick='markUnCompleate({$row0['LesId']})' data-bs-toggle='tooltip' data-bs-placement='top' title='Mark as none complete'><i class='fs-6 bi bi-eye-slash'></i></span>";
+                            $CompleateStatus = $row0['ActId'] != null ? $Compleate : $NonCompleate;
+                            $CompleateStatus = $row0['Type'] == 'note'  ? "" : $CompleateStatus;
+                            $eye = $row0['ActId'] != null && ($row0['Type'] == 'video' || $row0['Type'] == 'quiz') ? $unwatch : "";
+                            $lesMonth = $row0['Month'];
+                            $lessonName = $row0['LesName'];
+
+                            $paymentnotpay = "<span class='alert alert-danger p-0 px-2' onclick='nthj(5,`{$lesMonth}`)'>Not paid&nbsp;<i class='bi bi-lock'></i></span>";
+                            $click =  "onclick='lesEvent({$row0['LesId']},`{$row0['Type']}`)'";
+
+                            $sql = "SELECT * FROM payment WHERE UserId = ? and ClassId = ? and Month = ? ";
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("sss", $UserId, $activeClaId, $lesMonth);
+                            $stmt->execute();
+                            $result1 = $stmt->get_result();
+                            if ($result1->num_rows > 0 && $row1 = $result1->fetch_assoc()) {
+                                if ($row1['Status'] == 'active') {
+                                    $StatusIndi = $CompleateStatus;
+                                    $onclickEvent = $click;
+                                } elseif ($row1['Status'] == 'pending') {
+                                    $StatusIndi = $paymentPending;
+                                    $onclickEvent = "";
+                                } else {
+                                    $StatusIndi = $paymentnotpay;
+                                    $onclickEvent = "";
+                                }
+                            } else {
+                                $StatusIndi = $paymentnotpay;
+                                $onclickEvent = "";
+                            }
+                            if ($row0['Type'] == 'video') {
+                                $lesindi = $video;
+                            } elseif ($row0['Type'] == 'note') {
+                                $lesindi = $note;
+                            } elseif ($row0['Type'] == 'quiz') {
+                                $lesindi = $quiz;
+                            } elseif ($row0['Type'] == 'upload') {
+                                $lesindi = $upload;
+                            } elseif ($row0['Type'] == 'upcomming') {
+                                $lesindi = $upcomming;
+                            } else {
+                                $lesindi = $classwork;
+                            }
+
+                            $contentRow .= "
+                                <div class='table-card-main d-flex align-items-center'>
+			                	    <div class='ms-3' style='color: #a9aaae;'><i class='fs-5 bi bi-arrow-return-right'></i></div>
+			                	    <div class='table-card-row ms-1 justify-content-between w-100'>
+			                		    <div class='d-flex flex-grow-1' {$onclickEvent}>
+                                            {$lesindi}
+                                            &nbsp;&nbsp;
+			                		        <p>{$lessonName}</p>
+                                        </div>
+                                        <div class='item-center'>
+                                            {$eye}
+			                		        {$StatusIndi}
+                                        </div>
+                                    </div>
+                                </div>";
+                        }
+                        $allLessonContent .=  $lessonHeader . $lessonOne . $contentRow . $htmlContentFooter;
+                    } else {
+                        $contentRow = "<div class='table-card-head'><p>Undefind Content !</p></div>";
+                        $allLessonContent .=  $lessonHeader . $contentRow . $htmlContentFooter;
+                    }
+                }
+                $htmlFullContent = $htmlContentHeader . $allLessonContent . $htmlContentFooter;
+            }
+
             if ($maintype == 'lesson') {
                 $sql = "SELECT * FROM grouplist WHERE HideFrom Not LIKE '%$insti%' and HideFrom NOT LIKE '%All%' and HideFrom Not LIKE '%[$activeClaId]%' OR HideFrom IS NULL ORDER BY Status ASC";
                 $stmt = $conn->prepare($sql);
@@ -585,7 +711,7 @@ try {
         } catch (Exception $e) {
             $htmlContent = "Undefind Content" . $e;
         }
-        echo $htmlContent;
+        echo $htmlFullContent . $htmlContent;
     }
 
     // get grouplist end
@@ -1025,89 +1151,109 @@ try {
     }
     // payment online end
 
-    // get video player start
-    if (isset($_POST['LessonData'])) {
-        try {
-            $type = $_POST['type'];
-            if ($type == 'video') {
-                $htmlContent = "
-                <div class='col-12 position-relative mainGroup animiZoom' style='--index:1;'>
-        <div class='container-fluid pt-4 px-4'>
-            <div class='row g-4'>
-                <div class='col-sm-12 col-xl-12' >
-                    <div class='bg-secondary text-center rounded p-4'>
-                        <div class='container_player show-controls'>
-                            <div class='wrapper'>
-                                <div class='video-timeline'>
-                                    <div class='progress-area mx-4'>
-                                        <span>00:00</span>
-                                        <div class='progress-bar'></div>
+    // lesson model load 
+    if (isset($_POST['loadLessonModel'])) {
+        $type = $_POST['type'];
+        if ($type == 'video') {
+            $lessonId = $_POST['data'];
+            $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $LesName = $row['LesName'];
+            }else{
+                $LesName = "";
+            }
+            $respons = "
+            <div class='modal-header'>
+                    <h5 class='modal-title' id='lessonModelLabel'>{$LesName}</h5>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal'><b><i class='bi bi-x-lg'></i></b></button>
+                </div>
+				<div class='modal-body row'>
+                    <div class='col-12 position-relative mainGroup animiZoom m-0 p-0' style='--index:1;'>
+                        <div class='container-fluid px-4'>
+                            <div class='row g-4'>
+                                <div class='col-sm-12 col-xl-12' >
+                                    <div class='bg-secondary text-center rounded p-4'>
+                                        <div class='container_player show-controls'>
+                                            <div class='wrapper'>
+                                                <div class='video-timeline'>
+                                                    <div class='progress-area mx-4'>
+                                                        <span>00:00</span>
+                                                        <div class='progress-bar'></div>
+                                                    </div>
+                                                </div>
+                                                <ul class='video-controls'>
+                                                    <li class='options left'>
+                                                        <button id='mute' class='volume'><i class='fa-solid fa-volume-high'></i></button>
+                                                        <input id='volume-bar' type='range' min='0' max='100' step='any'>
+                                                        <div class='video-timer'>
+                                                            <p class='current-time'>00:00</p>
+                                                            <p>&nbsp;/&nbsp;</p>
+                                                            <p class='video-duration'>00:00</p>
+                                                        </div>
+                                                    </li>
+                                                    <li class='options center'>
+                                                        <button class='skip-backward'><i class='fas fa-backward'></i></button>
+                                                        <button id='play-pause' class='play-pause'><i class='fas fa-play'></i></button>
+                                                        <button class='skip-forward'><i class='fas fa-forward'></i></button>
+                                                    </li>
+                                                    <li class='options right'>
+                                                        <div class='playback-content'>
+                                                            <button class='playback-speed'><span class='material-symbols-outlined'>
+                                                            slow_motion_video
+                                                            </span></button>
+                                                            <ul class='speed-options'>
+                                                                <li data-speed='2.0'>2x</li>
+                                                                <li data-speed='1.5'>1.5x</li>
+                                                                <li data-speed='1.0' class='active'>Normal</li>
+                                                                <li data-speed='0.75'>0.75x</li>
+                                                                <li data-speed='0.5'>0.5x</li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class='quality-content' hidden>
+                                                            <button class='playback-quality'><span class='fa fa-sliders'></span></button>
+                                                            <ul class='quality-options'>
+                                                                <li data-speed='highres'>Higher</li>
+                                                                <li data-speed='hd1080'>1080p</li>
+                                                                <li data-speed='hd720'>720p</li>
+                                                                <li data-speed='large'>480p</li>
+                                                                <li data-speed='medium' class='active'>360p</li>
+                                                                <li data-speed='small'>240p</li>
+                                                            </ul>
+                                                        </div>
+                                                        <button class='pic-in-pic'><span class='material-icons'>picture_in_picture_alt</span></button>
+                                                        <button class='fullscreen'><i class='fa-solid fa-expand'></i></button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div style='position: absolute;' id='player'></div>
+                                            <video style='position:relative; width:100%;height: 100%; opacity: 0;'></video>
+                                            <!-- <div style='position:relative; width:100%;height: 100%;'>k</div> -->
+                                        </div>
                                     </div>
                                 </div>
-                                <ul class='video-controls'>
-                                    <li class='options left'>
-                                        <button id='mute' class='volume'><i class='fa-solid fa-volume-high'></i></button>
-                                        <input id='volume-bar' type='range' min='0' max='100' step='any'>
-                                        <div class='video-timer'>
-                                            <p class='current-time'>00:00</p>
-                                            <p>&nbsp;/&nbsp;</p>
-                                            <p class='video-duration'>00:00</p>
-                                        </div>
-                                    </li>
-                                    <li class='options center'>
-                                        <button class='skip-backward'><i class='fas fa-backward'></i></button>
-                                        <button id='play-pause' class='play-pause'><i class='fas fa-play'></i></button>
-                                        <button class='skip-forward'><i class='fas fa-forward'></i></button>
-                                    </li>
-                                    <li class='options right'>
-                                        <div class='playback-content'>
-                                            <button class='playback-speed'><span class='material-symbols-outlined'>
-                                            slow_motion_video
-                                            </span></button>
-                                            <ul class='speed-options'>
-                                                <li data-speed='2.0'>2x</li>
-                                                <li data-speed='1.5'>1.5x</li>
-                                                <li data-speed='1.0' class='active'>Normal</li>
-                                                <li data-speed='0.75'>0.75x</li>
-                                                <li data-speed='0.5'>0.5x</li>
-                                            </ul>
-                                        </div>
-                                        <div class='quality-content' hidden>
-                                            <button class='playback-quality'><span class='fa fa-sliders'></span></button>
-                                            <ul class='quality-options'>
-                                                <li data-speed='highres'>Higher</li>
-                                                <li data-speed='hd1080'>1080p</li>
-                                                <li data-speed='hd720'>720p</li>
-                                                <li data-speed='large'>480p</li>
-                                                <li data-speed='medium' class='active'>360p</li>
-                                                <li data-speed='small'>240p</li>
-                                            </ul>
-                                        </div>
-                                        <button class='pic-in-pic'><span class='material-icons'>picture_in_picture_alt</span></button>
-                                        <button class='fullscreen'><i class='fa-solid fa-expand'></i></button>
-                                    </li>
-                                </ul>
                             </div>
-                            <div style='position: absolute;' id='player'></div>
-                            <video style='position:relative; width:100%;height: 100%; opacity: 0;'></video>
-                            <!-- <div style='position:relative; width:100%;height: 100%;'>k</div> -->
                         </div>
                     </div>
+				</div>";
+        } elseif ($type == 'quiz') {
+            $lessonId = $_POST['data'];
+            $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $LesName = $row['LesName'];
+                $LesTime = $row['Time'];
+            }
+            $respons = "
+            <div class='modal-header'>
+                <h5 class='modal-title' id='lessonModelLabel'>Upload Peaper ( peaper Name )</h5>
                 </div>
-            </div>
-        </div>
-    </div>";
-            } elseif ($type == 'quiz') {
-                $lessonId = $_POST['LessonData'];
-                $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute();
-                $reusalt = $stmt->get_result();
-                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                    $LesName = $row['LesName'];
-                    $LesTime = $row['Time'];
-                }
-                $htmlContent = "
+                <button type='button' class='btn-close' data-bs-dismiss='modal'><b><i class='bi bi-x-lg'></i></b></button>
+            <div class='modal-body row'>
                 <div class='mainGroupOptions'>
                     <div class='card item-center m-1 p-2'>
                         <div class='quiz_content col-xxl-6 col-sm-10 col-md-8 col-12'>
@@ -1170,15 +1316,168 @@ try {
                             </div>
                         </div>
                     </div>
-                </div>";
-            } else {
-                $htmlContent = "undefind";
-            }
-        } catch (Exception $e) {
-            $htmlContent = "undefind";
+                </div>
+            </div>";
+        } else {
+            $respons = "undefind Content";
         }
-        echo $htmlContent;
+        echo $respons;
     }
+
+    // get video player start
+    // if (isset($_POST['LessonData'])) {
+    //     try {
+    //         $type = $_POST['type'];
+    //         if ($type == 'video') {
+    //             $htmlContent = "
+    //             <div class='col-12 position-relative mainGroup animiZoom' style='--index:1;'>
+    //                 <div class='container-fluid pt-4 px-4'>
+    //                     <div class='row g-4'>
+    //                         <div class='col-sm-12 col-xl-12' >
+    //                             <div class='bg-secondary text-center rounded p-4'>
+    //                                 <div class='container_player show-controls'>
+    //                                     <div class='wrapper'>
+    //                                         <div class='video-timeline'>
+    //                                             <div class='progress-area mx-4'>
+    //                                                 <span>00:00</span>
+    //                                                 <div class='progress-bar'></div>
+    //                                             </div>
+    //                                         </div>
+    //                                         <ul class='video-controls'>
+    //                                             <li class='options left'>
+    //                                                 <button id='mute' class='volume'><i class='fa-solid fa-volume-high'></i></button>
+    //                                                 <input id='volume-bar' type='range' min='0' max='100' step='any'>
+    //                                                 <div class='video-timer'>
+    //                                                     <p class='current-time'>00:00</p>
+    //                                                     <p>&nbsp;/&nbsp;</p>
+    //                                                     <p class='video-duration'>00:00</p>
+    //                                                 </div>
+    //                                             </li>
+    //                                             <li class='options center'>
+    //                                                 <button class='skip-backward'><i class='fas fa-backward'></i></button>
+    //                                                 <button id='play-pause' class='play-pause'><i class='fas fa-play'></i></button>
+    //                                                 <button class='skip-forward'><i class='fas fa-forward'></i></button>
+    //                                             </li>
+    //                                             <li class='options right'>
+    //                                                 <div class='playback-content'>
+    //                                                     <button class='playback-speed'><span class='material-symbols-outlined'>
+    //                                                     slow_motion_video
+    //                                                     </span></button>
+    //                                                     <ul class='speed-options'>
+    //                                                         <li data-speed='2.0'>2x</li>
+    //                                                         <li data-speed='1.5'>1.5x</li>
+    //                                                         <li data-speed='1.0' class='active'>Normal</li>
+    //                                                         <li data-speed='0.75'>0.75x</li>
+    //                                                         <li data-speed='0.5'>0.5x</li>
+    //                                                     </ul>
+    //                                                 </div>
+    //                                                 <div class='quality-content' hidden>
+    //                                                     <button class='playback-quality'><span class='fa fa-sliders'></span></button>
+    //                                                     <ul class='quality-options'>
+    //                                                         <li data-speed='highres'>Higher</li>
+    //                                                         <li data-speed='hd1080'>1080p</li>
+    //                                                         <li data-speed='hd720'>720p</li>
+    //                                                         <li data-speed='large'>480p</li>
+    //                                                         <li data-speed='medium' class='active'>360p</li>
+    //                                                         <li data-speed='small'>240p</li>
+    //                                                     </ul>
+    //                                                 </div>
+    //                                                 <button class='pic-in-pic'><span class='material-icons'>picture_in_picture_alt</span></button>
+    //                                                 <button class='fullscreen'><i class='fa-solid fa-expand'></i></button>
+    //                                             </li>
+    //                                         </ul>
+    //                                     </div>
+    //                                     <div style='position: absolute;' id='player'></div>
+    //                                     <video style='position:relative; width:100%;height: 100%; opacity: 0;'></video>
+    //                                     <!-- <div style='position:relative; width:100%;height: 100%;'>k</div> -->
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>";
+    //         } elseif ($type == 'quiz') {
+    //             $lessonId = $_POST['LessonData'];
+    //             $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
+    //             $stmt = $conn->prepare($sql);
+    //             $stmt->execute();
+    //             $reusalt = $stmt->get_result();
+    //             if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+    //                 $LesName = $row['LesName'];
+    //                 $LesTime = $row['Time'];
+    //             }
+    //             $htmlContent = "
+    //             <div class='mainGroupOptions'>
+    //                 <div class='card item-center m-1 p-2'>
+    //                     <div class='quiz_content col-xxl-6 col-sm-10 col-md-8 col-12'>
+    //                         <!-- start Quiz button -->
+    //                         <div class='start_btn'><button>Start Now</button></div>
+    //                         <!-- Info Box -->
+    //                         <div class='info_box w-100'>
+    //                             <div class='info-title'><span>Some Rules of this Quiz</span></div>
+    //                             <div class='info-list'>
+    //                                 <div class='info'>1. You will have only <span>{$LesTime} seconds</span> per each question.</div>
+    //                                 <div class='info'>2. Once you select your answer, it can't be undone.</div>
+    //                                 <div class='info'>3. You can't select any option once time goes off.</div>
+    //                                 <div class='info'>4. You can't exit from the Quiz while you're playing.</div>
+    //                                 <div class='info'>5. You'll get points on the basis of your correct answers.</div>
+    //                             </div>
+    //                             <div class='buttons'>
+    //                                 <button class='quit'>Exit Quiz</button>
+    //                                 <button class='restart'>Continue</button>
+    //                             </div>
+    //                         </div>
+    //                         <!-- Quiz Box -->
+    //                         <div class='quiz_box w-100'>
+    //                             <header>
+    //                                 <div class='title'>{$LesName}</div>
+    //                                 <div class='timer'>
+    //                                     <div class='time_left_txt'>Time Left</div>
+    //                                     <div class='timer_sec'>--:--</div>
+    //                                 </div>
+    //                                 <div class='time_line'></div>
+    //                             </header>
+    //                             <div class='section'>
+    //                                 <div class='que_text'>
+    //                                     <!-- Here I've inserted question from JavaScript -->
+    //                                 </div>
+    //                                 <div class='option_list'>
+    //                                     <!-- Here I've inserted options from JavaScript -->
+    //                                 </div>
+    //                             </div>
+    //                             <!-- footer of Quiz Box -->
+    //                             <footer>
+    //                                 <div class='total_que'>
+    //                                     <!-- Here I've inserted Question Count Number from JavaScript -->
+    //                                 </div>
+    //                                 <button class='next_btn'>Next Que</button>
+    //                             </footer>
+    //                         </div>
+    //                         <!-- Result Box -->
+    //                         <div class='result_box w-100'>
+    //                             <div class='icon'>
+    //                                 <i class='fas fa-crown' animate__animated animate__swing animate__infinite infinite></i>
+    //                             </div>
+    //                             <div class='complete_text'>You've completed the Quiz!</div>
+    //                             <div class='score_text text-center d-block'>
+    //                                 <!-- Here I've inserted Score Result from JavaScript -->
+    //                             </div>
+    //                             <div class='buttons'>
+    //                                 <button class='restart'>Replay Quiz</button>
+    //                                 <button class='quit'>Quit Quiz</button>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>";
+    //         } else {
+    //             $htmlContent = "undefind";
+    //         }
+    //     } catch (Exception $e) {
+    //         $htmlContent = "undefind";
+    //     }
+    //     echo $htmlContent;
+    // }
     // get video player end
 
     // get video link in video id start
