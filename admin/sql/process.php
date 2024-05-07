@@ -1,6 +1,9 @@
 <?php
 
 // database connection
+
+use function PHPSTORM_META\type;
+
 try {
     include('conn.php');
 } catch (EXception $e) {
@@ -1191,22 +1194,22 @@ if (isset($_POST['loadModelDataPeaper'])) {
                 <th>Action</th>
             </tr>";
             $tBody = "";
-            $sql_with_data = "SELECT * FROM user WHERE ( UserName LIKE ? or InstiId LIKE ?  or RegCode LIKE ? ) and Status = 'active' LIMIT 5";
-            $sql_without_data = "SELECT * FROM user WHERE Status = 'active' LIMIT 5";
+            $sql_with_data = "SELECT * FROM unreguser WHERE Name LIKE ? GROUP BY Name,Year,InstiName LIMIT 5";
+            $sql_without_data = "SELECT * FROM unreguser GROUP BY Name,Year,InstiName LIMIT 5 ";
 
             if ($data != null) {
                 $stmt = $conn->prepare($sql_with_data);
-                $stmt->bind_param("sss", $data, $data, $data);
+                $stmt->bind_param("s", $data,);
             } else {
                 $stmt = $conn->prepare($sql_without_data);
             }
             $stmt->execute();
             $reusalt = $stmt->get_result();
             while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                $PeaperuserId = $row['UserId'];
+                // $PeaperuserId = $row['UserId'];
                 $marks = '';
                 if (true) { // get marks
-                    $sql = "SELECT Marks FROM marksofpeaper WHERE PeaperId = '$PeaperId' and UserId = '$PeaperuserId' ";
+                    $sql = "SELECT Marks FROM marksofpeaper WHERE PeaperId = '$PeaperId' and    = '$PeaperuserId' ";
                     $stmt = $conn->prepare($sql);
                     $stmt->execute();
                     $reusaltMarks = $stmt->get_result();
@@ -1217,13 +1220,13 @@ if (isset($_POST['loadModelDataPeaper'])) {
                 }
                 $tBody .= "
                 <tr>
-                    <td>{$row['UserName']}</td>
+                    <td>{$row['Name']}</td>
                     <td>{$row['InstiName']}</td>
-                    <td>{$row['InstiId']}</td>
-                    <td><input type='number' name='marks' class='form-input w-100' placeholder='Enter Marks' id='{$row['UserId']}{$rowMain['PeaperId']}' value='{$marks}'></input></td>
+                    <td>{$row['Year']}</td>
+                    <td><input type='number' name='marks' class='form-input w-100' placeholder='Enter Marks' id='{$row['URGId']}{$rowMain['PeaperId']}' value='{$marks}'></input></td>
                     <td> 
                         <div class='actions item-center'>
-                            <a onclick='update(this.id,`addmarks`)' id='{$row['UserId']} {$rowMain['PeaperId']}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
+                            <a onclick='update(this.id,`addmarks`)' id='{$row['URGId']} {$rowMain['PeaperId']}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
                         </div>
                     </td>
                 </tr>";
@@ -1564,6 +1567,40 @@ if (isset($_POST['changePeaperManageTable'])) {
             </div>
             <div id='rank_Body'><center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center></div>
             ";
+    } elseif ($type == "downloadPeaper") {
+        $tHead = "
+        <tr>
+            <th>User Name</th>
+            <th>RegCode</th>
+            <th>Mobile</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>";
+        $tBody = "";
+
+        $sql = "SELECT lesson.LesName,user.UserName,user.RegCode,userdata.MobNum,userdata.WhaNum,uploadpeaper.* FROM uploadpeaper LEFT JOIN user ON uploadpeaper.UserId = user.UserId LEFT JOIN lesson ON lesson.LesId = uploadpeaper.LesId LEFT JOIN userdata ON uploadpeaper.UserId = userdata.UserId  WHERE uploadpeaper.Status != 'finished'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $tBody .= "
+                <tr>
+                    <td>{$row['UserName']}</td>
+                    <td>{$row['RegCode']}</td>
+                    <td>Mobile : {$row['MobNum']} <br> Whatsapp : {$row['WhaNum']}</td>
+                    <td>{$row['Status']}</td>
+                    <td>
+                        <div class='actions item-center'>
+                            <a onclick=''><i class='bi bi-pencil-square text-green fs-6'></i></a>
+                            &nbsp;
+                            <a onclick=''><i class='bi bi-cloud-arrow-down text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+        } else {
+            $tBody .= "<tfoot><tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr></tfoot>";
+        }
+        $htmlContent =  $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
     }
     echo $htmlContent;
 }
@@ -3434,6 +3471,171 @@ if (isset($_POST['getChartVariyable'])) {
 // get lessno Viwes end
 
 // notification management start *********************
+
+//  user management start ***************************
+if (isset($_POST['loadModelDataStManage'])) {
+    $type = $_POST['type'];
+    $modelFooter = "
+        <div class='modal-footer pt-3'>
+            <button type='button' class='btn btn-dark' data-bs-dismiss='modal'>Close</button>
+            <button type='button' class='btn btn-success' onclick='submitModelPeaper(`{$type}`)'>Finish</button>
+        </div>";
+    if ($type == 'regStu') {
+        $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+        $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+        $tMiddle = "
+            </thead>
+            <tbody>";
+        $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+        $tHead = "
+            <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>";
+        $tBody = "";
+        $sql_with_data = "SELECT * FROM user WHERE ( UserName LIKE ? or Email LIKE ? ) and RegCode IS NULL LIMIT 5";
+        $sql_without_data = "SELECT * FROM user WHERE RegCode IS NULL LIMIT 5";
+
+        if ($data != null) {
+            $stmt = $conn->prepare($sql_with_data);
+            $stmt->bind_param("ss", $data, $data);
+        } else {
+            $stmt = $conn->prepare($sql_without_data);
+        }
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $tBody .= "
+                <tr>
+                    <td>{$row['UserName']}</td>
+                    <td>{$row['Email']}</td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='update(this.id,`addmarks`)' id='{$row['UserId']} {$row['UserId']}'><i class='bi bi-arrow-repeat text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $tBody = "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+        }
+        // }
+        $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
+    }
+    echo $modelContent;
+}
+
+if (isset($_POST['changeUserManageTable'])) {
+    $type = $_POST['changeUserManageTable'];
+    $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+    $limit = $_POST['limidData'] == 'all' ? "" : " LIMIT " . $_POST['limidData'];
+    $tFirst = "
+    <div class='table-responsive'>
+        <table class='table table-bordered m-0'>
+            <thead>";
+    $tMiddle = "
+    </thead>
+    <tbody>";
+    $tEnd = "
+            </tbody>
+        </table>
+    </div>";
+    if ($type == 'userManage') {
+        $tHead = "
+        <tr>
+            <th>Name</th>
+            <th>RegCode</th>
+            <th>Email</th>
+            <th>Institute</th>
+            <th>Institute Id</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>";
+        $tBody = "";
+        $sql = $data != null ? "SELECT * FROM User WHERE ( UserNAme LIKE ? or RegCode LIKE ? or Year LIKE ? or InstiName LIKE ? or Email LIKE ? ) AND RegCode IS NOT NULL $limit" : "SELECT * FROM user WHERE RegCode IS NOT NULL $limit";
+        $stmt = $conn->prepare($sql);
+        $data != null ? $stmt->bind_param("sssss", $data, $data, $data, $data, $data) : null;
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $tBody .= "
+            <tr>
+                <td>{$row['UserName']}</td>
+                <td>{$row['RegCode']}</td>
+                <td>{$row['Email']}</td>
+                <td>" . (empty($row['InstiName']) ? "Not Registered" : $row['InstiName']) . "</td>
+                <td>" . (empty($row['InstiId']) ? "Not Registered" : $row['InstiId']) . "</td>
+                <td>{$row['Status']}</td>
+                <td>
+                    <div class='actions item-center'>
+                        &nbsp;
+                        <a onclick='update(this.id,`peaper`)' id='{$UserId}'><i class='bi bi-pencil-square text-green fs-6'></i></a>
+                    </div>
+                </td>
+            </tr>";
+        }
+        $htmlContent = ($reusalt->num_rows > 0) ?  $tFirst . $tHead . $tMiddle . $tBody . $tEnd : $tFirst . $tHead . $tMiddle . "<tr><td colspan='7'  class='text-info text-center'><i class='bi bi-search'>&nbsp;</i>Rusalt Not Found</td></tr>" . $tEnd;
+    } elseif ($type == 'regStu') {
+        $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+        $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+        $tMiddle = "
+            </thead>
+            <tbody>";
+        $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+        $tHead = "
+            <tr>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>";
+        $tBody = "";
+        $sql_with_data = "SELECT * FROM user WHERE ( UserName LIKE ? or Email LIKE ? ) and RegCode IS NULL $limit";
+        $sql_without_data = "SELECT * FROM user WHERE RegCode IS NULL $limit";
+
+        if ($data != null) {
+            $stmt = $conn->prepare($sql_with_data);
+            $stmt->bind_param("ss", $data, $data);
+        } else {
+            $stmt = $conn->prepare($sql_without_data);
+        }
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $tBody .= "
+                <tr>
+                    <td>{$row['UserName']}</td>
+                    <td>{$row['Email']}</td>
+                    <td>Not Regisrered</td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='update(this.id,`addmarks`)' id='{$row['UserId']} {$row['UserId']}'><i class='bi bi-plus text-green fs-5'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $tBody = "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+        }
+        // }
+        $htmlContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
+    }
+    echo $htmlContent;
+}
+//  user management end ******************************
 
 
 // same ad alol site  stast *****************

@@ -1,4 +1,0 @@
-mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '= ? WHERE UserId =  ? and OtherId = ?' at line 1 in C:\xampp\htdocs\new\arise\Dachbord\sql\process.php:1313
-Stack trace:
-#0 C:\xampp\htdocs\new\arise\Dachbord\sql\process.php(1313): mysqli->prepare('UPDATE activity...')
-#1 {main}

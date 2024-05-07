@@ -11,7 +11,7 @@
 <!-- Main css -->
 <link rel="stylesheet" href="assets/css/main.min.css">
 
-<link rel="stylesheet" href="assets/css/animates-apesial.css">
+<!-- <link rel="stylesheet" href="assets/css/animates-apesial.css"> -->
 
 
 <!-- *************

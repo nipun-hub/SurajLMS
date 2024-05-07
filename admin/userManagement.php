@@ -2,7 +2,7 @@
 <?php include('sql/conn.php'); ?>
 
 <!-- navbar_session -->
-<?php $_SESSION['active'] = 'peaperManagement'; ?>
+<?php $_SESSION['active'] = 'userManagement'; ?>
 
 <?php include_once('sql/function.php'); ?>
 
@@ -119,13 +119,13 @@
                     <!-- Row start -->
                     <div class="row my-3 text-center">
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('addPeaper')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add Peaper</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('regStu')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Register Student</button>
                         </div>
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?> disabled><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
                         </div>
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Upload marks other</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?> disabled><i class="bi bi-plus"></i>&nbsp;Upload marks other</button>
                         </div>
                         <!-- <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
                             <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
@@ -143,9 +143,9 @@
                                     <input type="radio" name="sub_nav" onchange="" id="sub_nav-3" value="3" onclick="ShowBody()">
                                     <!-- <input type="radio" name="sub_nav" onchange="" id="sub_nav-4" value="4" onclick="ShowBody()"> -->
                                     <div class="ul">
-                                        <label class="text-overflow" for="sub_nav-1">Peaper Manage</label>
+                                        <label class="text-overflow" for="sub_nav-1">User</label>
                                         <label class="text-overflow" for="sub_nav-2">Ranking</label>
-                                        <label class="text-overflow" for="sub_nav-3">Online Peaper Download</label>
+                                        <label class="text-overflow" for="sub_nav-3">User Register</label>
                                         <!-- <label class="text-overflow" for="sub_nav-4">Winner Manage</label> -->
                                     </div>
                                 </div>
@@ -167,7 +167,7 @@
 
                                         <!-- Search input group start -->
                                         <div class="input-group">
-                                            <select id="limitData" class="form-select mx-3" onchange="ShowRankBody('',this.value)">
+                                            <select id="limitData" class="form-select mx-3" onchange="ShowBody('',this.value)">
                                                 <option value="10">10</option>
                                                 <option value="20">20</option>
                                                 <option value="50">50</option>
@@ -273,8 +273,8 @@
         // }
 
         function updateModelContent(type, data = null) {
-            if (type == 'addPeaper') {
-                formData = "loadModelDataPeaper=" + "&type=" + type;
+            if (type == 'regStu') {
+                formData = "loadModelDataStManage=" + "&type=" + type;
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#modelMainContent').html(response);
                     getClassList();
@@ -283,51 +283,29 @@
                     loadScript('assets/vendor/bs-select/bs-select-custom.js');
                     $('#modelMain').modal('show');
                 });
-            } else if (type == 'uploadMarks' || type == 'uploadMarkNotReg') {
-                formData = "loadModelDataPeaper=" + "&type=" + type
-                $.post("sql/process.php", formData, function(response, status) {
-                    if (response == ' not active peaper') {
-                        nTost({
-                            type: 'error',
-                            titleText: 'Not active peaper',
-                            dictText: 'Active Class Not Found. Please active the class and try again!'
-                        });
-                    } else {
-                        $('#modelMainContent').html(response);
-                        type == 'uploadMarks' ? updateModelContent(`uploadMarksTableData`, '') : (type == 'uploadMarkNotReg' ? updateModelContent(`uploadMarkNotRegTableData`, '') : null);
-                        $('#modelMain').modal('show');
-                    }
-                });
-            } else if (type == 'uploadMarksTableData') {
-                formData = data == null ? "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperTable" : "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperTable" + "&data=" + data;
-                $.post("sql/process.php", formData, function(response, status) {
-                    $('#model-table-content-change').html(response);
-                });
-            } else if (type == 'uploadMarkNotRegTableData') {
-                // console.log('done');
-                formData = data == null ? "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperNotRegTable" : "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperNotRegTable" + "&data=" + data;
-                $.post("sql/process.php", formData, function(response, status) {
-                    $('#model-table-content-change').html(response);
-                });
             }
         }
 
         ShowBody();
 
-        function ShowBody(data = null) {
+        function ShowBody(data = null,limit = null) {
             $('#table-content-change').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
             
             var searchval = document.querySelector('.input-group .searchInp').value;
             data = searchval == "" ? null : searchval;
             var checkedinp = document.querySelector('#sub-nav-body1 input:checked').value;
-            var type = checkedinp == 1 ? "PeaperManage" : (checkedinp == 2 ? 'rankingManage' : (checkedinp == 3 ? "downloadPeaper" : "undefind"));
+            var type = checkedinp == 1 ? "userManage" : (checkedinp == 2 ? 'rankingManage' : (checkedinp == 3 ? "regStu" : "undefind"));
+            var limitData = document.querySelector('.input-group #limitData').value;
+            limitData = limit == null ? limitData : limit;
 
-            formData = data == null ? "changePeaperManageTable=" + type : "changePeaperManageTable=" + type + "&data=" + data;
+            formData = data == null ? "changeUserManageTable=" + type + '&limidData=' + limitData: "changeUserManageTable=" + type + "&data=" + data + '&limidData=' + limitData;
             $.post("sql/process.php", formData, function(response, status) {
                 $('#table-content-change').html(response);
                 checkedinp == 2 ? ShowRankBody() : null;
             });
         }
+
+        // finished ##############
 
         function ShowRankBody(data = null, limit = null) {
             $('#rank_Body').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
@@ -523,7 +501,7 @@
 
 
 
-        // finished ***********************************
+        // finished 2 ***********************************
 
         // function showImage(src) {
         //     nthj(6, src);

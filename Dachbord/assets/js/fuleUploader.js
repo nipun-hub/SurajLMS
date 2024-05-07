@@ -61,10 +61,10 @@ fileInput.addEventListener("change", () => {
                 formData.append("data", data);
                 formData.append("type", "uploadFile");
                 // formData = "manageActivity=" + "&data=" + data + "&type=" + "uploadFile";
-                console.log('--- FormData Entries ---');
-                for (const [key, value] of formData.entries()) {
-                    console.log(`Key: ${key}, Value: ${value}`); // Access key and value
-                }
+                // console.log('--- FormData Entries ---');
+                // for (const [key, value] of formData.entries()) {
+                //     console.log(`Key: ${key}, Value: ${value}`); // Access key and value
+                // }
 
                 $.ajax({
                     url: "sql/process.php",
