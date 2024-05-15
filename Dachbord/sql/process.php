@@ -1162,7 +1162,7 @@ try {
             $reusalt = $stmt->get_result();
             if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                 $LesName = $row['LesName'];
-            }else{
+            } else {
                 $LesName = "";
             }
             $respons = "
@@ -2013,6 +2013,74 @@ try {
     // profile model submit section end
 
     // profile sections end **********************
+
+
+    // same as all functions section start  *************
+
+    if (isset($_POST['updateModal'])) {
+        $type = $_POST['type'];
+        $modelHead = "
+        <div class='modal-header'>
+                <h5 class='modal-title' id='verticallyCenteredLabel'>Peaper Rusalt</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'><i class='bi bi-x-lg'></i></button>
+            </div>
+        <div class='modal-body' id='modelBody'>";
+        $modelFooter = "
+        </div>";
+        if ($type == 'searchbox') {
+            $today = GetToday('ymd', '-');
+            $status = "finished";
+            $sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ss", $today, $status);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $ModelMiddle = "
+                <div class='row item-center'>
+                    <div class='col-8'>
+                        <div class='search-container'>
+                            <div class='input-group'>
+                                <input type='text' class='form-control' id='searchInp2' placeholder='Search index'>
+                                <button class='btn' type='button' onclick='search(`peaperReusalt`)'>
+                                    <i class='bi bi-search' id='searchInp2Search'></i>
+                                    <div class='spinner-border text-red spinner-w1 d-none pe-none' id='searchInp2Snip' role='status'>
+							        	<span class='visually-hidden'>Loading...</span>
+							        </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class='search_reusalt' id='search_reusalt'></div>
+                    </div>
+                </div>
+                ";
+                $respons = $modelHead . $ModelMiddle . $modelFooter;
+            }
+        } elseif ($type == 'peaperReusalt') {
+            $data = $_POST['data'];
+            $respons = "";
+            $today = GetToday('ymd', '-');
+            $status = "finished";
+            // $sql = "SELECT * FROM peaper LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId LEFT JOIN unreguser ON unreguser.CousId = ? OR unreguser.InstiId = ? WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) >  ?  and peaper.Status = ?";
+            $sql = "SELECT * FROM peaper
+            LEFT JOIN unreguser ON unreguser.CousId = ?
+            LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId
+            WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) > ? AND peaper.Status = ?";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sss",$data, $today, $status);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $marks = $row['Marks'];
+                $grade = empty($marks) ? "Grade Not Found" : (($marks >  94) ? "A &#8314;" : ($marks > 74 ? "A &#8315;" : ($marks > 69 ? "B &#8314;" : ($marks > 64 ? "B &#8315;" : ($marks > 59  ? "C &#8314;" : ($marks > 54 ? "C &#8315;" : ($marks > 49 ? "S &#8314;" : ($marks > 44 ? "S &#8315;" : "F") ) ) )) ) ) );
+                $respons .= empty($row['Name']) ? "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found </p>" :  "<p class='text-success mt-3 p-3 border'> Peaper &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  &nbsp;{$row['peaperName']} <br> Use Name : &nbsp;{$row['Name']} <br> Greade &nbsp;&nbsp;&nbsp;&nbsp; : &nbsp;{$grade} <br> Marks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['Marks']) ? "Marks Not Found" : $row['Marks'])." </p>";
+            }
+        }
+        echo $respons;
+    }
+
+    // same as all functions section ens  *************
 } catch (Exception $e) {
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     fwrite($myfile, $e);

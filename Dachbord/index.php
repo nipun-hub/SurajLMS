@@ -293,6 +293,10 @@
 
 	</div>
 
+	<!-- nTost alert section start  -->
+	<div id='ntostDisplay'></div>
+	<!-- nTost alert section emd -->
+
 	<?php include('include/animated-special.php'); ?>
 
 
@@ -385,6 +389,7 @@
 	<!-- alert js -->
 	<script src="assets/js/alert.js"></script>
 	<script src="assets/js/error.js"></script>
+	<script src="assets/js/nTost.js"></script>
 
 	<script>
 		// $(".xdtgyr").owlCarousel({

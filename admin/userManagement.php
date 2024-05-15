@@ -216,6 +216,13 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modelMainxl" tabindex="-1" aria-labelledby="modelMainxlLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content modelMainxl bg-light" id="modelMainContentxl">
+
+            </div>
+        </div>
+    </div>
     <!-- model Section end -->
 
 
@@ -273,24 +280,38 @@
         // }
 
         function updateModelContent(type, data = null) {
-            if (type == 'regStu') {
-                formData = "loadModelDataStManage=" + "&type=" + type;
+            if (true) {
+                formData = data == null ? "loadModelDataStManage=" + "&type=" + type : "loadModelDataStManage=" + "&type=" + type + "&data=" + data;
                 $.post("sql/process.php", formData, function(response, status) {
-                    $('#modelMainContent').html(response);
-                    getClassList();
-                    loadGroup();
-                    loadScript('assets/vendor/bs-select/bs-select.min.js');
-                    loadScript('assets/vendor/bs-select/bs-select-custom.js');
-                    $('#modelMain').modal('show');
+                    if (type == 'viweStuInfo') {
+                        $('#modelMainContentxl').html(response);
+                        $('#modelMainxl').modal('show');
+                    } else {
+                        $('#modelMainContent').html(response);
+                        $('#modelMain').modal('show');
+                    }
                 });
             }
+            // if (type == 'regStu') {
+            //     formData = data == null ? "loadModelDataStManage=" + "&type=" + type : "loadModelDataStManage=" + "&type=" + type + "&data=" + data;
+            //     $.post("sql/process.php", formData, function(response, status) {
+            //         $('#modelMainContent').html(response);
+            //         $('#modelMain').modal('show');
+            //     });
+            // } else if (type == 'regStuSearch') {
+            //     formData = "loadModelDataStManage=" + "&type=" + type + "&data=" + data;
+            //     $.post("sql/process.php", formData, function(response, status) {
+            //         $('#modelMainContent').html(response);
+            //         $('#modelMain').modal('show');
+            //     });
+            // }
         }
 
         ShowBody();
 
-        function ShowBody(data = null,limit = null) {
+        function ShowBody(data = null, limit = null) {
             $('#table-content-change').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
-            
+
             var searchval = document.querySelector('.input-group .searchInp').value;
             data = searchval == "" ? null : searchval;
             var checkedinp = document.querySelector('#sub-nav-body1 input:checked').value;
@@ -298,12 +319,45 @@
             var limitData = document.querySelector('.input-group #limitData').value;
             limitData = limit == null ? limitData : limit;
 
-            formData = data == null ? "changeUserManageTable=" + type + '&limidData=' + limitData: "changeUserManageTable=" + type + "&data=" + data + '&limidData=' + limitData;
+            formData = data == null ? "changeUserManageTable=" + type + '&limidData=' + limitData : "changeUserManageTable=" + type + "&data=" + data + '&limidData=' + limitData;
             $.post("sql/process.php", formData, function(response, status) {
                 $('#table-content-change').html(response);
                 checkedinp == 2 ? ShowRankBody() : null;
             });
         }
+
+        function search(type) {
+            const value = document.querySelector('#searchInp2').value;
+            if (value.length > 2 && validateEmail(value)) {
+                document.getElementById('searchInp2Search').classList.add('d-none');
+                document.getElementById('searchInp2Snip').classList.remove('d-none');
+                updateModelContent('regStuSearch', value);
+            } else {
+                nTost({
+                    type: 'error',
+                    titleText: 'Pleace enter valied email'
+                });
+            }
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return emailRegex.test(email);
+        }
+
+        function add(self, type) {
+            formData = "add=" + "&type=" + type + "&data=" + self;
+            $.post("sql/process.php", formData, function(response, status) {
+                $('#modelMainContent').html(response);
+                $('#modelMain').modal('show');
+            });
+        }
+
+        // function viwe(){
+        //     updateModelContent('viweUser');
+        // }
+
+
 
         // finished ##############
 

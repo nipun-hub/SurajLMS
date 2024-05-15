@@ -1,3 +1,13 @@
+<!-- model Section start -->
+<div class="modal fade" id="modelMain" tabindex="-1" aria-labelledby="modelMainLabel" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content modelMain bg-light" id="modelMainContent">
+
+            </div>
+        </div>
+    </div>
+    <!-- model Section end -->
+
 <!-- App Footer start -->
 <div class="app-footer">
 	<p class="left col-7">© <a href="#" style="color: red;">Surajskumara.lk</a> , All Right Reserved.</p>

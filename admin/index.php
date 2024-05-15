@@ -68,8 +68,8 @@
 							$reusalt = $stmt->get_result();
 							if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
 								$className = "{$row['year']}  {$row['ClassName']} {$row['InstiName']}";
-								$decodeDict = json_decode($row['Dict'],true);
-								$ending = $decodeDict[1]." - ".$decodeDict[2];
+								$decodeDict = json_decode($row['Dict'], true);
+								$ending = $decodeDict[1] . " - " . $decodeDict[2];
 							?>
 								<div class="stats-tile p-2">
 									<img src="assets/img/site use/acvitating.gif" alt="" width="30">
@@ -99,33 +99,244 @@
 					<!-- Row start -->
 					<div class="row">
 						<?php
-						$sql = "SELECT InstiName FROM insti WHERE Status = 'active'";
-						$stmt = $conn->prepare($sql);
-						$stmt->execute();
-						$reusalt = $stmt->get_result();
-						while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-							$instiName = $row['InstiName'];
-							$sql = "SELECT COUNT(UserId) AS numofrows FROM user WHERE InstiName = '$instiName' and Status = 'active'";
+						if (false) {
+							$sql = "SELECT SUM(CASE WHEN user.RegCode IS NOT NULL AND user.Status = 'active' THEN 1 ELSE 0 END) AS activeUser, SUM(CASE WHEN user.RegCode IS NOT NULL AND user.Status = 'pending' THEN 1 ELSE 0 END) AS pendingUser, user.InstiName ,insti.InstiPic FROM user LEFT JOIN insti ON user.InstiName COLLATE utf8mb4_unicode_ci = insti.InstiName COLLATE utf8mb4_unicode_ci WHERE user.InstiName IS NOT NULL GROUP BY user.InstiName";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							while ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+								$activeUser = $row1['activeUser'];
+								$pendingUser = $row1['pendingUser'];
+								$instiName = $row1['InstiName'];
+								$InstiPic = $row1['InstiPic'];
+						?>
+								<div class="col-xxl-6 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-body row justify-content-between">
+											<div class="col-8 ps-4">
+												<h4 class="mb-2 text-success"><?php echo $pendingUser; ?> / <?php echo $activeUser; ?></h4>
+												<p class="mb-2">Registered Student OF <?php echo $instiName; ?></p>
+											</div>
+											<div class="col-4">
+												<img class="float-end" src="../Dachbord/assets/img/site use/instiimge/<?php echo $InstiPic; ?>" width="100">
+											</div>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as stuCount FROM user WHERE RegCode IS NOT NULL and Status = 'active'";
 							$stmt = $conn->prepare($sql);
 							$stmt->execute();
 							$reusalt1 = $stmt->get_result();
 							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-								$numofrows = $row1['numofrows'];
-							}
-						?>
-							<div class="col-xxl-3 col-sm-6 col-12">
-								<div class="stats-tile p-2">
-									<div class="sale-icon-bdr">
-										<i class="bi bi-person-check-fill fs-5"></i>
-									</div>
-									<div class="sale-details">
-										<h5><?php echo $instiName; ?>Registered student</h5>
-										<!-- <h3 class="text-blue">2,567</h3> -->
-										<p class="growth text-center"><?php echo $numofrows; ?></p>
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Student Regisrered</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-people text-info fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['stuCount']; ?></h3>
+												<!-- <p class="mb-2">Registered Student OF</p> -->
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Registered Student on the site </p>
+										</div>
 									</div>
 								</div>
-							</div>
-						<?php } ?>
+						<?php }
+						} ?>
+
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as stuCount FROM user WHERE RegCode IS NULL";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Not Regisrered</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-person-x text-danger fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['stuCount']; ?></h3>
+												<!-- <p class="mb-2">Registered Student OF</p> -->
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Not Registered Student on the site </p>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
+
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as instiCount FROM insti WHERE Status = 'active'";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Institutes</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-building text-info fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['instiCount']; ?></h3>
+												<!-- <p class="mb-2">Registered Student OF</p> -->
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Created Institute</p>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
+
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as classCount FROM class WHERE Status = 'active'";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Class</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-person-workspace text-info fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['classCount']; ?></h3>
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Created class count</p>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
+
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as lesCount FROM lesson";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Lesson</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-person-video3 text-info fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['lesCount']; ?></h3>
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Created lessons count</p>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
+
+						<?php if (true) { ?>
+							<?php
+							$sql = "SELECT COUNT(*) as adminCount FROM adminuser WHERE Status = 'active'";
+							$stmt = $conn->prepare($sql);
+							$stmt->execute();
+							$reusalt1 = $stmt->get_result();
+							if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+							?>
+								<div class="col-xxl-3 col-sm-6 col-12">
+									<div class="card">
+										<div class="card-header">
+											<div class="card-title">Admin</div>
+										</div>
+										<div class="card-body row justify-content-between">
+											<div class="col-8 item-center m-0">
+												<!-- <img class="float-end" src="../Dachbord/assets/img/site use/instiimge/" width="100"> -->
+												<!-- <div class="stats-tile item-center bg-da"> -->
+												<!-- <div class="sale-icon-bdr "> -->
+												<!-- <i class="bi bi-pie-chart"></i> -->
+												<!-- </div> -->
+												<!-- </div> -->
+												<i class="bi bi-person-lines-fill text-info fs-1"></i>
+											</div>
+											<div class="col-4">
+												<h3 class="text-success float-start"><?php echo $row1['adminCount']; ?></h3>
+											</div>
+										</div>
+										<div>
+											<p class="m-4 mt-0">Acmin count on site Registered</p>
+										</div>
+									</div>
+								</div>
+						<?php }
+						} ?>
 					</div>
 					<!-- Row end -->
 
