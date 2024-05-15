@@ -125,7 +125,8 @@
                             <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
                         </div>
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Upload marks other</button>
+                            <!-- <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add new student</button> -->
+                            <button class="btn btn-success w-100" onclick="updateModelContent('addNewStudent')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add new student</button>
                         </div>
                         <!-- <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
                             <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
@@ -140,12 +141,14 @@
                                 <div class="radio-btn notifiradio">
                                     <input type="radio" name="sub_nav" onchange="" id="sub_nav-1" value="1" onclick="ShowBody()" checked>
                                     <input type="radio" name="sub_nav" onchange="" id="sub_nav-2" value="2" onclick="ShowBody()">
-                                    <!-- <input type="radio" name="sub_nav" onchange="" id="sub_nav-3" value="3" onclick="ShowBody()"> -->
+                                    <input type="radio" name="sub_nav" onchange="" id="sub_nav-3" value="3" onclick="ShowBody()">
+                                    <input type="radio" name="sub_nav" onchange="" id="sub_nav-4" value="4" onclick="ShowBody()">
                                     <!-- <input type="radio" name="sub_nav" onchange="" id="sub_nav-4" value="4" onclick="ShowBody()"> -->
                                     <div class="ul">
                                         <label class="text-overflow" for="sub_nav-1">Peaper Manage</label>
                                         <label class="text-overflow" for="sub_nav-2">Ranking</label>
-                                        <!-- <label class="text-overflow" for="sub_nav-3">Group Manage</label> -->
+                                        <label class="text-overflow" for="sub_nav-3">Online Peaper Download</label>
+                                        <label class="text-overflow" for="sub_nav-4">Finished Peaper</label>
                                         <!-- <label class="text-overflow" for="sub_nav-4">Winner Manage</label> -->
                                     </div>
                                 </div>
@@ -216,7 +219,16 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modelMainxl" tabindex="-1" aria-labelledby="modelMainxlLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content modelMainxl" id="modelMainxlContent">
+
+            </div>
+        </div>
+    </div>
     <!-- model Section end -->
+
+    <a id="downloadAnchor" style="display: none;"></a>
 
 
     <!-- alert include -->
@@ -238,6 +250,9 @@
     <!-- Bootstrap Select JS -->
     <script src="assets/vendor/bs-select/bs-select.min.js"></script>
     <script src="assets/vendor/bs-select/bs-select-custom.js"></script>
+
+    <!-- Apex Charts -->
+    <script src="assets/vendor/apex/apexcharts.min.js"></script>
 
     <!-- Main Js Required -->
     <script src="assets/js/main.js"></script>
@@ -283,7 +298,8 @@
                     loadScript('assets/vendor/bs-select/bs-select-custom.js');
                     $('#modelMain').modal('show');
                 });
-            } else if (type == 'uploadMarks' || type == 'uploadMarkNotReg') {
+                // } else if (type == 'uploadMarks' || type == 'uploadMarkNotReg') {
+            } else if (type == 'uploadMarks' || type == 'addNewStudent') {
                 formData = "loadModelDataPeaper=" + "&type=" + type
                 $.post("sql/process.php", formData, function(response, status) {
                     if (response == ' not active peaper') {
@@ -294,7 +310,7 @@
                         });
                     } else {
                         $('#modelMainContent').html(response);
-                        type == 'uploadMarks' ? updateModelContent(`uploadMarksTableData`, '') : (type == 'uploadMarkNotReg' ? updateModelContent(`uploadMarkNotRegTableData`, '') : null);
+                        type == 'uploadMarks' ? updateModelContent(`uploadMarksTableData`, '') : null;
                         $('#modelMain').modal('show');
                     }
                 });
@@ -303,11 +319,17 @@
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#model-table-content-change').html(response);
                 });
-            } else if (type == 'uploadMarkNotRegTableData') {
-                // console.log('done');
+            } else if (type == 'addNewStudentTableData') {
                 formData = data == null ? "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperNotRegTable" : "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperNotRegTable" + "&data=" + data;
                 $.post("sql/process.php", formData, function(response, status) {
                     $('#model-table-content-change').html(response);
+                });
+            } else if (type == 'viewFinishedPeaper') {
+                formData = data == null ? "loadModelDataPeaper=" + "&type=" + "loadModelDataviewFinishedPeaper" : "loadModelDataPeaper=" + "&type=" + "loadModelDataviewFinishedPeaper" + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#modelMainxlContent').html(response);
+                    $('#modelMainxl').modal('show');
+                    showViewOldPeaperBody();
                 });
             }
         }
@@ -316,10 +338,12 @@
 
         function ShowBody(data = null) {
             $('#table-content-change').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
+
             var searchval = document.querySelector('.input-group .searchInp').value;
             data = searchval == "" ? null : searchval;
             var checkedinp = document.querySelector('#sub-nav-body1 input:checked').value;
-            var type = checkedinp == 1 ? "PeaperManage" : (checkedinp == 2 ? 'rankingManage' : (checkedinp == 3 ? "undefind" : "undefind"));
+            var type = checkedinp == 1 ? "PeaperManage" : (checkedinp == 2 ? 'rankingManage' : (checkedinp == 3 ? "downloadPeaper" : (checkedinp == 4 ? "FinishedPeaper" : "undefind")));
+
             formData = data == null ? "changePeaperManageTable=" + type : "changePeaperManageTable=" + type + "&data=" + data;
             $.post("sql/process.php", formData, function(response, status) {
                 $('#table-content-change').html(response);
@@ -337,6 +361,47 @@
             formData = data == null ? "changeRankingData=" + "&type=" + type + "&limit=" + limitData : "changeRankingData=" + "&type=" + type + "&data=" + data + "&limit=" + limitData;
             $.post("sql/process.php", formData, function(response, status) {
                 $('#rank_Body').html(response);
+                // load Chart 
+                formData = "getChartVariyable=" + "&type=" + "activePeaperchart" + "&id=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    if (status) {
+                        var options = response.lesSummary1;
+                        var chart1 = new ApexCharts(
+                            document.querySelector("#activePeaperChart"),
+                            options
+                        );
+                        setTimeout(function() {
+                            chart1.render();
+                        }, 500);
+                    }
+                });
+            });
+        }
+
+        function showViewOldPeaperBody(data = null, limit = null) {
+            $('#Old_peaper_body').html("<center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center>");
+            var searchval = document.querySelector('.inputData2 .searchInp').value;
+            var limitData = document.querySelector('.inputData2 #limitData').value;
+            var peaperId = document.getElementById('oldPeaperId').value;
+            limitData = limit == null ? limitData : limit;
+            data = searchval == "" ? null : searchval;
+            var type = document.querySelector('#sub-nav-body2 input:checked').value;
+            formData = data == null ? "changeviewOldPeaperData=" + "&type=" + type + "&limit=" + limitData + "&peaperId=" + peaperId : "changeviewOldPeaperData=" + "&type=" + type + "&data=" + data + "&limit=" + limitData + "&peaperId=" + peaperId;
+            $.post("sql/process.php", formData, function(response, status) {
+                $('#Old_peaper_body').html(response);
+                formData = "getChartVariyable=" + "&type=" + "oldPeaperchart" + "&id=" + peaperId;
+                $.post("sql/process.php", formData, function(response, status) {
+                    if (status) {
+                        var options2 = response.lesSummary2;
+                        var chart2 = new ApexCharts(
+                            document.querySelector("#oldPeaperchart"),
+                            options2
+                        );
+                        setTimeout(function() {
+                            chart2.render();
+                        }, 500);
+                    }
+                });
             });
         }
 
@@ -404,6 +469,7 @@
                     formData = "updateWith=" + "&type=" + type + 'Update' + "&data=" + self + "&marks=" + marks;
                     $.post("sql/process.php", formData, function(response, status) {
                         document.getElementById(self).querySelector('i').classList.remove('rotatr-continuar');
+                        console.log(response);
                         response == ' success' ? nTost({
                             type: 'success',
                             titleText: 'Successfully updated'
@@ -517,6 +583,42 @@
                 //     });
                 // });
             }
+        }
+
+        function prepareFile(type, data = null, method = null) {
+            formData = "prepareFile=" + "&type=" + type + "&data=" + data + "&method=" + method;
+            $.post("sql/redyDownloadExcel.php", formData, function(response, status) {
+                console.log(response);
+                if (response == ' success') {
+                    nTost({
+                        type: 'success',
+                        titleText: 'Successfully create file. will download soon!'
+                    });
+
+                    // Define the file name and URL
+                    const fileName = 'export.xlsx';
+                    const fileUrl = 'sql/' + fileName;
+
+                    // Create an anchor element and set its properties
+                    const anchor = document.getElementById('downloadAnchor');
+                    anchor.href = fileUrl;
+                    anchor.target = '_blank';
+                    anchor.download = fileName;
+
+
+                    // Click the anchor element to start the download
+                    anchor.click();
+                } else {
+                    nTost({
+                        type: 'error',
+                        titleText: 'Error create file'
+                    });
+                }
+
+                if (true) {
+                    $file_path = '/path/to/your/file.ext';
+                }
+            });
         }
 
 

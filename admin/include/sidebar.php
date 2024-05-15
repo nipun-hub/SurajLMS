@@ -5,9 +5,9 @@ $atendent = GetActive('atendent');
 $notification = GetActive('notification');
 $lessonManage_sub = GetActive('lessonManage', 'sub');
 $addsnippet_sub = GetActive('addsnippet', 'sub');
-// $updatelesson_sub = GetActive('updatelesson', 'sub');
+$userManagement_sub = GetActive('userManagement', 'sub');
 $peaperManagement_sub = GetActive('peaperManagement', 'sub');
-(GetActive('addsnippet') != '' || GetActive('lessonManage') != '') || GetActive('peaperManagement') ? $addcontent = "active-page-link" : $addcontent = "";
+(GetActive('addsnippet') != '' || GetActive('lessonManage') != '') || GetActive('peaperManagement') || GetActive('userManagement') ? $addcontent = "active-page-link" : $addcontent = "";
 // (GetActive('updatelesson') != '') ? $updatecontent = "active-page-link" : $updatecontent = "";
 
 ?>
@@ -52,6 +52,9 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
+                            <li>
+                                <a href="userManagement.php" class="<?php echo $userManagement_sub; ?>">User Management</a>
+                            </li>
                             <li>
                                 <a href="lessonManagement.php" class="<?php echo $lessonManage_sub; ?>">Lesson Management</a>
                             </li>

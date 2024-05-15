@@ -164,11 +164,11 @@ if (!isset($_SESSION['login'])) {
 
 	<script>
 		window.onload = function() {
-			var specialAnimation = document.querySelectorAll('.special-animate');
-			console.log('success');
-			specialAnimation.forEach(function(self) {
-				self.classList.add('snowflake');
-			});
+			// var specialAnimation = document.querySelectorAll('.special-animate');
+			// console.log('success');
+			// specialAnimation.forEach(function(self) {
+			// 	self.classList.add('snowflake');
+			// });
 
 			url_data = window.location.search;
 			if (url_data == '?success_login') {

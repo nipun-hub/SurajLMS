@@ -12146,10 +12146,14 @@ img{
     background:#dae0e9;
     box-shadow:0 3px 5px rgba(0,10,10,.05);
     overflow: hidden;
+   
 }
 .sub-nav .sub-nav-body .ul {
     display: flex;
     gap: 10px;
+    overflow-x:auto;
+    overflow-y: hidden;
+    /* -webkit-overflow-scrolling:touch */
 }
 .sub-nav .sub-nav-body .ul label{
     /* background-color: #eee; */
@@ -12162,9 +12166,9 @@ img{
     gap: 10px;
 }
 .sub-nav .sub-nav-body .text-overflow{
-    overflow:hidden;
+    /* overflow:hidden; */
     white-space:nowrap;
-    text-overflow:ellipsis;
+    /* text-overflow:ellipsis; */
 }
 .sub-nav .sub-nav-body input{
     display: none;
@@ -12222,6 +12226,16 @@ input[name="sub_nav_rank"][id="sub_nav_rank-2"]:checked ~ .ul label[for="sub_nav
     overflow: visible;
     transform: scale(1.1);
 }input[name="sub_nav_rank"][id="sub_nav_rank-4"]:checked ~ .ul label[for="sub_nav_rank-4"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}input[name="sub_nav_rank"][id="sub_nav_rank-5"]:checked ~ .ul label[for="sub_nav_rank-5"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}input[name="sub_nav_rank"][id="sub_nav_rank-6"]:checked ~ .ul label[for="sub_nav_rank-6"]{
     background-color: #fff;
     width: auto;
     overflow: visible;

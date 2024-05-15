@@ -94,6 +94,21 @@ function getaddpeaperAttribute() {
     reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
 }
 
+function getaddNewStudentAttribute() {
+    inputfeelds = document.querySelectorAll('.modelMain .AddStu');
+    // inputfeelds2 = document.querySelectorAll('.modelMain .physical');
+    // tags = document.querySelectorAll('.modelMain .tags select');
+    reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
+}
+
+function getUnRegUserRegAttribute() {
+    inputfeelds = document.querySelectorAll('.modelMain .regstu');
+    // inputfeelds2 = document.querySelectorAll('.modelMain .physical');
+    // tags = document.querySelectorAll('.modelMain .tags select');
+    reusaltLog = document.querySelectorAll('.modelMain .rusaltLog div');
+    finifhIndi = document.querySelectorAll('.modelMain #finishIndi div');
+}
+
 // snippit update 
 function getUpdateInstiAttribute() {
     inputfeelds = document.querySelectorAll('#modelMainContent input[type=text] , #modelMainContent textarea');
@@ -735,7 +750,7 @@ function submitModelPeaper(type, method = null) {
     if (type == 'addPeaper') {
         getaddpeaperAttribute();
         if (validateaddpeaper()) {
-            console.log('done');
+            // console.log('done');
             var PeaperData = new FormData();
             PeaperData.append("peaperManage", "");
             PeaperData.append("type", "addPeaperData");
@@ -795,8 +810,139 @@ function submitModelPeaper(type, method = null) {
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
+    } else if(type == 'addNewStudent'){ // for peaper
+        getaddNewStudentAttribute();
+        if (validateAddStu()) {
+            if (true) {
+                var PeaperData = new FormData();
+                PeaperData.append("peaperManage", "");
+                PeaperData.append("type", "addNewStudent");
+                for (var count = 0; count < inputfeelds.length; count++) {
+                    PeaperData.append(inputfeelds[count].name, inputfeelds[count].value);
+                }
+            }
+
+            // PeaperData.forEach((key,value) => {
+            //     console.log("name : " + key + "   " + " value : " + value);
+            // });
+
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PeaperData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    if (response == " success") {
+                        // clearFormData();
+                        // reusaltLog[1].style.display = "none";
+                        // reusaltLog[0].style.display = "block";
+                        // setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                        // ShowBody('addPeaper');
+                        $('#modelMain').modal('hide');
+                        nTost({ type: 'success', titleText: 'SuccessFully add the student' });
+                    } else {
+                        reusaltLog[0].style.display = "none";
+                        reusaltLog[1].style.display = "block";
+                        reusaltLog[1].innerHTML = response == ' Alredy Added' ? 'Failed Alredy add this student' : 'Failed add the student';
+                        setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                    }
+                }
+            });
+
+
+        }  else {
+            reusaltLog[0].style.display = "none";
+            reusaltLog[1].innerHTML = "Please complete the everything";
+            reusaltLog[1].style.display = "block";
+            setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        } 
+    } else if (type == 'UnRegUserReg' ) {   // regidtered new student
+        getUnRegUserRegAttribute();
+        if (validateUnRegUserReg()) {
+            if (true) {
+                finifhIndi[0].classList.add('d-none');
+                finifhIndi[1].classList.remove('d-none');
+            }
+
+            if (true) { // getting input data
+                var PeaperData = new FormData();
+                PeaperData.append("studentManage", "");
+                PeaperData.append("type", type);
+                for (var count = 0; count < inputfeelds.length; count++) {
+                    PeaperData.append(inputfeelds[count].name, inputfeelds[count].value);
+                }
+            }
+            PeaperData.forEach((key,value) => {
+                console.log("name : " + key + "   " + " value : " + value);
+            });
+
+            $.ajax({
+                url: "sql/process.php", type: "POST", data: PeaperData, processData: false, contentType: false, success: function (response, status) {
+                    console.log(response);
+                    if (response == " success") {
+                        // clearFormData();
+                        // reusaltLog[1].style.display = "none";
+                        // reusaltLog[0].style.display = "block";
+                        // setTimeout(function () { reusaltLog[0].style.display = "none"; }, 5000);
+                        // ShowBody('addPeaper');
+                        $('#modelMain').modal('hide');
+                        nTost({ type: 'success', titleText: 'SuccessFully registered this student' });
+                    } else {
+                        // reusaltLog[0].style.display = "none";
+                        // reusaltLog[1].style.display = "block";
+                        // reusaltLog[1].innerHTML = response == ' somthing wront' ? 'Failed! Somthing Wront ' : 'Failed add the student';
+                        // setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+                        var massage = response == ' somthing wront' ? 'Failed! Somthing Wront ' : 'Failed add the student';
+                        nTost({ type: 'error', titleText: massage });
+
+                        if (true) {
+                            finifhIndi[0].classList.remove('d-none');
+                            finifhIndi[1].classList.add('d-none');
+                        }
+                    }
+                }
+            });
+            
+        } else {
+            nTost({ type: 'error', titleText: 'Please fill the all' });
+            // reusaltLog[0].style.display = "none";
+            // reusaltLog[1].innerHTML = "Please complete the everything";
+            // reusaltLog[1].style.display = "block";
+            // setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
+        }
     }
 
+}
+
+function validateUnRegUserReg(){
+    finaly =true;
+    for (let index = 0; index < inputfeelds.length; index++) {
+
+        if (inputfeelds[index].value == "") {
+            inputfeelds[index].classList.toggle("is-valid", false);
+            inputfeelds[index].classList.toggle("is-invalid", true);
+            finaly = false;
+        } else {
+            inputfeelds[index].classList.toggle("is-valid", true);
+            inputfeelds[index].classList.toggle("is-invalid", false);
+        }
+    }
+    return finaly;
+}
+
+function validateAddStu(){
+    finaly =true;
+    for (let index = 0; index < inputfeelds.length; index++) {
+        if (index == 1) {
+            continue;
+        }
+        if (inputfeelds[index].value == "") {
+            inputfeelds[index].classList.toggle("is-valid", false);
+            inputfeelds[index].classList.toggle("is-invalid", true);
+            finaly = false;
+        } else {
+            inputfeelds[index].classList.toggle("is-valid", true);
+            inputfeelds[index].classList.toggle("is-invalid", false);
+        }
+    }
+    return finaly;
 }
 
 function validateaddpeaper() {

@@ -104,7 +104,7 @@
 				<div class="content-wrapper">
 					<?php
 					if (true) {
-						$sql = "SELECT user.Status as userStatus,user.InstiId as  InstiIdUser,user.*,insti.* FROM user LEFT JOIN insti ON user.InstiName = user.InstiName WHERE user.UserId = ?";
+						$sql = "SELECT user.Status as userStatus, user.InstiId as InstiIdUser, user.*, insti.* FROM user LEFT JOIN insti ON user.InstiName COLLATE utf8mb4_unicode_ci = insti.InstiName COLLATE utf8mb4_unicode_ci WHERE user.UserId = ?;";
 						$stmt = $conn->prepare($sql);
 						$stmt->bind_param("i", $UserId);
 						$stmt->execute();
@@ -427,11 +427,11 @@
 
 		window.onload = function() {
 
-			var specialAnimation = document.querySelectorAll('.special-animate');
-			console.log('success');
-			specialAnimation.forEach(function(self) {
-				self.classList.add('snowflake');
-			});
+			// var specialAnimation = document.querySelectorAll('.special-animate');
+			// console.log('success');
+			// specialAnimation.forEach(function(self) {
+			// 	self.classList.add('snowflake');
+			// });
 
 			url_data = window.location.search;
 			if (url_data == '?success_login') {
