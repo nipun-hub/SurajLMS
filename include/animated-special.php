@@ -12,10 +12,10 @@
 </div>
 
 <script>
-    var specialAnimation = document.querySelectorAll('.special-animate');
-    window.onload = function(){
-        specialAnimation.forEach(function (self) {
-            self.classList.add('snowflake')
-        });
-    }
+    // var specialAnimation = document.querySelectorAll('.special-animate');
+    // window.onload = function(){
+    //     specialAnimation.forEach(function (self) {
+    //         self.classList.add('snowflake')
+    //     });
+    // }
 </script>

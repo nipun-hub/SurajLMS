@@ -1318,12 +1318,12 @@ if (isset($_POST['loadModelDataPeaper'])) {
                 <th>Action</th>
             </tr>";
             $tBody = "";
-            $sql_with_data = "SELECT * FROM unreguser WHERE Name LIKE ? GROUP BY Name,Year,InstiName LIMIT 5";
+            $sql_with_data = "SELECT * FROM unreguser WHERE Name LIKE ? or CousId LIKE ? GROUP BY InsertDate,Year,InstiName LIMIT 5";
             $sql_without_data = "SELECT * FROM unreguser GROUP BY Name,Year,InstiName LIMIT 5 ";
 
             if ($data != null) {
                 $stmt = $conn->prepare($sql_with_data);
-                $stmt->bind_param("s", $data,);
+                $stmt->bind_param("ss", $data,$data);
             } else {
                 $stmt = $conn->prepare($sql_without_data);
             }
@@ -1346,8 +1346,8 @@ if (isset($_POST['loadModelDataPeaper'])) {
                 $tBody .= "
                 <tr>
                     <td>{$row['Name']}</td>
-                    <td>{$row['InstiName']}</td>
-                    <td>{$row['Year']}</td>
+                    <td>{$row['InstiName']} / {$row['Year']}</td>
+                    <td>{$row['CousId']}</td>
                     <td><input type='number' name='marks' class='form-input w-100' placeholder='Enter Marks' id='{$row['URGId']}{$rowMain['PeaperId']}' value='{$marks}'></input></td>
                     <td> 
                         <div class='actions item-center'>
