@@ -16,10 +16,10 @@ var options = {
   },
   series: [{
     name: 'Overall sales',
-    data: [52, 73, 34, 66, 82]
+    data: [52, 73, 34, 66, 82, 49]
   }],
   xaxis: {
-    categories: ["A", "B", "C", "S", "F"],
+    categories: ["USA", "India", "Canada", "Brazil", "Turkey", "UK"],
     axisBorder: {
       show: false
     },
