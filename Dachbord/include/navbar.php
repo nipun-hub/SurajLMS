@@ -129,7 +129,7 @@ if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         <!-- end section start  -->
         <ul class="header-actions">
             <button class="alert alert-success px-3 py-2 rounded-pill d-flex d-none d-sm-flex" onclick="search('searchbox')"><i class="bi bi-search"></i>&nbsp; <span class="d-sm-block d-none">Search reusalt Now</span></button>
-            <i onclick="search('searchbox')" class="bi bi-search text-green me-2"></i>
+            <i onclick="search('searchbox')" class="bi bi-search text-green me-2 d-block d-sm-none"></i>
         </ul>
         <!-- end section end -->
 
