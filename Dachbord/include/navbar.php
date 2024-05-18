@@ -92,3 +92,47 @@
 
 </div>
 <!-- Page header ends -->
+
+<!-- *************************************************************************************** -->
+
+<!-- pending peaper rusalt start -->
+<?php
+$today = GetToday('ymd', '-');
+$status = "finished";
+$sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $today, $status);
+$stmt->execute();
+$reusalt = $stmt->get_result();
+if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+?>
+    <div class="page-header m-3">
+
+        <!-- Breadcrumb start -->
+        <ol onclick="search('searchbox')" class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#" class="leads ms-0">
+                    <span class="lead-icon">
+                        <i class="text-success bi bi-card-text animate__animated animate__swing animate__infinite infinite fs-5"></i>
+                        <b class="dot animate__animated animate__heartBeat animate__infinite"></b>
+                    </span>
+                </a>
+            </li>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#" class="d-flex"><span class="text-red"><?php echo $row['peaperName']; ?></span>&nbsp;<span class="d-none d-md-block">Peaper results released</span></a>
+                </li>
+            </ol>
+        </ol>
+        <!-- Breadcrumb end -->
+
+        <!-- end section start  -->
+        <ul class="header-actions">
+            <button class="alert alert-success px-3 py-2 rounded-pill d-flex d-none d-sm-flex" onclick="search('searchbox')"><i class="bi bi-search"></i>&nbsp; <span class="d-sm-block d-none">Search reusalt Now</span></button>
+            <i onclick="search('searchbox')" class="bi bi-search text-green me-2"></i>
+        </ul>
+        <!-- end section end -->
+
+    </div>
+<?php } ?>
+<!-- pending peaper rusalt ends -->
