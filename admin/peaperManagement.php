@@ -119,14 +119,14 @@
                     <!-- Row start -->
                     <div class="row my-3 text-center">
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('addPeaper')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add Peaper</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('addPeaper')" ><i class="bi bi-plus"></i>&nbsp;Add Peaper</button>
                         </div>
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" ><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
                         </div>
                         <div class="col-auto m-2">
                             <!-- <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add new student</button> -->
-                            <button class="btn btn-success w-100" onclick="updateModelContent('addNewStudent')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add new student</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('addNewStudent')"><i class="bi bi-plus"></i>&nbsp;Add new student</button>
                         </div>
                         <!-- <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
                             <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
