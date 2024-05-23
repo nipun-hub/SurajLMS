@@ -23,10 +23,10 @@
 
     <!-- CSS
     ================================================== -->
+    <link rel="stylesheet" href="assets/css/animates-apesial.css">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/vendor.css">
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/animates-apesial.css">
 
     <!-- script
     ================================================== -->
@@ -255,14 +255,13 @@
 	</div>
 
     <!-- apecial animated link  -->
-    <?php include_once('include/animated-special.php'); ?>
+    <?php include_once('include/animated-canvers.php'); ?>
     
     <!-- Messenger Chat plugin Code start -->
     <div id="fb-root"></div>
 
     <!-- Your Chat plugin code -->
-    <div id="fb-customer-chat" class="fb-customerchat">
-    </div>
+    <div id="fb-customer-chat" class="fb-customerchat"></div>
 
     <script>
       var chatbox = document.getElementById('fb-customer-chat');
