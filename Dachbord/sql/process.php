@@ -2020,9 +2020,9 @@ try {
     if (isset($_POST['updateModal'])) {
         $type = $_POST['type'];
         $modelHead = "
-        <div class='modal-header'>
-                <h5 class='modal-title' id='verticallyCenteredLabel'>Peaper Rusalt</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'><i class='bi bi-x-lg'></i></button>
+        <div class='modal-header position-absolute flex-end'>
+                <!--<h5 class='modal-title' id='verticallyCenteredLabel'>Peaper Rusalt</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'><i class='bi bi-x-lg'></i></button>-->
             </div>
         <div class='modal-body' id='modelBody'>";
         $modelFooter = "
@@ -2062,19 +2062,33 @@ try {
             $today = GetToday('ymd', '-');
             $status = "finished";
             // $sql = "SELECT * FROM peaper LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId LEFT JOIN unreguser ON unreguser.CousId = ? OR unreguser.InstiId = ? WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) >  ?  and peaper.Status = ?";
-            $sql = "SELECT * FROM peaper
-            LEFT JOIN unreguser ON unreguser.CousId = ?
-            LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId
-            WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) > ? AND peaper.Status = ?";
+            // $sql = "SELECT *,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM peaper
+            // LEFT JOIN unreguser ON unreguser.CousId = ?
+            // LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId
+            // WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) > ? AND peaper.Status = ?";
+            $sql="SELECT 
+                p.peaperName,un.*,t.* 
+            FROM peaper p 
+            INNER JOIN unreguser un ON un.CousId = ? 
+            INNER JOIN (
+                SELECT 
+                    m.*,ROW_NUMBER() OVER (ORDER BY m.Marks DESC) AS rank 
+                FROM marksofpeaper  m 
+                INNER JOIN peaper p ON DATE_ADD(p.finishDate, INTERVAL 8 DAY) > ? and p.Status = ? and p.PeaperId = m.PeaperId
+                ) t ON un.URGId = t.URGId 
+            WHERE DATE_ADD(p.finishDate, INTERVAL 8 DAY) > ? and p.Status = ?";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss",$data, $today, $status);
+            $stmt->bind_param("sssss",$data, $today, $status, $today, $status);
             $stmt->execute();
             $reusalt = $stmt->get_result();
             while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                 $marks = $row['Marks'];
-                $grade = empty($marks) ? "Grade Not Found" : (($marks >  94) ? "A &#8314;" : ($marks > 74 ? "A &#8315;" : ($marks > 69 ? "B &#8314;" : ($marks > 64 ? "B &#8315;" : ($marks > 59  ? "C &#8314;" : ($marks > 54 ? "C &#8315;" : ($marks > 49 ? "S &#8314;" : ($marks > 44 ? "S &#8315;" : "F") ) ) )) ) ) );
-                $respons .= empty($row['Name']) ? "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found </p>" :  "<p class='text-success mt-3 p-3 border'> Peaper &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  &nbsp;{$row['peaperName']} <br> Use Name : &nbsp;{$row['Name']} <br> Greade &nbsp;&nbsp;&nbsp;&nbsp; : &nbsp;{$grade} <br> Marks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['Marks']) ? "Marks Not Found" : $row['Marks'])." </p>";
+                $grade = empty($marks) ? "Grade Not Found" : (($marks >  94) ? "A &#8314;" : ($marks > 74 ? "A &#8315;" : ($marks > 69 ? "B &#8314;" : ($marks > 64 ? "B &#8315;" : ($marks > 59  ? "C &#8314;" : ($marks > 54 ? "C &#8315;" : ($marks > 49 ? "S &#8314;" : ($marks > 34 ? "S &#8315;" : "F") ) ) )) ) ) );
+                $respons .= empty($row['Name']) ? "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found </p>" :  "<p class='text-success mt-3 p-3 border'> Peaper &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  &nbsp;{$row['peaperName']} <br> Use Name : &nbsp;{$row['Name']} <br> Greade &nbsp;&nbsp;&nbsp;&nbsp; : &nbsp;{$grade} <br> Marks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['Marks']) ? "Marks Not Found" : $row['Marks'])."<br>Rank &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['rank']) ? "Marks Not Found" : ($row['rank'] > 3 ? $row['rank']+50: $row['rank']) )." </p>";
+            }
+            if(!$reusalt->num_rows){
+                $respons = "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found! Invalied Number </p>";
             }
         }
         echo $respons;
