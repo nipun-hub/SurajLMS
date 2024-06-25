@@ -90,19 +90,41 @@ if (!isset($_SESSION['login'])) {
 					<!-- Row start -->
 					<div class="row">
 
-						<div class="col-sm-12 col-12 notification">
-							<!-- <div class="card bg-transparent"> -->
-							<div class="card-header">
-								<div class="card-title">COntact Us</div>
+						<?php
+						$sql = "SELECT * FROM adminuser WHERE ShowStu = 1";
+						$stmt = $conn->prepare($sql);
+						$stmt->execute();
+						$reusalt = $stmt->get_result();
+
+						while ($reusalt->num_rows && $row = $reusalt->fetch_assoc()) { ?>
+							<?php
+							$accessStr = '';
+							$accessList = explode("][", substr($row['Access'], 1, -1));
+							foreach ($accessList as $key => $value) {
+								$accessStr .= $value . "  ";
+							}
+							$image = empty($row['image']) ? "assets\img\site use\admin\admin.jpg" : "../admin/assets/img/admin/".$row['image'];
+							?>
+							<div class="col-lg-3 col-sm-4 col-6">
+								<div class="card text-center">
+									<div class="card-header d-flex justify-content-center">
+										<img src="<?php echo $image;?>" width="100" height="100" class="rounded-circle border border-5" alt="Surajskumara.lk admin">
+									</div>
+									<div class="card-body">
+										<h5 class="card-title"><?php echo $row['UName'] ?></h5>
+										<p class="mb-3"><?php echo $row['Type']." ".$accessStr; ?></p>
+										<!-- <a class="aler/ alert-success px-3 py-2 rounded-pill w-auto">Admin Susipwan 2024</a> -->
+										<!-- <a href="#" class="">Update</a> -->
+									</div>
+									<div class="card-footer d-flex justify-content-between">
+										<p><i class="bi bi-whatsapp text-success me-2"></i><?php echo empty($row['MobNum']) ? "undefind" : $row['MobNum']?></p>
+										<p>|</p>
+										<p><i class="bi bi-telephone text-info me-2"></i> <?php echo empty($row['WhaNum']) ? "undefind" : $row['WhaNum']?></p>
+									</div>
+								</div>
 							</div>
-							<div class="card-body p-0 m-0">
-								<ul class="user-messages">
-									<li>
-										<img src="assets/img/development.gif" alt="" width="500">
-									</li>
-								</ul>
-							</div>
-						</div>
+						<?php } ?>
+
 
 					</div>
 					<!-- Row end -->
