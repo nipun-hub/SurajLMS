@@ -532,6 +532,8 @@ function validateText() {
 function search(type) {
   if (type == "peaperReusalt") {
     const value = document.querySelector("#searchInp2").value;
+    value.replace(" ","");
+    console.log(value);
     if (value.length > 0) {
       document.getElementById("searchInp2Search").classList.add("d-none");
       document.getElementById("searchInp2Snip").classList.remove("d-none");
@@ -577,16 +579,16 @@ function search(type) {
     });
   }
 
-  if (value.length > 2 && validateEmail(value)) {
-    document.getElementById("searchInp2Search").classList.add("d-none");
-    document.getElementById("searchInp2Snip").classList.remove("d-none");
-    updateModelContent("regStuSearch", value);
-  } else {
-    nTost({
-      type: "error",
-      titleText: "Pleace enter valied email",
-    });
-  }
+  // if (value.length > 2 && validateEmail(value)) {
+  //   document.getElementById("searchInp2Search").classList.add("d-none");
+  //   document.getElementById("searchInp2Snip").classList.remove("d-none");
+  //   updateModelContent("regStuSearch", value);
+  // } else {
+  //   nTost({
+  //     type: "error",
+  //     titleText: "Pleace enter valied email",
+  //   });
+  // }
 }
 
 // payment details
