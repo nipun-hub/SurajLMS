@@ -14,3 +14,5 @@
 	<p class="right col-5" > Powered by <a href="#" style="color: red;">Genie-X Technology</a></p>
 </div>
 <!-- App footer end -->
+
+<?php include('chat/chat.php'); ?>
