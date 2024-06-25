@@ -4559,6 +4559,55 @@ if (isset($_POST['studentManage'])) {
 }
 //  user management end ******************************
 
+// profile start *************************************
+if (isset($_POST['save'])) {
+    $type = $_POST['type'];
+    if ($type == 'adminData') {
+        try {
+            $userName = empty($_POST['userName']) ? null : $_POST['userName'];
+            $email = empty($_POST['email']) ? null : $_POST['email'];
+            $mobNo = empty($_POST['mobNo']) ? null : $_POST['mobNo'];
+            $whaNo = empty($_POST['whaNo']) ? null : $_POST['whaNo'];
+            $fileTemp = empty($_FILES['profileImage']) ? null : $_FILES['profileImage']['tmp_name'];
+
+            $sql = "UPDATE adminuser SET UName = ? , Email = ? , MobNum = ? , WhaNum = ?  WHERE AdminId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssi", $userName, $email, $mobNo, $whaNo, $UserId);
+            $stmt->execute();
+            $stmt->close();
+
+            if (!empty($_FILES['profileImage'])) {
+                $image = $UserId . ".jpg";
+                $sql = "UPDATE adminuser SET image = ? WHERE AdminId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $image, $UserId);
+                $stmt->execute();
+                $stmt->close();
+                move_uploaded_file($fileTemp, "../assets/img/admin/" . $UserId . ".jpg");
+            }
+            $respons = "success";
+        } catch (\Throwable $e) {
+            $respons = "error " . $e;
+        }
+    } elseif ($type == 'showStu' || $type == 'showAdmin') {
+        try {
+            $value = empty($_POST['value'])  ? 0 : ($_POST['value']=='true' ? 1 : 0);
+            
+            $sql = $type == 'showStu' ? "UPDATE adminuser SET ShowStu = ? WHERE AdminId = ?" : "UPDATE adminuser SET ShowAdm = ? WHERE AdminId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $value, $UserId);
+            $stmt->execute();
+            $stmt->close();
+            $respons = 'success';
+        } catch (Exception $e) {
+           $respons = "error";
+        }
+    }else {
+        $respons = 'undefind';
+    }
+    echo $respons;
+}
+// profile end ***************************************
 
 
 // same ad alol site  stast *****************
