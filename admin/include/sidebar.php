@@ -3,6 +3,7 @@ include_once('sql/function.php');
 $dashbord = GetActive('dashbord');
 $atendent = GetActive('atendent');
 $notification = GetActive('notification');
+$contact = GetActive('contact');
 $lessonManage_sub = GetActive('lessonManage', 'sub');
 $addsnippet_sub = GetActive('addsnippet', 'sub');
 $userManagement_sub = GetActive('userManagement', 'sub');
@@ -27,13 +28,13 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
         <div class="sidebarMenuScroll">
             <ul>
                 <li class="<?php echo $dashbord; ?>">
-                    <a href="index.php">
+                    <a class="sidea" href="index.php">
                         <i class="bi bi-house"></i>
                         <span class="menu-text">Dashboards</span>
                     </a>
                 </li>
                 <li class="<?php echo $atendent; ?>">
-                    <a href="atendent.php">
+                    <a class="sidea" href="atendent.php">
                         <i class="bi bi-house"></i>
                         <span class="menu-text">Atendent</span>
                     </a>
@@ -46,7 +47,7 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
 				</a>
 			</li> -->
                 <li class="sidebar-dropdown sidebar-dropdown-arror <?php echo $addcontent; ?>">
-                    <a href="#">
+                    <a class="sidea" href="#">
                         <i class="bi bi-plus-circle"></i>
                         <span class="menu-text ">Site Management</span>
                     </a>
@@ -83,9 +84,21 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
                     </div>
                 </li> -->
                 <li class="<?php echo $notification; ?>">
-                    <a href="notification.php">
+                    <a class="sidea" href="notification.php">
                         <i class="bi bi-house"></i>
                         <span class="menu-text">Notofication</span>
+                    </a>
+                </li>
+                <li class="<?php echo $massage; ?>">
+                    <a class="sidea" href="massage.php">
+                        <i class="bi bi-chat-text"></i>
+                        <span class="menu-text">Massage</span>
+                    </a>
+                </li>
+                <li class="<?php echo $contact; ?>">
+                    <a class="sidea" href="contact.php">
+                        <i class="bi bi-telephone "></i>
+                        <span class="menu-text">Contact Us</span>
                     </a>
                 </li>
             </ul>

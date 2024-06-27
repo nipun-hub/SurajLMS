@@ -3946,6 +3946,11 @@ textarea.form-control-lg{
     padding:var(--bs-card-img-overlay-padding);
     border-radius:var(--bs-card-inner-border-radius)
 }
+.card-img-center-rounded{
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+}
 .card-img,.card-img-top,.card-img-bottom{
     width:100%
 }
@@ -11099,7 +11104,10 @@ img{
     position:relative
 }
 .sidebar-wrapper .sidebar-menu ul li.active-page-link a{
-    color:var(--bs-red);
+    margin: 10px; /* new added */
+    border-radius: 10px; /* new added */
+    background-color: var(--bs-red); /* new added */
+    color:var(--bs-white);
 }
 .sidebar-wrapper .sidebar-menu ul li.active-page-link a i{
     color:var(--bs-red);

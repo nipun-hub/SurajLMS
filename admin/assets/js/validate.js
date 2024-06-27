@@ -768,17 +768,17 @@ function submitModelPeaper(type, method = null) {
             if (true) {
                 var ligroup = document.querySelectorAll('#modelMainContent .group .select2-selection__rendered li');
                 var liaccess = document.querySelectorAll('#modelMainContent .class .select2-selection__rendered li');
-                const grouplist = [];
+                // const grouplist = [];
+                // ligroup.forEach(function (li) {
+                    // var title = li.getAttribute('title');
+                    // grouplist.push(title);
+                // });
+                // PeaperData.append('group', grouplist);
                 const accesslist = [];
-                ligroup.forEach(function (li) {
-                    var title = li.getAttribute('title');
-                    grouplist.push(title);
-                });
                 liaccess.forEach(function (li) {
                     var title = li.getAttribute('title');
                     accesslist.push(title);
                 });
-                PeaperData.append('group', grouplist);
                 PeaperData.append('class', accesslist);
 
                 // PeaperData.forEach(function (key, value) {
@@ -810,7 +810,7 @@ function submitModelPeaper(type, method = null) {
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
         }
-    } else if(type == 'addNewStudent'){ // for peaper
+    } else if (type == 'addNewStudent') { // for peaper
         getaddNewStudentAttribute();
         if (validateAddStu()) {
             if (true) {
@@ -847,13 +847,13 @@ function submitModelPeaper(type, method = null) {
             });
 
 
-        }  else {
+        } else {
             reusaltLog[0].style.display = "none";
             reusaltLog[1].innerHTML = "Please complete the everything";
             reusaltLog[1].style.display = "block";
             setTimeout(function () { reusaltLog[1].style.display = "none"; }, 5000);
-        } 
-    } else if (type == 'UnRegUserReg' ) {   // regidtered new student
+        }
+    } else if (type == 'UnRegUserReg') {   // regidtered new student
         getUnRegUserRegAttribute();
         if (validateUnRegUserReg()) {
             if (true) {
@@ -869,7 +869,7 @@ function submitModelPeaper(type, method = null) {
                     PeaperData.append(inputfeelds[count].name, inputfeelds[count].value);
                 }
             }
-            PeaperData.forEach((key,value) => {
+            PeaperData.forEach((key, value) => {
                 console.log("name : " + key + "   " + " value : " + value);
             });
 
@@ -899,7 +899,7 @@ function submitModelPeaper(type, method = null) {
                     }
                 }
             });
-            
+
         } else {
             nTost({ type: 'error', titleText: 'Please fill the all' });
             // reusaltLog[0].style.display = "none";
@@ -911,8 +911,8 @@ function submitModelPeaper(type, method = null) {
 
 }
 
-function validateUnRegUserReg(){
-    finaly =true;
+function validateUnRegUserReg() {
+    finaly = true;
     for (let index = 0; index < inputfeelds.length; index++) {
 
         if (inputfeelds[index].value == "") {
@@ -927,8 +927,8 @@ function validateUnRegUserReg(){
     return finaly;
 }
 
-function validateAddStu(){
-    finaly =true;
+function validateAddStu() {
+    finaly = true;
     for (let index = 0; index < inputfeelds.length; index++) {
         if (index == 1) {
             continue;

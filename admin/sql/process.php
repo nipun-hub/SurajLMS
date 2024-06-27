@@ -962,28 +962,28 @@ if (isset($_POST['peaperManage'])) {
             // $class = $_POST['class'];
 
             $access = explode(",", $_POST['class']);
-            $group = explode(",", $_POST['group']);
-            $groupNew = "";
+            // $group = explode(",", $_POST['group']);
+            // $groupNew = "";
             $classNew = "";
             $groupSql = "";
             $classSql = "";
 
-            $i = 1;
-            foreach ($group as $value) {
-                $sql = "SELECT GId FROM grouplist WHERE MGName =  ? ";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("s", $value);
-                $stmt->execute();
-                $reusalt = $stmt->get_result();
-                $stmt->close();
-                if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-                    $groupSql .= $i == 1 ? " AND ( " : "";
-                    $groupSql .= " GId LIKE '%[{$row['GId']}]%' ";
-                    $groupSql .= $i < sizeof($group) ? " OR " : " ) ";
-                    $groupNew .= "[{$row['GId']}]";
-                }
-                $i++;
-            }
+            // $i = 1;
+            // foreach ($group as $value) {
+            //     $sql = "SELECT GId FROM grouplist WHERE MGName =  ? ";
+            //     $stmt = $conn->prepare($sql);
+            //     $stmt->bind_param("s", $value);
+            //     $stmt->execute();
+            //     $reusalt = $stmt->get_result();
+            //     $stmt->close();
+            //     if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            //         $groupSql .= $i == 1 ? " AND ( " : "";
+            //         $groupSql .= " GId LIKE '%[{$row['GId']}]%' ";
+            //         $groupSql .= $i < sizeof($group) ? " OR " : " ) ";
+            //         $groupNew .= "[{$row['GId']}]";
+            //     }
+            //     $i++;
+            // }
 
             $i = 1;
             foreach ($access as $value) {
@@ -996,7 +996,7 @@ if (isset($_POST['peaperManage'])) {
                 $stmt->close();
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                     $classSql .= $i == 1 ? " AND ( " : "";
-                    $classSql .= " GId LIKE '%[{$row['ClassId']}]%' ";
+                    $classSql .= " ClassId LIKE '%[{$row['ClassId']}]%' ";
                     $classSql .= $i < sizeof($access) ? " OR " : " ) ";
                     $classNew .= "[{$row['ClassId']}]";
                 }
@@ -1012,9 +1012,9 @@ if (isset($_POST['peaperManage'])) {
             $reusalt = $stmt->get_result();
             if (!$reusalt->num_rows > 0) {
 
-                $sql = "INSERT INTO peaper(peaperName,type,ClassId,GId,Dict) VALUES(?,?,?,?,?)";
+                $sql = "INSERT INTO peaper(peaperName,type,ClassId,Dict) VALUES(?,?,?,?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sssss", $peaperName, $PeaperType, $classNew, $groupNew, $dict);
+                $stmt->bind_param("ssss", $peaperName, $PeaperType, $classNew, $dict);
                 $stmt->execute();
 
                 $conn->commit();
@@ -1133,14 +1133,14 @@ if (isset($_POST['loadModelDataPeaper'])) {
                         </select>
                     </div>
                 </div>
-                <div class='col-xl-6 col-sm-12 col-12'>
+                <!--<div class='col-xl-6 col-sm-12 col-12'>
                     <div class='mb-3 tags w-100 group'>
                         <label class='form-label d-flex'>Select The Group*</label>
                         <select name='group' id='group' class='is-valid select-multiple js-states form-control w-100' title='Select Group *' multiple='multiple' disabled>
                             <option>111111111111111111111111111111111111111111111111111</option>
                         </select>
                     </div>
-                </div>
+                </div>-->
 
                 <div class='col-12'>
                     <div class='mb-3'>
@@ -1571,22 +1571,22 @@ if (isset($_POST['loadModelDataPeaper'])) {
         }
 
         // get group access
-        if ($row['GId'] == !null) {
-            $groupNameList = "";
-            $groupIdList = explode("][", substr($row['GId'], 1, -1));
-            foreach ($groupIdList as $value) {
-                $sql = "SELECT * FROM grouplist WHERE GId = ? ";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $value);
-                $stmt->execute();
-                $reusalt1 = $stmt->get_result();
-                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                    $groupNameList .= "• {$row1['MGName']}" . "<br>";
-                }
-            }
-        } else {
-            $groupNameList = "Not a Group";
-        }
+        // if ($row['GId'] == !null) {
+        //     $groupNameList = "";
+        //     $groupIdList = explode("][", substr($row['GId'], 1, -1));
+        //     foreach ($groupIdList as $value) {
+        //         $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+        //         $stmt = $conn->prepare($sql);
+        //         $stmt->bind_param("i", $value);
+        //         $stmt->execute();
+        //         $reusalt1 = $stmt->get_result();
+        //         if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+        //             $groupNameList .= "• {$row1['MGName']}" . "<br>";
+        //         }
+        //     }
+        // } else {
+        //     $groupNameList = "Not a Group";
+        // }
 
         // totle student count 
         // if ($row['ClassId'] == !null) {
@@ -1676,9 +1676,6 @@ if (isset($_POST['loadModelDataPeaper'])) {
                                 <div class='col-5 border border-1 m-2 p-2'>
                                     <span class='text-dark'>Access Class</span><br>
                                     {$ClassNameList}</div>
-                                <div class='col-5 border border-1 m-2 p-2'>
-                                    <span class='text-dark'>Access Group</span><br>
-                                    {$groupNameList}</div>
                             </div>
                             <div class='row'>
                                 <span class='col-auto alert alert-success m-2 p-0 px-2'>Compleated : {$row['doneStu']}</span>
@@ -1742,7 +1739,6 @@ if (isset($_POST['changePeaperManageTable'])) {
             <th>Type</th>
             <th>Discription</th>
             <th>Aprued Class</th>
-            <th>Aprued Group</th>
             <th>Status</th>
             <th>Action</th>
         </tr>";
@@ -1775,22 +1771,22 @@ if (isset($_POST['changePeaperManageTable'])) {
                 $ClassNameList = "Not a Class";
             }
 
-            if ($row['GId'] == !null) {
-                $groupNameList = "";
-                $groupIdList = explode("][", substr($row['GId'], 1, -1));
-                foreach ($groupIdList as $value) {
-                    $sql = "SELECT * FROM grouplist WHERE GId = ? ";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("i", $value);
-                    $stmt->execute();
-                    $reusalt1 = $stmt->get_result();
-                    if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                        $groupNameList .= "{$row1['MGName']}" . "<br>";
-                    }
-                }
-            } else {
-                $groupNameList = "Not a Class";
-            }
+            // if ($row['GId'] == !null) {
+            //     $groupNameList = "";
+            //     $groupIdList = explode("][", substr($row['GId'], 1, -1));
+            //     foreach ($groupIdList as $value) {
+            //         $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+            //         $stmt = $conn->prepare($sql);
+            //         $stmt->bind_param("i", $value);
+            //         $stmt->execute();
+            //         $reusalt1 = $stmt->get_result();
+            //         if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+            //             $groupNameList .= "{$row1['MGName']}" . "<br>";
+            //         }
+            //     }
+            // } else {
+            //     $groupNameList = "Not a Class";
+            // }
 
             $tBody .= "
             <tr>
@@ -1798,7 +1794,6 @@ if (isset($_POST['changePeaperManageTable'])) {
                 <td>{$row['type']}</td>
                 <td>" . (empty($row['Dict']) ? "Not Discription" :  $row['Dict']) . "</td>
                 <td>{$ClassNameList}</td>
-                <td>{$groupNameList}</td>
                 <td class='text-center'>{$Status}</td>
                 <td>
                     <div class='actions item-center'>
@@ -1837,22 +1832,22 @@ if (isset($_POST['changePeaperManageTable'])) {
         }
 
         // get group access
-        if ($row['GId'] == !null) {
-            $groupNameList = "";
-            $groupIdList = explode("][", substr($row['GId'], 1, -1));
-            foreach ($groupIdList as $value) {
-                $sql = "SELECT * FROM grouplist WHERE GId = ? ";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $value);
-                $stmt->execute();
-                $reusalt1 = $stmt->get_result();
-                if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                    $groupNameList .= "• {$row1['MGName']}" . "<br>";
-                }
-            }
-        } else {
-            $groupNameList = "Not a Group";
-        }
+        // if ($row['GId'] == !null) {
+        //     $groupNameList = "";
+        //     $groupIdList = explode("][", substr($row['GId'], 1, -1));
+        //     foreach ($groupIdList as $value) {
+        //         $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+        //         $stmt = $conn->prepare($sql);
+        //         $stmt->bind_param("i", $value);
+        //         $stmt->execute();
+        //         $reusalt1 = $stmt->get_result();
+        //         if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+        //             $groupNameList .= "• {$row1['MGName']}" . "<br>";
+        //         }
+        //     }
+        // } else {
+        //     $groupNameList = "Not a Group";
+        // }
 
         // totle student count 
         // if ($row['ClassId'] == !null) {
@@ -1902,9 +1897,6 @@ if (isset($_POST['changePeaperManageTable'])) {
                                 <div class='col-5 border border-1 m-2 p-2'>
                                     <span class='text-dark'>Access Class</span><br>
                                     {$ClassNameList}</div>
-                                <div class='col-5 border border-1 m-2 p-2'>
-                                    <span class='text-dark'>Access Group</span><br>
-                                    {$groupNameList}</div>
                             </div>
                             <div class='row'>
                                 <span class='col-auto alert alert-success m-2 p-0 px-2'>All Compleated : {$row['doneStu']}</span>
@@ -1979,7 +1971,6 @@ if (isset($_POST['changePeaperManageTable'])) {
             <th>Type</th>
             <th>Discription</th>
             <th>Aprued Class</th>
-            <th>Aprued Group</th>
             <th>Status</th>
             <th>Action</th>
         </tr>";
@@ -2012,22 +2003,22 @@ if (isset($_POST['changePeaperManageTable'])) {
                 $ClassNameList = "Not a Class";
             }
 
-            if ($row['GId'] == !null) {
-                $groupNameList = "";
-                $groupIdList = explode("][", substr($row['GId'], 1, -1));
-                foreach ($groupIdList as $value) {
-                    $sql = "SELECT * FROM grouplist WHERE GId = ? ";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("i", $value);
-                    $stmt->execute();
-                    $reusalt1 = $stmt->get_result();
-                    if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                        $groupNameList .= "{$row1['MGName']}" . "<br>";
-                    }
-                }
-            } else {
-                $groupNameList = "Not a Class";
-            }
+            // if ($row['GId'] == !null) {
+            //     $groupNameList = "";
+            //     $groupIdList = explode("][", substr($row['GId'], 1, -1));
+            //     foreach ($groupIdList as $value) {
+            //         $sql = "SELECT * FROM grouplist WHERE GId = ? ";
+            //         $stmt = $conn->prepare($sql);
+            //         $stmt->bind_param("i", $value);
+            //         $stmt->execute();
+            //         $reusalt1 = $stmt->get_result();
+            //         if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
+            //             $groupNameList .= "{$row1['MGName']}" . "<br>";
+            //         }
+            //     }
+            // } else {
+            //     $groupNameList = "Not a Class";
+            // }
 
             $tBody .= "
             <tr>
@@ -2035,7 +2026,6 @@ if (isset($_POST['changePeaperManageTable'])) {
                 <td>{$row['type']}</td>
                 <td>" . (empty($row['Dict']) ? "Not Discription" :  $row['Dict']) . "</td>
                 <td>{$ClassNameList}</td>
-                <td>{$groupNameList}</td>
                 <td class='text-center'>{$Status}</td>
                 <td>
                     <div class='actions item-center'>
@@ -2166,11 +2156,14 @@ if (isset($_POST['changeviewOldPeaperData'])) {
                     </div>
                 </th>
             </tr>";
+
+        $limitInsti = empty($type) || $type == 'iland' ? "" : " and InstiName = '{$type}'";
+
         $tBody = "";
-        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m INNER JOIN unreguser un ON un.URGId = m.URGId ORDER BY m.Marks DESC) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) and t.PeaperId = ? WHERE p.PeaperId = ? $limit" :
-        "SELECT * FROM peaper p INNER JOIN ( SELECT *,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m ORDER BY m.Marks DESC) t ON t.PeaperId = '$peaperId' WHERE p.PeaperId = '$peaperId' $limit";        
+        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m , unreguser un WHERE m.PeaperId = ? and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) WHERE p.PeaperId = ? $limit" :
+            "SELECT * FROM peaper p INNER JOIN ( SELECT m.*,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m , unreguser un  WHERE m.peaperId = '$peaperId' and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t WHERE p.PeaperId = '$peaperId' $limit";
         $stmt = $conn->prepare($sql);
-        isset($_POST['data']) ? $stmt->bind_param("ssss", $data, $data, $peaperId, $peaperId) : null;
+        isset($_POST['data']) ? $stmt->bind_param("ssss", $peaperId, $data, $data, $peaperId) : null;
         $stmt->execute();
         $reusaltMain = $stmt->get_result();
         $stmt->close();
@@ -4566,6 +4559,55 @@ if (isset($_POST['studentManage'])) {
 }
 //  user management end ******************************
 
+// profile start *************************************
+if (isset($_POST['save'])) {
+    $type = $_POST['type'];
+    if ($type == 'adminData') {
+        try {
+            $userName = empty($_POST['userName']) ? null : $_POST['userName'];
+            $email = empty($_POST['email']) ? null : $_POST['email'];
+            $mobNo = empty($_POST['mobNo']) ? null : $_POST['mobNo'];
+            $whaNo = empty($_POST['whaNo']) ? null : $_POST['whaNo'];
+            $fileTemp = empty($_FILES['profileImage']) ? null : $_FILES['profileImage']['tmp_name'];
+
+            $sql = "UPDATE adminuser SET UName = ? , Email = ? , MobNum = ? , WhaNum = ?  WHERE AdminId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssi", $userName, $email, $mobNo, $whaNo, $UserId);
+            $stmt->execute();
+            $stmt->close();
+
+            if (!empty($_FILES['profileImage'])) {
+                $image = $UserId . ".jpg";
+                $sql = "UPDATE adminuser SET image = ? WHERE AdminId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $image, $UserId);
+                $stmt->execute();
+                $stmt->close();
+                move_uploaded_file($fileTemp, "../assets/img/admin/" . $UserId . ".jpg");
+            }
+            $respons = "success";
+        } catch (\Throwable $e) {
+            $respons = "error " . $e;
+        }
+    } elseif ($type == 'showStu' || $type == 'showAdmin') {
+        try {
+            $value = empty($_POST['value'])  ? 0 : ($_POST['value']=='true' ? 1 : 0);
+            
+            $sql = $type == 'showStu' ? "UPDATE adminuser SET ShowStu = ? WHERE AdminId = ?" : "UPDATE adminuser SET ShowAdm = ? WHERE AdminId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $value, $UserId);
+            $stmt->execute();
+            $stmt->close();
+            $respons = 'success';
+        } catch (Exception $e) {
+           $respons = "error";
+        }
+    }else {
+        $respons = 'undefind';
+    }
+    echo $respons;
+}
+// profile end ***************************************
 
 // same ad alol site  stast *****************
 if (isset($_POST['enableWith'])) {

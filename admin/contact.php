@@ -1,38 +1,15 @@
 <!-- database connection include -->
 <?php include('sql/conn.php'); ?>
 
-<?php if (isset($_REQUEST['logout'])) {
-	session_destroy();
-	header('location:./');
-	exit;
-} ?>
-
 <!-- navbar_session -->
 <?php $_SESSION['active'] = 'contact'; ?>
 
 <?php include_once('sql/function.php'); ?>
 
-<?php
-// chech logged user ?
-if (!isset($_SESSION['login'])) {
-	header('location:../login');
-	exit;
-} else {
-	$UserId = $_SESSION['login'];
-	$sql = "SELECT UserName,RegCode FROM user WHERE UserId = ?";
-	$stmt = $conn->prepare($sql);
-	$stmt->bind_param("s", $UserId);
-	$stmt->execute();
-	$result_data = $stmt->get_result();
-	if ($row = $result_data->fetch_assoc()) {
-		$_SESSION['username'] = $row['UserName'];
-		$_SESSION['regcode'] = $row['RegCode'];
-	} else {
-		header('location:../login');
-		exit;
-	}
-}
-?>
+<?php include_once('include/main.php'); ?>
+
+
+
 
 <!doctype html>
 <html lang="en">
@@ -44,20 +21,41 @@ if (!isset($_SESSION['login'])) {
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- Meta -->
-	<meta name="description" content="Suraj S Kumara - A/L ICT - Online">
-	<meta name="keywords" content="surajskumara , suraj s kumara , A/L ict , Online">
-	<title>Surajskumara.lk | Contact</title>
-	<meta property="og:site_name" content="surajskumara.lk">
-	<meta property="og:title" content="Suraj S Kumara" />
-	<meta property="og:description" content="Suraj S Kumara - A/L ICT - Online" />
-	<meta property="og:image" itemprop="image" content="https://surajskumara.lk/assets/images/suraj-imge-01.jpg">
-	<meta property="og:type" content="website" />
-	<meta name="author" content="Suraj S Kumara">
 	<link rel="shortcut icon" href="../assets/images/ict.ico">
+
+	<!-- Title -->
+	<title>Surajskumara.lk | Admin</title>
 
 	<?php include('include/header.php'); ?>
 
 	<link rel="stylesheet" href="assets/css/alert.css">
+
+	<style>
+		.select2 {
+			width: 100% !important;
+		}
+	</style>
+
+	<style>
+		/* Style for positioning toast */
+		.toast {
+			z-index: 10100;
+		}
+
+		.rotatr-continuar {
+			animation: in 2s linear 0s infinite normal;
+		}
+
+		@keyframes in {
+			from {
+				transform: rotate(0deg);
+			}
+
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
 
 </head>
 
@@ -87,11 +85,12 @@ if (!isset($_SESSION['login'])) {
 				<!-- Content wrapper start -->
 				<div class="content-wrapper">
 
+
 					<!-- Row start -->
 					<div class="row">
 
 						<?php
-						$sql = "SELECT * FROM adminuser WHERE ShowStu = 1";
+						$sql = "SELECT * FROM adminuser WHERE ShowAdm = 1";
 						$stmt = $conn->prepare($sql);
 						$stmt->execute();
 						$reusalt = $stmt->get_result();
@@ -103,23 +102,23 @@ if (!isset($_SESSION['login'])) {
 							foreach ($accessList as $key => $value) {
 								$accessStr .= $value . "  ";
 							}
-							$image = empty($row['image']) ? "assets\img\site use\admin\admin.jpg" : "../admin/assets/img/admin/".$row['image'];
+							$image = empty($row['image']) ? "../admin/assets/img/admin/admin.jpg" : "../admin/assets/img/admin/" . $row['image'];
 							?>
 							<div class="col-lg-3 col-sm-4 col-6">
 								<div class="card text-center">
 									<div class="card-header d-flex justify-content-center">
-										<img src="<?php echo $image;?>" width="100" height="100" class="rounded-circle border border-5" alt="Surajskumara.lk admin">
+										<img src="<?php echo $image; ?>" width="100" height="100" class="rounded-circle border border-5" alt="Surajskumara.lk admin">
 									</div>
 									<div class="card-body">
 										<h5 class="card-title"><?php echo $row['UName'] ?></h5>
-										<p class="mb-3"><?php echo $row['Type']." ".$accessStr; ?></p>
+										<p class="mb-3"><?php echo $row['Type'] . " " . $accessStr; ?></p>
 										<!-- <a class="aler/ alert-success px-3 py-2 rounded-pill w-auto">Admin Susipwan 2024</a> -->
 										<!-- <a href="#" class="">Update</a> -->
 									</div>
 									<div class="card-footer d-flex justify-content-between">
-										<p><i class="bi bi-whatsapp text-success me-2"></i><?php echo empty($row['MobNum']) ? "undefind" : $row['MobNum']?></p>
+										<p><i class="bi bi-whatsapp text-success me-2"></i><?php echo empty($row['MobNum']) ? "undefind" : $row['MobNum'] ?></p>
 										<p>|</p>
-										<p><i class="bi bi-telephone text-info me-2"></i> <?php echo empty($row['WhaNum']) ? "undefind" : $row['WhaNum']?></p>
+										<p><i class="bi bi-telephone text-info me-2"></i> <?php echo empty($row['WhaNum']) ? "undefind" : $row['WhaNum'] ?></p>
 									</div>
 								</div>
 							</div>
@@ -131,7 +130,6 @@ if (!isset($_SESSION['login'])) {
 
 				</div>
 				<!-- Content wrapper end -->
-
 				<!-- app footer -->
 				<?php include('include/footer.php'); ?>
 
@@ -144,12 +142,6 @@ if (!isset($_SESSION['login'])) {
 			************* -->
 
 	</div>
-
-
-	<!-- alert include -->
-	<?php include('include/alert.php'); ?>
-	<?php include('include/animated-special.php'); ?>
-
 
 	<!-- *************
 			************ Required JavaScript Files *************
@@ -181,32 +173,10 @@ if (!isset($_SESSION['login'])) {
 	<script src="assets/js/main.js"></script>
 
 	<!-- alert js -->
-	<script src="assets/js/alert.js"></script>
-	<script src="assets/js/error.js"></script>
-
-	<script>
-		window.onload = function() {
-			// var specialAnimation = document.querySelectorAll('.special-animate');
-			// console.log('success');
-			// specialAnimation.forEach(function(self) {
-			// 	self.classList.add('snowflake');
-			// });
-
-			url_data = window.location.search;
-			if (url_data == '?success_login') {
-				history.pushState({
-					page: 'new-page'
-				}, 'New Page', './');
-				nthj(3);
-			} else if (url_data == '?success_register') {
-				history.pushState({
-					page: 'new-page'
-				}, 'New Page', './');
-				nthj(4);
-			}
-		};
-	</script>
-
+	<!-- <script src="assets/js/alert.js"></script> -->
+	<!-- <script src="assets/js/error.js"></script> -->
+	<!-- <script src="assets/js/validate.js"></script> -->
+	<!-- <script src="assets/js/nTost.js"></script> -->
 </body>
 
 </html>

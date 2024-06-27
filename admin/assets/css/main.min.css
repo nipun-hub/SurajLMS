@@ -6506,6 +6506,11 @@ textarea.form-control-lg{
 .overflow-y-scroll{
     overflow-y:scroll !important
 }
+.hide-scroll::-webkit-scrollbar{
+   display: none;
+   ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none; 
+}
 .d-inline{
     display:inline !important
 }
@@ -6669,6 +6674,18 @@ textarea.form-control-lg{
 .border-start-0{
     border-left:0 !important
 }
+.border-y{
+    border-left:0 !important;
+    border-right:0 !important;
+    border-top:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    border-bottom:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+.border-x{
+    border-top:0 !important;
+    border-bottom:0 !important;
+    border-left:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+    border-right:var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
 .border-primary{
     --bs-border-opacity: 1;
     border-color:rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important
@@ -6814,11 +6831,22 @@ textarea.form-control-lg{
 .mh-100{
     max-height:100% !important
 }
+.vh-80{
+    height: 80vh !important
+}
 .vh-100{
     height:100vh !important
 }
 .min-vh-100{
     min-height:100vh !important
+}
+
+.max-80vh{
+    max-height: 80vh !important;
+}
+
+.vh60{
+    height: 67vh !important;
 }
 .flex-fill{
     flex:1 1 auto !important
@@ -11111,7 +11139,13 @@ img{
     position:relative
 }
 .sidebar-wrapper .sidebar-menu ul li.active-page-link a{
-    color:var(--bs-red);
+    color:var(--bs-white);
+}
+
+.sidebar-wrapper .sidebar-menu ul li.active-page-link a.sidea{ /* new added */
+    margin: 10px; /* new added */
+    border-radius: 10px; /* new added */
+    background-color: var(--bs-red); /* new added */
 }
 .sidebar-wrapper .sidebar-menu ul li.active-page-link a i{
     color:var(--bs-red);
@@ -12978,7 +13012,7 @@ ul.user-messages li .delivery-details p{
     width:36px;
     height:36px
 }
-.stacked-images .plus{
+.plus{
     display:flex;
     align-items:center;
     justify-content:center;
@@ -12993,12 +13027,12 @@ ul.user-messages li .delivery-details p{
     background:var(--bs-red);
     letter-spacing:.03rem;
     font-weight:700;
-    font-size:.9rem;
+    font-size:.5rem;
     flex-shrink:0
 }
-.stacked-images .plus.sm{
-    width:36px;
-    height:36px;
+.plus.sm{
+    width: 25px;
+    height:25px;
     color:#fff
 }
 ul.recent-orders{
@@ -14363,13 +14397,15 @@ ul.sales-stats li p span small,ul.sales-stats li p span .small{
 }
 .chats{
     position:relative;
-    padding:0
+    padding:0;
+    bottom: 0;
 }
 .chats li{
-    margin-bottom:25px
+    margin-bottom:10px
 }
 .chats li.chats-left,.chats li.chats-right{
-    position:relative
+    position:relative;
+    right: 0;
 }
 .chats li img{
     width:50px;
@@ -14401,6 +14437,7 @@ ul.sales-stats li p span small,ul.sales-stats li p span .small{
     color:var(--bs-green)
 }
 .chats li .chats-text{
+    width: fit-content;
     margin:0 0 0 70px;
     padding:15px;
     -webkit-border-radius:20px;
@@ -14408,9 +14445,9 @@ ul.sales-stats li p span small,ul.sales-stats li p span .small{
     border-radius:20px;
     background-color:#dbe1e9;
     left:15px;
-    line-height:170%
+    /* line-height:170% */
 }
-.chats li .chats-text:before{
+/* .chats li .chats-text:before{
     content:"";
     position:absolute;
     width:0;
@@ -14419,18 +14456,20 @@ ul.sales-stats li p span small,ul.sales-stats li p span .small{
     left:52px;
     border:10px solid;
     border-color:rgba(0,0,0,0) #dbe1e9 rgba(0,0,0,0) rgba(0,0,0,0)
-}
+} */
+
 .chats li.chats-right>.chats-text{
+    /* float: right; */
     text-align:right;
     right:16px;
     margin:0 70px 0 0;
     background-color:#dbe1e9
 }
-.chats li.chats-right>.chats-text:before{
+/* .chats li.chats-right>.chats-text:before{  // chat pointer disabled
     left:auto;
     right:52px;
     border-color:rgba(0,0,0,0) rgba(0,0,0,0) rgba(0,0,0,0) #dbe1e9
-}
+} */
 .chats li.chats-right>.chats-hour{
     text-align:right;
     margin:0 70px 0 0
