@@ -89,12 +89,12 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
                         <span class="menu-text">Notofication</span>
                     </a>
                 </li>
-                <!-- <li class="<?php echo $massage; ?>">
+                <li class="<?php echo $massage; ?>">
                     <a class="sidea" href="massage.php">
                         <i class="bi bi-chat-text"></i>
                         <span class="menu-text">Massage</span>
                     </a>
-                </li> -->
+                </li>
                 <li class="<?php echo $contact; ?>">
                     <a class="sidea" href="contact.php">
                         <i class="bi bi-telephone "></i>
