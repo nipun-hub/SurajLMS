@@ -271,6 +271,7 @@ function register(institi) {
           if (data == " success") {
             window.location.href = "?success_register";
           } else {
+            console.log(data);
             btn[0].style.display = "block";
             Loading_img[0].style.display = "none";
             document.querySelector("#reg_invalid_id").innerHTML =
