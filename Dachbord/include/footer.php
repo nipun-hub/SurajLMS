@@ -15,4 +15,5 @@
 </div>
 <!-- App footer end -->
 
-<?php //include('chat/chat.php'); ?>
+<?php ///include('chat/chat.php'); ?>
+

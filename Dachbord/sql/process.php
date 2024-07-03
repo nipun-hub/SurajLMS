@@ -132,9 +132,11 @@ try {
                         $stmt = $conn->prepare($sql);
                         $stmt->bind_param("sss", $instiId, $instiName, $UserId);
                         $stmt->execute();
-                        $conn->commit();
 
                         move_uploaded_file($fileTmpName, $targetFile);
+                        
+                        $conn->commit();
+
                         echo "success";
                     } catch (Exception $e) {
                         $conn->rollback();
@@ -2066,7 +2068,7 @@ try {
             // LEFT JOIN unreguser ON unreguser.CousId = ?
             // LEFT JOIN marksofpeaper ON peaper.PeaperId = marksofpeaper.PeaperId and unreguser.URGId = marksofpeaper.URGId
             // WHERE DATE_ADD(peaper.finishDate, INTERVAL 8 DAY) > ? AND peaper.Status = ?";
-            $sql="SELECT 
+            $sql = "SELECT 
                 p.peaperName,un.*,t.* 
             FROM peaper p 
             INNER JOIN unreguser un ON un.CousId = ? 
@@ -2079,15 +2081,15 @@ try {
             WHERE DATE_ADD(p.finishDate, INTERVAL 8 DAY) > ? and p.Status = ?";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssss",$data, $today, $status, $today, $status);
+            $stmt->bind_param("sssss", $data, $today, $status, $today, $status);
             $stmt->execute();
             $reusalt = $stmt->get_result();
             while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                 $marks = $row['Marks'];
-                $grade = empty($marks) ? "Grade Not Found" : (($marks >  94) ? "A &#8314;" : ($marks > 74 ? "A &#8315;" : ($marks > 69 ? "B &#8314;" : ($marks > 64 ? "B &#8315;" : ($marks > 59  ? "C &#8314;" : ($marks > 54 ? "C &#8315;" : ($marks > 49 ? "S &#8314;" : ($marks > 34 ? "S &#8315;" : "F") ) ) )) ) ) );
-                $respons .= empty($row['Name']) ? "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found </p>" :  "<p class='text-success mt-3 p-3 border'> Peaper &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  &nbsp;{$row['peaperName']} <br> Use Name : &nbsp;{$row['Name']} <br> Greade &nbsp;&nbsp;&nbsp;&nbsp; : &nbsp;{$grade} <br> Marks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['Marks']) ? "Marks Not Found" : $row['Marks'])."<br>Rank &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;".(empty($row['rank']) ? "Marks Not Found" : ($row['rank'] > 3 ? $row['rank']+50: $row['rank']) )." </p>";
+                $grade = empty($marks) ? "Grade Not Found" : (($marks >  94) ? "A &#8314;" : ($marks > 74 ? "A &#8315;" : ($marks > 69 ? "B &#8314;" : ($marks > 64 ? "B &#8315;" : ($marks > 59  ? "C &#8314;" : ($marks > 54 ? "C &#8315;" : ($marks > 49 ? "S &#8314;" : ($marks > 34 ? "S &#8315;" : "F"))))))));
+                $respons .= empty($row['Name']) ? "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found </p>" :  "<p class='text-success mt-3 p-3 border'> Peaper &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  &nbsp;{$row['peaperName']} <br> Use Name : &nbsp;{$row['Name']} <br> Greade &nbsp;&nbsp;&nbsp;&nbsp; : &nbsp;{$grade} <br> Marks &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;" . (empty($row['Marks']) ? "Marks Not Found" : $row['Marks']) . "<br>Rank &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;" . (empty($row['rank']) ? "Marks Not Found" : ($row['rank'] > 3 ? $row['rank'] + 50 : $row['rank'])) . " </p>";
             }
-            if(!$reusalt->num_rows){
+            if (!$reusalt->num_rows) {
                 $respons = "<p class='text-info mt-3'> <i class='bi bi-search'>&nbsp;</i> Reusalt Not Found! Invalied Number </p>";
             }
         }
@@ -2096,10 +2098,11 @@ try {
 
     // same as all functions section ens  *************
 } catch (Exception $e) {
+    // filrWrite($e);
     $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
     fwrite($myfile, $e);
     fclose($myfile);
-    echo "Main Error Please Inform Developer";
+    echo "Main Error Please Inform Developer1";
 }
 
 

@@ -19,7 +19,7 @@ if (!isset($_SESSION['login'])) {
 	if ($row = $result_data->fetch_assoc()) {
 		$_SESSION['username'] = $row['UserName'];
 		$_SESSION['regcode'] = $row['RegCode'];
-        $pict = $row['picture'];
+        $pict = isset($row['picture']) ? $row['picture'] : "assets/img/user.jpeg";
 	} else {
 		header('location:../login');
 		exit;

@@ -72,7 +72,7 @@
                 <a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
                     <span class="user-name d-none d-md-block"><?php echo $_SESSION['username']; ?></span>
                     <span class="avatar">
-                        <img src="<?php echo $pict; ?>" alt="User profile picture" onerror="imgNotFound()">
+                        <img src="<?php echo isset($pict) ? $pict : "assets/img/user.jpeg"; ?>" alt="User profile picture" onerror="imgNotFound()">
                         <span class="status online"></span>
                     </span>
                 </a>

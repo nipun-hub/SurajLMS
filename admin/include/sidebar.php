@@ -3,6 +3,7 @@ include_once('sql/function.php');
 $dashbord = GetActive('dashbord');
 $atendent = GetActive('atendent');
 $notification = GetActive('notification');
+$massage = GetActive('massage');
 $contact = GetActive('contact');
 $lessonManage_sub = GetActive('lessonManage', 'sub');
 $addsnippet_sub = GetActive('addsnippet', 'sub');
