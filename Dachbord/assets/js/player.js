@@ -148,7 +148,7 @@ function updateFunction() {
     progressBar.style.width = `${NewLineWith}%`;
     player.getPlayerState() === 1 && NewLineWith <= 99 ? finifhCounter++ : null;
     var finishprecentage = (finifhCounter / player.getDuration() * 100);
-    if (finishprecentage > 5 && NewLineWith > 80 && addPoint == 0) {
+    if (finishprecentage > 10 && NewLineWith > 80 && addPoint == 0) {
         PassData = "manageActivity=" + "&type=" + 'votchRecoding' + "&data=" + Lesid;
         $.post("sql/process.php", PassData, function (data, status) { console.log("add activity " + data); });
         // console.log('mark as finished' + Lesid);
