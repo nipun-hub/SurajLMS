@@ -119,7 +119,7 @@
                     <!-- Row start -->
                     <div class="row my-3 text-center">
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('regStu')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Register Student</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('regStu')"><i class="bi bi-plus"></i>&nbsp;Register Student</button>
                         </div>
                         <div class="col-auto m-2">
                             <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?> disabled><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
