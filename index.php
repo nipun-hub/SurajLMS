@@ -255,7 +255,7 @@
 	</div>
 
     <!-- apecial animated link  -->
-    <?php include_once('include/animated-canvers.php'); ?>
+    <?php //include_once('include/animated-canvers.php'); ?>
     
     <!-- Messenger Chat plugin Code start -->
     <div id="fb-root"></div>
