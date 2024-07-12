@@ -317,7 +317,9 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 	?>
 
 	<script>
+		
 		// let questions
+		changeContent(`month`)
 		prograss_snipper();
 		PageControles();
 		PaymentStatus();
