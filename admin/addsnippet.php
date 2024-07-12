@@ -226,7 +226,7 @@
         function getClassList() {
             formData = "getClassList=";
             $.post("sql/process.php", formData, function(response, status) {
-                $('#grouphide').html(response);
+                $('#groupshow').html(response);
             });
         }
 

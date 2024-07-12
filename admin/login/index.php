@@ -92,9 +92,9 @@
                             </div>
                             <center><img style="display: none;" src="assets/images/gif/loading01.gif" width="50" height="50" alt=""></center>
                             <div class="login-form-footer">
-                                <div class="additional-link">
+                                <!-- <div class="additional-link">
                                     Don't have an account? <br> <a class="suneup" href="?register"> Register</a>
-                                </div>
+                                </div> -->
                                 <div class="additional-link mt-2">
                                     <span>යම් කිසි ගැටලුවක් වේනම් 0742966266 අමතන්න.</span>
                                 </div>
@@ -104,28 +104,22 @@
                 </div>
             </div>
             <!-- Login box end -->
-        <?php  } elseif (isset($_REQUEST['register'])) { ?>
+        <?php // } elseif (isset($_REQUEST['register'])) { 
+        } else {
+            header('location:?login');
+            exit;
+        } ?>
 
-            <!-- Register box start -->
-            <div class="form register">
+        <!-- Register box start -->
+        <!-- <div class="form register">
                 <div class="login-box">
                     <div class="login-form">
                         <form class="register_form">
-                            <!-- <a href="index.html" class="login-logo">
-						<img src="../Dachbord/assets/images/logo.svg" alt="Vico Admin" />
-					</a> -->
+                           
                             <div class="login-welcome" style="text-align: center;">
                                 <h4>register</h4>
                             </div>
-                            <!-- multi bar -->
-                            <!-- <div class="multi-form">
-								<div class="multi" id="multi"></div>
-								<div class="multi-step multi-step-active" data-title="Intro"></div>
-								<div class="multi-step" data-title="Personal"></div>
-								<div class="multi-step" data-title="School"></div>
-								<div class="multi-step" data-title="Delivery "></div>
-								<div class="multi-step" data-title="Guardian "></div>
-							</div> -->
+                            
 
                             <div class="form-step row form-step-active ">
                                 <div class=" mb-3 col-6 reguname">
@@ -143,21 +137,18 @@
                                 <div class=" mb-3 col-6 pass">
                                     <div class="d-flex justify-content-between">
                                         <label class="form-label">Password</label>
-                                        <!-- <a href="forgot-password.html" class="btn-link ml-auto">Forgot password?</a> -->
                                     </div>
                                     <input maxlength="10" minlength="6" name="pass" onkeyup="pass_val()" type="password" class="form-control Register_Data">
                                 </div>
                                 <div class=" mb-3 col-6 repass">
                                     <div class="d-flex justify-content-between">
                                         <label class="form-label">Re Type Password</label>
-                                        <!-- <a href="forgot-password.html" class="btn-link ml-auto">Forgot password?</a> -->
                                     </div>
                                     <input maxlength="10" minlength="6" onkeyup="pass_val()" type="password" class="form-control">
                                 </div>
                                 <label class="form-lable"></label>
                                 <label class="form-lable">Password must be more than 6 characters and less than 10 characters.</label>
                                 <div class="login-form-actions onennext">
-                                    <!-- <button class="btn btn-next"> <span class="icon"> <i class="bi bi-box-arrow-in-right"></i> </span> Next</button> -->
                                     <button id="register" class="btn submit-btn"><span class="icon"><i class="bi bi-arrow-right-circle"></i></span> Register</button>
                                 </div>
                                 <center><img style="display: none;" src="assets/images/gif/loading01.gif" width="50" height="50" alt=""></center>
@@ -176,12 +167,13 @@
                         </form>
                     </div>
                 </div>
-            </div>
-        <?php } elseif (isset($_REQUEST['success_register'])) {
-        } else {
-            header('location:?login');
-            exit;
-        } ?>
+            </div> -->
+        <?php //} elseif (isset($_REQUEST['success_register'])) {
+        // } else {
+        //    header('location:?login');
+        //    exit;
+        //} 
+        ?>
         <!-- Register box end -->
 
     </div>

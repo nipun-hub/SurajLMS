@@ -770,8 +770,8 @@ function submitModelPeaper(type, method = null) {
                 var liaccess = document.querySelectorAll('#modelMainContent .class .select2-selection__rendered li');
                 // const grouplist = [];
                 // ligroup.forEach(function (li) {
-                    // var title = li.getAttribute('title');
-                    // grouplist.push(title);
+                // var title = li.getAttribute('title');
+                // grouplist.push(title);
                 // });
                 // PeaperData.append('group', grouplist);
                 const accesslist = [];
@@ -1083,15 +1083,15 @@ function submitModelSnippet(type, method) {
     } else if (method == 'group') {
         getaddgroupAttribute();
         if (validateaddgroup()) {
-            var ligroup = document.querySelectorAll('.grouphideclass .select2-selection__rendered li');
-            const HideList = [];
+            var ligroup = document.querySelectorAll('.groupshowclass .select2-selection__rendered li');
+            const ShowList = [];
             ligroup.forEach(function (li) {
                 var title = li.getAttribute('title');
-                HideList.push(title);
+                ShowList.push(title);
             });
             var PassData = new FormData();
             PassData.append("AddGroupData", "");
-            PassData.append("HideList", HideList);
+            PassData.append("ShowList", ShowList);
             PassData.append(inputfeelds[0].name, inputfeelds[0].value);
             PassData.append("groupimg", inputfeelds[1].files[0]);
 
@@ -1234,13 +1234,13 @@ function submitModelSnippetUpdate(type, id) {
             var PassData = new FormData();
             PassData.append("id", id);
             if (tags.value !== "") {
-                var ligroup = document.querySelectorAll('.grouphideclass .select2-selection__rendered li');
-                const HideList = [];
+                var ligroup = document.querySelectorAll('.groupshowclass .select2-selection__rendered li');
+                const ShowList = [];
                 ligroup.forEach(function (li) {
                     var title = li.getAttribute('title');
-                    HideList.push(title);
+                    ShowList.push(title);
                 });
-                PassData.append("HideList", HideList);
+                PassData.append("ShowList", ShowList);
             }
             PassData.append("updateGroup", "");
             PassData.append(inputfeelds.name, inputfeelds.value);
