@@ -604,7 +604,8 @@ try {
             }
 
             if ($maintype == 'lesson') {
-                $sql = "SELECT * FROM grouplist WHERE HideFrom Not LIKE '%$insti%' and HideFrom NOT LIKE '%All%' and HideFrom Not LIKE '%[$activeClaId]%' OR HideFrom IS NULL ORDER BY Status ASC";
+                $sql = "SELECT * FROM grouplist WHERE ShowFrom LIKE '%All%' or ShowFrom LIKE '%[$activeClaId]%' ORDER BY Status ASC";
+                // $sql = "SELECT * FROM grouplist WHERE HideFrom Not LIKE '%$insti%' and HideFrom NOT LIKE '%All%' and HideFrom Not LIKE '%[$activeClaId]%' OR HideFrom IS NULL ORDER BY Status ASC";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
                 $result = $stmt->get_result();

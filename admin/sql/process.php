@@ -2300,14 +2300,14 @@ if (isset($_POST['AddGroupData'])) {
     try {
         $groupName = $_POST['groupname'];
         $FileTemp = $_FILES['groupimg']['tmp_name'];
-        $HideFrom = $_POST['HideList'];
+        $ShowFrom = $_POST['ShowList'];
         $fileName = GetToday('ymdhis') . ".jpg";
-        if ($HideFrom == "") {
-            $hideList = null;
+        if ($ShowFrom == "") {
+            $showList = null;
         } else {
-            $hideList = "";
-            $listinhide = explode(",", $HideFrom);
-            foreach ($listinhide as $value) {
+            $showList = "";
+            $listinshow = explode(",", $ShowFrom);
+            foreach ($listinshow as $value) {
                 $classdata = explode("-", $value);
                 $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
                 $stmt = $conn->prepare($sql);
@@ -2316,7 +2316,7 @@ if (isset($_POST['AddGroupData'])) {
                 $reusalt = $stmt->get_result();
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                     $classId = $row['ClassId'];
-                    $hideList .= "[{$classId}]";
+                    $showList .= "[{$classId}]";
                 }
                 $stmt->close();
             }
@@ -2330,9 +2330,9 @@ if (isset($_POST['AddGroupData'])) {
             $reusalt = $stmt->get_result();
             if (!$reusalt->num_rows > 0) {
                 $targetFile = "../../Dachbord/assets/img/site use/group/" . $fileName;
-                $sql1 = "INSERT INTO grouplist(MGName,MGImage,HideFrom) VALUE(?,?,?)";
+                $sql1 = "INSERT INTO grouplist(MGName,MGImage,ShowFrom) VALUE(?,?,?)";
                 $stmt = $conn->prepare($sql1);
-                $stmt->bind_param("sss", $groupName, $fileName, $hideList);
+                $stmt->bind_param("sss", $groupName, $fileName, $showList);
                 $stmt->execute();
                 $stmt->close();
                 move_uploaded_file($FileTemp, $targetFile);
@@ -2441,20 +2441,20 @@ if (isset($_POST['updateGroup'])) {
         $groupName = $_POST['groupName'];
 
         if (true) {
-            $sql = "SELECT MGImage,HideFrom FROM grouplist WHERE GId = '$id'";
+            $sql = "SELECT MGImage,ShowFrom FROM grouplist WHERE GId = '$id'";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $reusalt = $stmt->get_result();
             $stmt->close();
             $row = $reusalt->fetch_assoc();
             $MGImage = $row['MGImage'];
-            $HideFrom = $row['HideFrom'];
+            $ShowFrom = $row['ShowFrom'];
         }
 
-        if (isset($_POST['HideList'])) {
-            $hideList = "";
-            $listinhide = explode(",", $_POST['HideList']);
-            foreach ($listinhide as $value) {
+        if (isset($_POST['ShowList'])) {
+            $showList = "";
+            $listinshow = explode(",", $_POST['ShowList']);
+            foreach ($listinshow as $value) {
                 $classdata = explode("-", $value);
                 $sql = "SELECT ClassId FROM class WHERE `ClassName` =  ? and `InstiName` = ? and `year` = ? ";
                 $stmt = $conn->prepare($sql);
@@ -2463,18 +2463,18 @@ if (isset($_POST['updateGroup'])) {
                 $reusalt = $stmt->get_result();
                 if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                     $classId = $row['ClassId'];
-                    $hideList .= "[{$classId}]";
+                    $showList .= "[{$classId}]";
                 }
                 $stmt->close();
             }
         } else {
-            $hideList = $HideFrom;
+            $showList = $ShowFrom;
         }
 
         // update dtabase 
-        $sql = "UPDATE grouplist SET MGName = ? , HideFrom = ? WHERE GId = ?";
+        $sql = "UPDATE grouplist SET MGName = ? , ShowFrom = ? WHERE GId = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $groupName, $hideList, $id);
+        $stmt->bind_param("sss", $groupName, $showList, $id);
         $stmt->execute();
 
         isset($_FILES['groupImage'])  ? move_uploaded_file($_FILES['groupImage']['tmp_name'], "../../Dachbord/assets/img/site use/group/" . $MGImage) : null;
@@ -2647,9 +2647,9 @@ if (isset($_POST['loadModelDataInsert'])) {
                     </div>
                 </div>
                 <div class='col-xl-12 col-sm-6 col-12'>
-                    <div class='mb-3 tags w-100 grouphideclass'>
-                        <label class='form-label d-flex'>Select Hide Class *</label>
-                        <select name='hidefrom' id='grouphide' class='is-valid select-multiple js-states form-control w-100' title='Select Product Category' multiple='multiple'>
+                    <div class='mb-3 tags w-100 groupshowclass'>
+                        <label class='form-label d-flex'>Select Show Class *</label>
+                        <select name='Showfrom' id='groupshow' class='is-valid select-multiple js-states form-control w-100' title='Select Product Category' multiple='multiple'>
                             <option>111111111111111111111111111111111111111111111111111</option>
                         </select>
                     </div>
@@ -2813,12 +2813,12 @@ if (isset($_POST['loadModelDataInsert'])) {
         $reusalt = $stmt->get_result();
         $stmt->close();
         $row = $reusalt->fetch_assoc();
-        // get hide NAme 
-        if ($row['HideFrom'] != null) {
-            $HideName = "";
+        // get Show NAme 
+        if ($row['ShowFrom'] != null) {
+            $ShowName = "";
             try {
-                $hidearray = explode("][", substr($row['HideFrom'], 1, -1));
-                foreach ($hidearray as $value) {
+                $Showarray = explode("][", substr($row['ShowFrom'], 1, -1));
+                foreach ($Showarray as $value) {
                     $sql = "SELECT * FROM class WHERE ClassId = ?";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $value);
@@ -2826,13 +2826,13 @@ if (isset($_POST['loadModelDataInsert'])) {
                     $reusalt1 = $stmt->get_result();
                     $stmt->close();
                     $row1 = $reusalt1->fetch_assoc();
-                    $HideName .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
+                    $ShowName .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
                 }
             } catch (\Throwable $th) {
-                $HideName = "Undefind";
+                $ShowName = "Undefind";
             }
         } else {
-            $HideName = "Not Hide Class";
+            $ShowName = "Not Show Class";
         }
         $modelBody = "
         <form id='Formclear'>
@@ -2845,7 +2845,7 @@ if (isset($_POST['loadModelDataInsert'])) {
                                     <th></th>
                                     <th>Name</th>
                                     <th>Image</th>
-                                    <th>Hide From</th>
+                                    <th>Show From</th>
                                     <th>Status</th>
                                 </tr>
                              </thead>
@@ -2853,7 +2853,7 @@ if (isset($_POST['loadModelDataInsert'])) {
                                 <td>{$row['GId']}</td>
                                 <td>{$row['MGName']}</td>
                                 <td><img width='50' id='image-preview' class='main-card-img' src='../Dachbord/assets/img/site use/group/{$row['MGImage']}' ></td>
-                                <td>{$HideName}</td>
+                                <td>{$ShowName}</td>
                                 <td>{$row['Status']}</td>
                              </tbody>
                         </table>
@@ -2879,9 +2879,9 @@ if (isset($_POST['loadModelDataInsert'])) {
                     </div>
                 </div>
                 <div class='col-xl-6 col-sm-6 col-12 item-center' >
-                    <div class='mb-3 tags w-100 grouphideclass'>
-                        <label class='form-label d-flex'>Select Hide Class *</label>
-                        <select name='hidefrom' id='grouphide' class='is-valid select-multiple js-states form-control w-100' title='Select Product Category' multiple='multiple'>
+                    <div class='mb-3 tags w-100 groupshowclass'>
+                        <label class='form-label d-flex'>Select Show Class *</label>
+                        <select name='showfrom' id='groupshow' class='is-valid select-multiple js-states form-control w-100' title='Select Product Category' multiple='multiple'>
                             <option>111111111111111111111111111111111111111111111111111</option>
                         </select>
                     </div>
@@ -3006,7 +3006,7 @@ if (isset($_POST['changeSnippitManageTable'])) {
         <tr>
             <th></th>
             <th>Group Name</th>
-            <th>Hide From</th>
+            <th>Show From</th>
             <th>Status</th>
             <th {$hiddenStatus}>Action</th>
         </tr>";
@@ -3020,9 +3020,9 @@ if (isset($_POST['changeSnippitManageTable'])) {
             $Gid = $row['GId'];
             $action = $row['Status'] == 'active' ? "<a onclick='disable(this.id,`group`)' id='{$Gid}'><i class='bi bi-x-circle text-red fs-6'></i></a>" : "<a onclick='enable(this.id,`group`)' id='{$Gid}'><i class='bi bi-check-circle text-green fs-6'></i></a>";
             $Status = $row['Status'] == 'active' ? "<span class='text-green fs-6'><i class='bi bi-check-circle'></i></span>" : "<span class='text-red fs-6'><i class='bi bi-x-circle'></i></span>";
-            if ($row['HideFrom'] == !null) {
-                $HideFrom = "";
-                $InstiIdList = explode("][", substr($row['HideFrom'], 1, -1));
+            if ($row['ShowFrom'] == !null) {
+                $ShowFrom = "";
+                $InstiIdList = explode("][", substr($row['ShowFrom'], 1, -1));
                 foreach ($InstiIdList as $value) {
                     $sql = "SELECT * FROM class WHERE ClassId = ? ";
                     $stmt = $conn->prepare($sql);
@@ -3030,17 +3030,17 @@ if (isset($_POST['changeSnippitManageTable'])) {
                     $stmt->execute();
                     $reusalt1 = $stmt->get_result();
                     if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                        $HideFrom .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
+                        $ShowFrom .= "{$row1['year']} {$row1['ClassName']} {$row1['InstiName']}" . "<br>";
                     }
                 }
             } else {
-                $HideFrom = "Not Hide Institute";
+                $ShowFrom = "Not Show Institute";
             }
             $tBody .= "
             <tr>
                 <td><img src='../Dachbord/assets/img/site use/group/{$row['MGImage']}' width='50' onclick='showImage(this.src)' alt='Image not found!'></td>
                 <td>{$row['MGName']}</td>
-                <td>{$HideFrom}</td>
+                <td>{$ShowFrom}</td>
                 <td class='text-center'>{$Status}</td>
                 <td class='text-center' {$hiddenStatus}>
                     <div class='actions item-center'>
@@ -4591,8 +4591,8 @@ if (isset($_POST['save'])) {
         }
     } elseif ($type == 'showStu' || $type == 'showAdmin') {
         try {
-            $value = empty($_POST['value'])  ? 0 : ($_POST['value']=='true' ? 1 : 0);
-            
+            $value = empty($_POST['value'])  ? 0 : ($_POST['value'] == 'true' ? 1 : 0);
+
             $sql = $type == 'showStu' ? "UPDATE adminuser SET ShowStu = ? WHERE AdminId = ?" : "UPDATE adminuser SET ShowAdm = ? WHERE AdminId = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ii", $value, $UserId);
@@ -4600,9 +4600,9 @@ if (isset($_POST['save'])) {
             $stmt->close();
             $respons = 'success';
         } catch (Exception $e) {
-           $respons = "error";
+            $respons = "error";
         }
-    }else {
+    } else {
         $respons = 'undefind';
     }
     echo $respons;
