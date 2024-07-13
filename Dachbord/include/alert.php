@@ -145,9 +145,9 @@
 							<p class="text-info month"></p>
 							<p class="text-success price"></p>
 							<div class="col-12  m-0">
-								<div class="card-body p-2 item-center PaymentOnl">
+								<div class="card-body p-2 item-center PaymentOnl d-none">
 									<label class="form-check-label" for="inlineRadio1">Bank Deposite</label>&nbsp;
-									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio1" value="bds">
+									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio1" value="bds" />
 									&nbsp;&nbsp;|&nbsp;&nbsp;
 									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio2" value="cod" checked>&nbsp;
 									<label class="form-check-label" for="inlineRadio2">Cash On Delivary</label>
