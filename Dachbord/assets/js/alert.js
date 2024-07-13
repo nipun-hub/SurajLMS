@@ -94,8 +94,8 @@ function nthj(type, val = null) {
     val == "payonl"
       ? (title.innerHTML = "Successfull Payment")
       : val == "payphy"
-      ? (title.innerHTML = "Successfully activation")
-      : (title.innerHTML = "Successfull Register");
+        ? (title.innerHTML = "Successfully activation")
+        : (title.innerHTML = "Successfull Register");
     // if (val == 'payonl') {
     //     title.innerHTML = "Successfull Payment";
     // } else if (val == 'payphy') {
@@ -137,6 +137,7 @@ function nthj(type, val = null) {
         alert[3].querySelector(
           ".month"
         ).innerHTML = `Payment for ${response.month}`;
+        document.getElementById('inlineRadio1').checked = true; // set alwais clicked bank deposite
       } else if (response.type == "physical") {
         mainTitle = "Active";
         alert[3].querySelector(
@@ -146,6 +147,7 @@ function nthj(type, val = null) {
       alert[3].querySelector(
         "h2"
       ).innerHTML = `${mainTitle}<br>${response.classHeader}`;
+
     });
     btn[3].addEventListener("click", (e) => {
       event.preventDefault();
@@ -163,6 +165,7 @@ function nthj(type, val = null) {
       // loading(false, 3);
       Pay(2, val, price);
     });
+
     show_alert();
   } else if (type == 6) {
     // error alert
@@ -328,8 +331,8 @@ function Pay(type, val = null, val2 = null) {
                 gid == "undefind"
                   ? mainCardContent()
                   : lestype == "lesson"
-                  ? changemainCardContent("clickGroup")
-                  : changemainCardContent("clickMonth");
+                    ? changemainCardContent("clickGroup")
+                    : changemainCardContent("clickMonth");
               });
             });
             close_alert();
@@ -382,8 +385,8 @@ function Pay(type, val = null, val2 = null) {
                 gid == "undefind"
                   ? mainCardContent()
                   : lestype == "lesson"
-                  ? changemainCardContent("clickGroup")
-                  : changemainCardContent("clickMonth");
+                    ? changemainCardContent("clickGroup")
+                    : changemainCardContent("clickMonth");
               });
             });
             close_alert();
@@ -533,7 +536,7 @@ function validateText() {
 function search(type) {
   if (type == "peaperReusalt") {
     const value = document.querySelector("#searchInp2").value;
-    value.replace(" ","");
+    value.replace(" ", "");
     console.log(value);
     if (value.length > 0) {
       document.getElementById("searchInp2Search").classList.add("d-none");

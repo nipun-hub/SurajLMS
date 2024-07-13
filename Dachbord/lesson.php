@@ -317,9 +317,8 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 	?>
 
 	<script>
-		
 		// let questions
-		changeContent(`month`)
+		changeContent(`month`) // month for active 
 		prograss_snipper();
 		PageControles();
 		PaymentStatus();
@@ -478,7 +477,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				});
 			} else if (type == 'quiz') {
 				// changePageControlesLec(value);
-				PassData = "loadLessonModel=" + "&type=" + type  + "&data=" + value;
+				PassData = "loadLessonModel=" + "&type=" + type + "&data=" + value;
 				$.post("sql/process.php", PassData, function(response, status) {
 					$('#lessonModelContent').html(response);
 					// console.log(response);
@@ -519,7 +518,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 			document.head.appendChild(script); // Append the script to the head
 		}
 
-		function clodeLesModel(){
+		function clodeLesModel() {
 			$('#lessonModelContent').html('');
 		}
 	</script>
@@ -527,6 +526,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 
 	<script>
 		window.onload = function() {
+
 			// special animatioin 
 			// var specialAnimation = document.querySelectorAll('.special-animate');
 			// console.log('success');
