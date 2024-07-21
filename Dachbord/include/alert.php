@@ -149,7 +149,7 @@
 									<label class="form-check-label" for="inlineRadio1">Bank Deposite</label>&nbsp;
 									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio1" value="bds" />
 									&nbsp;&nbsp;|&nbsp;&nbsp;
-									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio2" value="cod" checked>&nbsp;
+									<input class="form-check-input" type="radio" name="paymethod" id="inlineRadio2" value="cod">&nbsp;
 									<label class="form-check-label" for="inlineRadio2">Cash On Delivary</label>
 									<!-- <input value="" class="form-check-input" type="radio" name="paymethod" id="inlineRadio3" checked hidden>&nbsp; -->
 								</div>
