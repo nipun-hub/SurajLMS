@@ -137,7 +137,10 @@ function nthj(type, val = null) {
         alert[3].querySelector(
           ".month"
         ).innerHTML = `Payment for ${response.month}`;
-        document.getElementById('inlineRadio1').checked = true; // set alwais clicked bank deposite
+        for (let index = 0; index < 3; index++) {
+          document.getElementById('inlineRadio1').checked = true; // set alwais clicked bank deposite
+          document.getElementById('inlineRadio2').checked = false; // set alwais clicked bank deposite        
+        }
       } else if (response.type == "physical") {
         mainTitle = "Active";
         alert[3].querySelector(
