@@ -134,7 +134,7 @@ try {
                         $stmt->execute();
 
                         move_uploaded_file($fileTmpName, $targetFile);
-                        
+
                         $conn->commit();
 
                         echo "success";
@@ -565,19 +565,24 @@ try {
                                 $onclickEvent = "";
                             }
                             if ($row0['Type'] == 'video') {
+                                $downloadIndi = "";
                                 $lesindi = $video;
                             } elseif ($row0['Type'] == 'note') {
+                                $downloadIndi = "<a href='https://drive.google.com/uc?export=download&id={$row0['Link']}'><i class='bi bi-download text-success'></i></a>";
                                 $lesindi = $note;
                             } elseif ($row0['Type'] == 'quiz') {
+                                $downloadIndi = "";
                                 $lesindi = $quiz;
                             } elseif ($row0['Type'] == 'upload') {
+                                $downloadIndi = "";
                                 $lesindi = $upload;
                             } elseif ($row0['Type'] == 'upcomming') {
+                                $downloadIndi = "";
                                 $lesindi = $upcomming;
                             } else {
+                                $downloadIndi = "";
                                 $lesindi = $classwork;
                             }
-
                             $contentRow .= "
                                 <div class='table-card-main d-flex align-items-center'>
 			                	    <div class='ms-3' style='color: #a9aaae;'><i class='fs-5 bi bi-arrow-return-right'></i></div>
@@ -590,6 +595,7 @@ try {
                                         <div class='item-center'>
                                             {$eye}
 			                		        {$StatusIndi}
+                                            {$downloadIndi}
                                         </div>
                                     </div>
                                 </div>";
@@ -1321,6 +1327,28 @@ try {
                     </div>
                 </div>
             </div>";
+        } elseif ($type == 'note') {
+            $lessonId = $_POST['data'];
+            $sql = "SELECT LesName,Time,Link FROM lesson WHERE LesId = '$lessonId'";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $LesName = $row['LesName'];
+                $LesLink = $row['Link'];
+            } else {
+                $LesName = "";
+                $LesLink = "";
+            }
+            $respons = "
+                <div class='modal-header'>
+                    <h5 class='modal-title' id='lessonModelLabel'>{$LesName}</h5>
+                    &nbsp;&nbsp;&nbsp;<a href='https://drive.google.com/uc?export=download&id={$LesLink}'><i class='bi bi-download text-success'></i></a>
+                    <button type='button' class='btn-close' data-bs-dismiss='modal' onclick='clodeLesModel()'><b><i class='bi bi-x-lg'></i></b></button>
+                </div>
+				<div class='modal-body row'>
+                    <iframe src='https://drive.google.com/file/d/{$LesLink}/preview' height='600'></iframe>
+				</div>";
         } else {
             $respons = "undefind Content";
         }

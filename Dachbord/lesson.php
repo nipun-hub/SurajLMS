@@ -500,6 +500,12 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				document.getElementById('uploadPdfAlert').click();
 				localStorage.setItem('UploadFileData', value);
 				loadScript('assets/js/fuleUploader.js');
+			} else if (type == 'note') {
+				PassData = "loadLessonModel=" + "&type=" + type + "&data=" + value;
+				$.post("sql/process.php", PassData, function(response, status) {
+					$('#lessonModelContent').html(response);
+					$('#lessonModel').modal('show');
+				});
 			}
 		}
 
