@@ -4423,7 +4423,7 @@ if (isset($_POST['changeUserManageTable'])) {
             <th>Action</th>
         </tr>";
         $tBody = "";
-        $sql = $data != null ? "SELECT * FROM User WHERE ( UserNAme LIKE ? or RegCode LIKE ? or Year LIKE ? or InstiName LIKE ? or Email LIKE ? ) AND RegCode IS NOT NULL $limit" : "SELECT * FROM user WHERE RegCode IS NOT NULL $limit";
+        $sql = $data != null ? "SELECT * FROM user WHERE ( UserNAme LIKE ? or RegCode LIKE ? or Year LIKE ? or InstiName LIKE ? or Email LIKE ? ) AND RegCode IS NOT NULL $limit" : "SELECT * FROM user WHERE RegCode IS NOT NULL $limit";
         $stmt = $conn->prepare($sql);
         $data != null ? $stmt->bind_param("sssss", $data, $data, $data, $data, $data) : null;
         $stmt->execute();

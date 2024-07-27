@@ -121,12 +121,12 @@
                         <div class="col-auto m-2">
                             <button class="btn btn-success w-100" onclick="updateModelContent('regStu')"><i class="bi bi-plus"></i>&nbsp;Register Student</button>
                         </div>
-                        <div class="col-auto m-2">
+                        <!-- <div class="col-auto m-2">
                             <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?> disabled><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
                         </div>
                         <div class="col-auto m-2">
                             <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?> disabled><i class="bi bi-plus"></i>&nbsp;Upload marks other</button>
-                        </div>
+                        </div> -->
                         <!-- <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
                             <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
                         </div> -->
@@ -134,7 +134,7 @@
                     <!-- Row end -->
 
                     <!-- Row start -->
-                    <div class="row item-center">
+                    <div class="row item-center d-none">
                         <div class="sub-nav">
                             <div class="sub-nav-body" id="sub-nav-body1">
                                 <div class="radio-btn notifiradio">
