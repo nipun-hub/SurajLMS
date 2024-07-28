@@ -223,6 +223,11 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="actiomModel" tabindex="-1" aria-labelledby="actiomModelLabel" aria-hidden="true">
+        <div class="modal-dialog" id="actionModelContent"></div>
+    </div>
+
     <!-- model Section end -->
 
 
@@ -256,6 +261,8 @@
     <script src="assets/js/nTost.js"></script>
 
     <script>
+        let informationChangeValue = "";
+
         // updateSelectPeaper();
 
         // function updateSelectPeaper() {
@@ -356,6 +363,109 @@
         // function viwe(){
         //     updateModelContent('viweUser');
         // }
+
+
+        function userAction(action, id = null) {
+            let deleteModelContent = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSmLabel">Confourm Delete User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="userAction('confourmDelete',${id})"><i class='bi bi-trash text-white fs-6'></i>&nbsp;Delete</button>
+                </div>
+            </div>`;
+
+            let changeInstiModelContent = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSmLabel">Change user institute</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id='changeInforModelBody'>
+                    <select onchange="informationChangeValue = this.value" class="form-select" id='instiDta'>
+                        
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="userAction('changeInsti',${id})"><i class='bi bi-repeat text-white fs-6'></i>&nbsp;Change</button>
+                </div>
+            </div>`;
+
+            console.log(action, " is ", id);
+            if (action == 'showDeleteAlert') {
+
+                $('#actionModelContent').html(deleteModelContent);
+                document.getElementById('actionModelContent').classList.add('modal-sm');
+                $('#actiomModel').modal('show');
+
+            } else if (action == 'showChangeInstiAlert') {
+
+                $('#actionModelContent').html(changeInstiModelContent);
+                document.getElementById('actionModelContent').classList.add('modal-sm');
+                formData = "getinstitute=";
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#instiDta').html(response);
+                });
+                $('#actiomModel').modal('show');
+
+            } else if (action == 'confourmDelete') {
+
+                formData = "userAction=" + "&type=" + action + "&id=" + id;
+                $.post("sql/process.php", formData, function(response, status) {
+                    console.log(response);
+                    ShowBody();
+                    response.trim() == "success" ?
+                        nTost({
+                            type: 'success',
+                            titleText: 'Successfully Deleted user'
+                        }) :
+                        nTost({
+                            type: 'error',
+                            titleText: 'Error Deleted user'
+                        });
+                });
+                $('#actiomModel').modal('hide');
+                $('#modelMainxl').modal('hide');
+
+
+            } else if (action == 'changeInsti') {
+                if (informationChangeValue.length > 2) {
+                    formData = "userAction=" + "&type=" + action + "&id=" + id + "&value=" + informationChangeValue;
+                    $.post("sql/process.php", formData, function(response, status) {
+                        console.log(response)
+                        updateModelContent(`viweStuInfo`, id);
+                        ShowBody();
+                        response.trim() == "success" ?
+                            nTost({
+                                type: 'success',
+                                titleText: 'Successfully change user institute',
+                            }) :
+                            nTost({
+                                type: 'error',
+                                titleText: 'Error change user institute',
+                            });
+                    });
+                    $('#actiomModel').modal('hide');
+                } else {
+                    nTost({
+                        type: 'error',
+                        titleText: 'Plese Select the institute!',
+                    });
+                }
+
+            }
+        }
+
+        function testClearFunction() {
+            formData = "ClearPaymentImage="
+            $.post("sql/clearData.php", formData, function(response, status) {
+                console.log(response)
+            });
+        }
 
 
 
