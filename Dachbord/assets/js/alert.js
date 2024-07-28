@@ -210,6 +210,24 @@ function nthj(type, val = null) {
       clearInterval(intervalID);
     }, 10000);
     show_alert();
+  } else if (type == "notPay") {
+    // success alert
+    alert.forEach((self) => {
+      self.style.display = "none";
+    });
+    alert[2].style.display = "block";
+    logoImg.src = "../assets/images/gif/error.gif";
+    title.innerHTML = "Not Payed!";
+    stitle.innerHTML = "ඔබ මෙම මාසය සදහා ගෙවීම් සිදුකර නොමැත. එම නිසා මෙම මාසයට අදාල පාඩම් නැරඹිය නොහැක.";
+
+    btn[2].innerHTML = "Pay Now";
+    btn[2].style.display = "block";
+    btn[2].addEventListener("click", () => {
+      let currentmonth = new Date().toJSON().slice(0, 7).replace("-","");
+      nthj(5,currentmonth);
+      // close_alert();
+    });
+    show_alert();
   }
 }
 
