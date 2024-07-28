@@ -132,7 +132,7 @@
 								</div>
 								<div class=" mb-3 email">
 									<label class="form-label">Email</label>
-									<input name="email" onkeyup="email_val()" type="Email" class="form-control Register_Data" required disabled>
+									<input name="email" onkeyup="email_val()" type="Email" class="form-control" disabled>
 								</div>
 								<div class="login-form-actions onennext">
 									<button class="btn btn-next"> <span class="icon"> <i class="bi bi-box-arrow-in-right"></i> </span> Next</button>
@@ -346,8 +346,8 @@
 				window.location.href = "../login";
 			}else{
 				email.value = localStorage.getItem("email");
-				fname.value = localStorage.getItem("fname");
-				lname.value = localStorage.getItem("lname");
+				// fname.value = localStorage.getItem("fname");
+				// lname.value = localStorage.getItem("lname");
 			}
 		}
 	};

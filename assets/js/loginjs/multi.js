@@ -468,8 +468,8 @@ function handleCredentialResponse(response) {
 
         localStorage.setItem("regStatus", "1");
         localStorage.setItem("email", responsePayload.email);
-        localStorage.setItem("fname", responsePayload.given_name);
-        localStorage.setItem("lname", responsePayload.family_name);        
+        // localStorage.setItem("fname", responsePayload.given_name);
+        // localStorage.setItem("lname", responsePayload.family_name);        
         search();
       } else if (data.status == 2) {
         // Login and pass dashbord
@@ -500,11 +500,12 @@ function Register() {
     Register_Data.append(form_element[count].name, form_element[count].value);
   }
   Register_Data.append("email" , localStorage.getItem('email'));
-  Register_Data.append("fname" , localStorage.getItem('fname'));
-  Register_Data.append("lname" , localStorage.getItem('lname'));
+  // Register_Data.append("fname" , localStorage.getItem('fname'));
+  // Register_Data.append("lname" , localStorage.getItem('lname'));
   localStorage.clear();
   var nic_pic = register_form.querySelector('[name="nic_pic"]').files[0];
   Register_Data.append('nic_pic', nic_pic);
+  console.log(Register_Data);
   // Register_Data.append(form_element[count].name, form_element[count].value);
 
   // document.getElementById('Register').disabled = true;
