@@ -452,6 +452,26 @@ try {
     }
     // Update Payment Status end
 
+    // is Pay start 
+    if (isset($_POST['isPay'])) {
+        $activeClaId = explode("-", $_SESSION['clz'])[1];
+        $thisMonth =  GetToday('ym');
+
+        $sql = "SELECT PayId,Status  FROM payment WHERE `UserId` = ? and `ClassId` = ? and `Month` = ? ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $UserId, $activeClaId, $thisMonth);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $paymrntStatus = "";
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $respons = $row['Status'];
+        } else {
+            $respons = "notPay";
+        }
+        echo $respons;
+    }
+    // is Pay end
+
     // get grouplist start
 
     if (isset($_POST['updatemainCardContent'])) {
@@ -550,6 +570,7 @@ try {
                             $stmt->execute();
                             $result1 = $stmt->get_result();
                             if ($result1->num_rows > 0 && $row1 = $result1->fetch_assoc()) {
+                                $downloadIndi = ($row0['Type'] == 'note') && ($row1['Status'] == 'active') ? "<a href='https://drive.google.com/uc?export=download&id={$row0['Link']}'><i class='bi bi-download text-success'></i></a>" . "&nbsp;&nbsp;&nbsp;" : "";
                                 if ($row1['Status'] == 'active') {
                                     $StatusIndi = $CompleateStatus;
                                     $onclickEvent = $click;
@@ -563,24 +584,20 @@ try {
                             } else {
                                 $StatusIndi = $paymentnotpay;
                                 $onclickEvent = "";
-                            }
-                            if ($row0['Type'] == 'video') {
                                 $downloadIndi = "";
+                            }
+
+                            if ($row0['Type'] == 'video') {
                                 $lesindi = $video;
                             } elseif ($row0['Type'] == 'note') {
-                                $downloadIndi = "<a href='https://drive.google.com/uc?export=download&id={$row0['Link']}'><i class='bi bi-download text-success'></i></a>";
                                 $lesindi = $note;
                             } elseif ($row0['Type'] == 'quiz') {
-                                $downloadIndi = "";
                                 $lesindi = $quiz;
                             } elseif ($row0['Type'] == 'upload') {
-                                $downloadIndi = "";
                                 $lesindi = $upload;
                             } elseif ($row0['Type'] == 'upcomming') {
-                                $downloadIndi = "";
                                 $lesindi = $upcomming;
                             } else {
-                                $downloadIndi = "";
                                 $lesindi = $classwork;
                             }
                             $contentRow .= "
@@ -594,8 +611,8 @@ try {
                                         </div>
                                         <div class='item-center'>
                                             {$eye}
-			                		        {$StatusIndi}
                                             {$downloadIndi}
+			                		        {$StatusIndi}
                                         </div>
                                     </div>
                                 </div>";

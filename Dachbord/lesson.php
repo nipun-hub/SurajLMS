@@ -323,6 +323,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		PageControles();
 		PaymentStatus();
 		mainCardContent();
+		isPayed();
 
 		// function PayDetails(value) {
 		// 	console.log(value);
@@ -366,6 +367,17 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 				});
 			}
 		}
+
+		function isPayed() {
+			formData = "isPay=";
+			$.post("sql/process.php", formData, function(response, status) {
+				if (response.trim() == "notPay") {
+					nthj('notPay');
+				}
+			});
+
+		}
+
 
 		function mainCardContent(data = null) {
 			if (data == 'empty') {
