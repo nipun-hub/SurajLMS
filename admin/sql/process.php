@@ -4218,25 +4218,25 @@ if (isset($_POST['loadModelDataStManage'])) {
         <div class='row'>
 			<div class='col-auto'>
 				<div class='card'>
-					<div class='card-body product-added-card m-3 row justify-content-center'>
+					<div class='card-body product-added-card m-3 row justify-content-center' id='userProfileInfor'>
 						<div class='col-auto'>
 							<img class='product-added-img' width='100' height='100' src='{$dp}' alt='User profile picture' onerror='imgNotFound()'>
 						</div>
-						<div class='col-auto row'>
+						<div class='col-auto row position-relative'>
 							<div class='col-auto m-2'>
-								<h5>{$UName}</h5>
+								<h5>{$UName}</h5> 
+								<P class='text-dark'>{$Email}</P>
 								<P class='text-dark'>{$InstiName}</P>
 								<p class='text-success'><i class='bi bi-check-circle'></i> active</p>
 							</div>
 						</div>
-						<!-- <div class='col-auto'><h5>Susipwan</h5></div> -->
 					</div>
+                    <div class='item-center mb-2'>
+                        <button onclick='userAction(`showDeleteAlert`,$data)' class='btn btn-light btn-sm text'><i class='bi bi-trash text-danger fs-6'></i>&nbsp; Delete user</button>
+                    </div>
 				</div>
 			</div>
-			<div class='col-auto'>
-			</div>
 		</div>";
-
 
         $rowHed = "<div class='row'>";
         $rowFotter = "</div>";
@@ -4304,6 +4304,7 @@ if (isset($_POST['loadModelDataStManage'])) {
             </div>
         </div>
     </div>";
+
         $InstiInfo = "
     <div class='col-xxl-4 col-md-6 col-12'>
         <div class='card'>
@@ -4318,10 +4319,13 @@ if (isset($_POST['loadModelDataStManage'])) {
                 </div>
                 <div class='col-auto d-flex row'>
                     <div class='col-12 align-self-center'>
-                        <h5>'{$InstiName} {$Place}'</h5>
+                        <h5>{$InstiName} {$Place}</h5>
                         <P class='text-dark'>{$SubDict}</P>
                         {$StatusIndi}
                     </div>
+                </div>
+                <div class='item-center'>
+                    <button onclick='userAction(`showChangeInstiAlert`,$data)' class='btn btn-light btn-sm text'><i class='bi bi-arrow-repeat fs-6'></i> &nbsp;Change institute</button>
                 </div>
             </div>
         </div>
@@ -4555,6 +4559,80 @@ if (isset($_POST['studentManage'])) {
         }
     }
 
+    echo $respons;
+}
+
+if (isset($_POST['userAction'])) {
+    $type = $_POST['type'];
+    $id = $_POST['id'];
+    if ($type == "confourmDelete") {
+        try {
+            $conn->begin_transaction();
+
+            $sql = "DELETE FROM user WHERE UserId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+
+            $sql = "DELETE FROM userdata WHERE UserId = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+
+            $sql = "INSERT INTO adminactivity(AdminId,OtherId,Activity,Dict) VALUES($UserId,$id,'delete User','Delete User in $id')";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $stmt->close();
+
+            $conn->commit();
+
+            $respons = "success";
+        } catch (\Throwable $th) {
+            $conn->rollback();
+            $respons = "error" . $th;
+        }
+    } elseif ($type == 'changeInsti') {
+        $value = $_POST['value'];
+        $sql = "SELECT UserId FROM user WHERE UserId = ? and InstiName IS NOT NULL";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        $stmt->close();
+        if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            try {
+                $conn->begin_transaction();
+
+                $sql = "UPDATE user SET InstiName = ? WHERE UserId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $value, $id);
+                $stmt->execute();
+                $stmt->close();
+
+                $sql = "UPDATE userdata SET InstiName = ? WHERE UserId = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $value, $id);
+                $stmt->execute();
+                $stmt->close();
+
+                $sql = "INSERT INTO adminactivity(AdminId,OtherId,Activity,Dict) VALUES($UserId,$id,'change user Insti','change $id User in stitute is $value')";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute();
+                $stmt->close();
+
+                $conn->commit();
+
+                $respons = "success";
+            } catch (\Throwable $th) {
+                $conn->rollback();
+                $respons = "error" . $th;
+            }
+        } else {
+            $respons = "not registed Institute";
+        }
+    }
     echo $respons;
 }
 //  user management end ******************************
