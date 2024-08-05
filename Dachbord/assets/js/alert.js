@@ -21,7 +21,8 @@ function getpayphyinputs() {
 
 function getpayOnlInputs() {
   inputfeelds = document.querySelectorAll(
-    ".PaymentOnl input[type=text] , .PaymentOnl input[type=number] , .PaymentOnl input[type=radio]:checked , .PaymentOnl textarea"
+    ".PaymentOnl input[type=text] , .PaymentOnl input[type=number] , .PaymentOnl textarea"
+    // ".PaymentOnl input[type=text] , .PaymentOnl input[type=number] , .PaymentOnl input[type=radio]:checked , .PaymentOnl textarea" 
   );
   inputfeelds2 = document.querySelectorAll(".PaymentOnl input[type=radio]");
 }
@@ -137,10 +138,10 @@ function nthj(type, val = null) {
         alert[3].querySelector(
           ".month"
         ).innerHTML = `Payment for ${response.month}`;
-        for (let index = 0; index < 3; index++) {
-          document.getElementById('inlineRadio1').checked = true; // set alwais clicked bank deposite
-          document.getElementById('inlineRadio2').checked = false; // set alwais clicked bank deposite        
-        }
+        // for (let index = 0; index < 3; index++) {
+        // document.getElementById('inlineRadio1').checked = true; // set alwais clicked bank deposite
+        // document.getElementById('inlineRadio2').checked = false; // set alwais clicked bank deposite        
+        // }
       } else if (response.type == "physical") {
         mainTitle = "Active";
         alert[3].querySelector(
@@ -223,8 +224,8 @@ function nthj(type, val = null) {
     btn[2].innerHTML = "Pay Now";
     btn[2].style.display = "block";
     btn[2].addEventListener("click", () => {
-      let currentmonth = new Date().toJSON().slice(0, 7).replace("-","");
-      nthj(5,currentmonth);
+      let currentmonth = new Date().toJSON().slice(0, 7).replace("-", "");
+      nthj(5, currentmonth);
       // close_alert();
     });
     show_alert();
@@ -381,6 +382,7 @@ function Pay(type, val = null, val2 = null) {
       PassData.append("PaymetOnl", "");
       PassData.append("payMonth", val);
       PassData.append("price", val2);
+      PassData.append("paymethod", "bds");
       // console.log(val2);
       inputfeelds.forEach((self) => {
         PassData.append(self.name, self.value);
@@ -434,15 +436,23 @@ function Pay(type, val = null, val2 = null) {
     } else {
       image.classList.toggle("is-invalid", false);
     }
-    if (inputfeelds2[0].checked || inputfeelds2[1].checked) {
-      alert[3].querySelector(".invalid-feedback").style.display = "none";
-    } else {
-      alert[3].querySelector(".invalid-feedback").style.display = "block";
-      valid = false;
-    }
+    // if (inputfeelds2[0].checked || inputfeelds2[1].checked) {
+    // alert[3].querySelector(".invalid-feedback").style.display = "none";
+    // } else {
+    // alert[3].querySelector(".invalid-feedback").style.display = "block";
+    // valid = false;
+    // }
     for (var count = 0; count < inputfeelds.length - 1; count++) {
+      console.log(inputfeelds[count].name + "  " + inputfeelds[count].value);
       if (inputfeelds[count].value.length > 0) {
         inputfeelds[count].classList.toggle("is-invalid", false);
+        if (
+          inputfeelds[0].value.length < 10 ||
+          inputfeelds[0].value.length > 12
+        ) {
+          inputfeelds[0].classList.toggle("is-invalid", true);
+          valid = false;
+        }
         if (
           inputfeelds[1].value.length < 10 ||
           inputfeelds[1].value.length > 12
@@ -455,13 +465,6 @@ function Pay(type, val = null, val2 = null) {
           inputfeelds[2].value.length > 12
         ) {
           inputfeelds[2].classList.toggle("is-invalid", true);
-          valid = false;
-        }
-        if (
-          inputfeelds[3].value.length < 10 ||
-          inputfeelds[3].value.length > 12
-        ) {
-          inputfeelds[3].classList.toggle("is-invalid", true);
           valid = false;
         }
       } else {
