@@ -246,7 +246,6 @@ function submitAddLesson(val) {
     console.log(validatelesson_val(val));
     if (validatelesson_val(val)) {
         if (val == 1) {
-            console.log('hfdvijbsfgi');
             // getting data
             var ligroup = document.querySelectorAll('.add-lesson .group .select2-selection__rendered li');
             var liaccess = document.querySelectorAll('.add-lesson .access .select2-selection__rendered li');
