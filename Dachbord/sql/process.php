@@ -1182,12 +1182,13 @@ try {
         $type = $_POST['type'];
         if ($type == 'video') {
             $lessonId = $_POST['data'];
-            $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";
+            $sql = "SELECT LesName,Dict,Time FROM lesson WHERE LesId = '$lessonId'";
             $stmt = $conn->prepare($sql);
             $stmt->execute();
             $reusalt = $stmt->get_result();
             if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
                 $LesName = $row['LesName'];
+                $Dict = empty($row['Dict']) ? "" : $row['Dict'];
             } else {
                 $LesName = "";
             }
@@ -1263,7 +1264,11 @@ try {
                             </div>
                         </div>
                     </div>
-				</div>";
+				</div>
+                <div class='modal-footer justify-content-start'>
+                    <p>{$Dict}</p>
+				</div>
+                ";
         } elseif ($type == 'quiz') {
             $lessonId = $_POST['data'];
             $sql = "SELECT LesName,Time FROM lesson WHERE LesId = '$lessonId'";

@@ -337,6 +337,14 @@ if (isset($_POST['markAtendent'])) {
 //  lesson management sestion start ********
 
 if (isset($_POST['UpdateLessonContent'])) {
+
+    $video = "<i class='bi bi-camera-video text-success'></i>";
+    $note  = "<i class='bi bi-file-earmark-text text-success'></i>";
+    $quiz = "<i class='bi bi-check2-circle text-success'></i>";
+    $classwork = "<i class='bi bi-person-video3 text-success'></i>";
+    $upload = "<i class='bi bi-cloud-upload text-success'></i>";
+    $upcomming = "<i class='bi bi-clock-history text-success'></i>";
+
     $search = $_POST['UpdateLessonContent'];
     $htmlAllContent = "";
     $tableHeaderContent = "
@@ -344,11 +352,12 @@ if (isset($_POST['UpdateLessonContent'])) {
         <table class='table table-bordered  v-middle'>
             <thead>
                 <tr>
+                    <th></th>
                     <th>Name</th>
                     <th>Dict</th>
-                    <th>Type</th>
                     <th>Institutes</th>
-                    <th>Insert Date</th>
+                    <th>Month</th>
+                    <th>InsertBy</th>
                     <th>Status</th>
                     <th {$hiddenStatus}>Action</th>
                 </tr>
@@ -360,11 +369,11 @@ if (isset($_POST['UpdateLessonContent'])) {
     </div>";
     $tableBodyContent = "";
     if ($search == '') {
-        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess WHERE lesson.LesId = recaccess.LesId";
+        $sql = "SELECT lesson.*,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
         $stmt = $conn->prepare($sql);
     } else {
         $search = "%" . $search . "%";
-        $sql = "SELECT lesson.*,recaccess.ClassId FROM lesson,recaccess WHERE ( lesson.LesName LIKE ? or lesson.Type LIKE ? ) and lesson.LesId = recaccess.LesId";
+        $sql = "SELECT lesson.*,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE ( lesson.LesName LIKE ? or lesson.Type LIKE ? ) and lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $search, $search);
     }
@@ -374,15 +383,32 @@ if (isset($_POST['UpdateLessonContent'])) {
         $LesId = $row['LesId'];
         $name = $row['LesName'];
         $dict = empty($row['Dict']) ? "Not Found" : $row['Dict'];
+
+        // lesson type icon asign
         $type = $row['Type'];
+        if ($type == 'video') {
+            $lesindi = $video;
+        } elseif ($type == 'note') {
+            $lesindi = $note;
+        } elseif ($type == 'quiz') {
+            $lesindi = $quiz;
+        } elseif ($type == 'upload') {
+            $lesindi = $upload;
+        } elseif ($type == 'upcomming') {
+            $lesindi = $upcomming;
+        } else {
+            $lesindi = $classwork;
+        }
+
+        $month = substr($row['Month'], 0, 4) . "&nbsp;" . GetMonthName(substr($row['Month'], 4));
         $InsertDate = substr($row['InsertDate'], 0, 10);
         // $InsertDate = DateTime::createFromFormat('Ymd', $InsertDate)->format('Y-m-d');
         $status = $row['Status'];
         if ($status == 'active') {
-            $statusindi = "<span class='text-green td-status'><i class='bi bi-check-circle'></i> Active</span>";
+            $statusindi = "<span class='text-green td-status item-center'><i class='bi bi-check-circle fs-6'></i></span>";
             $actionbtn = "<a onclick='lesAction({$LesId},`disable`)'><i class='bi bi-x-circle text-red'></i></a>";
         } else if ($status == 'desable') {
-            $statusindi = "<span class='text-red td-status'><i class='bi bi-x-circle'></i> Desable</span>";
+            $statusindi = "<span class='text-red td-status item-center'><i class='bi bi-x-circle fs-6'></i></span>";
             $actionbtn = "<a onclick='lesAction({$LesId},`active`)'><i class='bi bi-check-circle text-success'></i></a>";
         } else {
             $statusindi = "<span class='text-blue td-status'><i class='bi bi-clock-history'></i> Awaiting</span>";
@@ -397,15 +423,16 @@ if (isset($_POST['UpdateLessonContent'])) {
             $stmt->execute();
             $reusalt1 = $stmt->get_result();
             if ($reusalt1->num_rows > 0 && $row1 = $reusalt1->fetch_assoc()) {
-                $InstiNames .= "<p>" . $row1['InstiName'] . "</p>";
+                $InstiNames .= "<p>" . $row1['year'] . " - " . $row1['ClassName'] . " - " . $row1['InstiName'] . "</p> <hr class='text-light m-0 p-0'/>";
             }
         }
         $tableBodyContent .= "
         <tr>
+            <td>{$lesindi}</td>
             <td>{$name}</td>
             <td>{$dict}</td>
-            <td>{$type}</td>
             <td>{$InstiNames}</td>
+            <td>{$month}</td>
             <td>{$InsertDate}</td>
             <td>{$statusindi}</td>
             <td class='item-center' {$hiddenStatus}>
@@ -475,12 +502,14 @@ if (isset($_POST['AddLessonData'])) {
         $status = "active";
 
         if ($_POST['AddLessonData'] == 1) {
-            $sql = "SELECT * FROM lesson WHERE Link = ? and Type = 'video' ";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $LesLink);
-            $stmt->execute();
-            $reusalt = $stmt->get_result();
-            if ($reusalt->num_rows > 0) {
+
+            // $sql = "SELECT * FROM lesson WHERE Link = ? and Type = 'video' ";
+            // $stmt = $conn->prepare($sql);
+            // $stmt->bind_param("s", $LesLink);
+            // $stmt->execute();
+            // $reusalt = $stmt->get_result();
+            // if ($reusalt->num_rows > 0) {
+            if (false) {  // lesson link alredy added not validate
                 $respons = "Alredy add";
             } else {
                 try {
