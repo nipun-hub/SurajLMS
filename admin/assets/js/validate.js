@@ -929,7 +929,7 @@ function validateUnRegUserReg() {
 function validateAddStu() {
     finaly = true;
     for (let index = 0; index < inputfeelds.length; index++) {
-        if (index == 1) {
+        if (index == 1 || index == 3 || index == 4 || index == 7 || index == Z) {
             continue;
         }
         if (inputfeelds[index].value == "") {
