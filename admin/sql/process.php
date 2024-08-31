@@ -2096,8 +2096,8 @@ if (isset($_POST['changeRankingData'])) {
                 <th></th>
             </tr>";
         $tBody = "";
-        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m INNER JOIN unreguser un ON un.URGId = m.URGId ORDER BY m.Marks ) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) and t.PeaperId = p.PeaperId WHERE p.Status = 'active'  $limit" :
-            "SELECT * FROM peaper p INNER JOIN ( SELECT *,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m ORDER BY m.Marks) t ON t.PeaperId = p.PeaperId WHERE p.Status = 'active' $limit";
+        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m INNER JOIN unreguser un ON un.URGId = m.URGId ORDER BY m.Marks ) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) and t.PeaperId = p.PeaperId WHERE p.Status = 'active'  $limit" :
+            "SELECT * FROM peaper p INNER JOIN ( SELECT *,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m ORDER BY m.Marks) t ON t.PeaperId = p.PeaperId WHERE p.Status = 'active' $limit";
         $stmt = $conn->prepare($sql);
         isset($_POST['data']) ? $stmt->bind_param("ss", $data, $data) : null;
         $stmt->execute();
@@ -2189,8 +2189,12 @@ if (isset($_POST['changeviewOldPeaperData'])) {
         $limitInsti = empty($type) || $type == 'iland' ? "" : " and InstiName = '{$type}'";
 
         $tBody = "";
-        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m , unreguser un WHERE m.PeaperId = ? and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) WHERE p.PeaperId = ? $limit" :
-            "SELECT * FROM peaper p INNER JOIN ( SELECT m.*,DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank FROM marksofpeaper m , unreguser un  WHERE m.peaperId = '$peaperId' and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t WHERE p.PeaperId = '$peaperId' $limit";
+        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m , unreguser un WHERE m.PeaperId = ? and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) WHERE p.PeaperId = ? $limit" :
+            "SELECT * FROM peaper p INNER JOIN ( SELECT m.*,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m , unreguser un  WHERE m.peaperId = '$peaperId' and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t WHERE p.PeaperId = '$peaperId' $limit";
+
+        // DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank     --------- >>>  rank by same marks same rank
+        // ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank    --------- >>>  rank by same not marks same rank
+
         $stmt = $conn->prepare($sql);
         isset($_POST['data']) ? $stmt->bind_param("ssss", $peaperId, $data, $data, $peaperId) : null;
         $stmt->execute();
