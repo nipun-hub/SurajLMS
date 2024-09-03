@@ -323,7 +323,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		PageControles();
 		PaymentStatus();
 		mainCardContent();
-		isPayed();
+		// isPayed();
 
 		// function PayDetails(value) {
 		// 	console.log(value);
