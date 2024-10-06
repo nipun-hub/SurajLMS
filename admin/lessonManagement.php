@@ -152,6 +152,14 @@
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-sm-12 col-12">
+                                                <div class="mb-3 AddLesSub select-month">
+                                                    <div class="form-label float-start">Preview Month&nbsp;&nbsp;
+                                                    </div>
+                                                    <input name="date-check-month" class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                                    <input name="accessMonth" type="month" value="<?php echo date('Y-m') ?>" class="form-control datepicker-week-numbers ">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-sm-12 col-12">
                                                 <div class="mb-3 AddLesSub1">
                                                     <label for="inputweek" class="form-label">Week of lesson *</label>
                                                     <select name="week" class="form-select" id="inputweek">
@@ -251,6 +259,14 @@
                                                     </div>
                                                     <input name="date-check" class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
                                                     <input name="expdate" type="date" class="form-control datepicker-week-numbers ">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6 col-sm-12 col-12">
+                                                <div class="mb-3 AddLesSub2 select-month">
+                                                    <div class="form-label float-start">Preview Month&nbsp;&nbsp;
+                                                    </div>
+                                                    <input name="date-check-month" class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                                    <input name="accessMonth" type="month" value="<?php echo date('Y-m') ?>" class="form-control datepicker-week-numbers ">
                                                 </div>
                                             </div>
                                             <div class="col-xl-6 col-sm-12 col-12">

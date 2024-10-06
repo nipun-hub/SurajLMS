@@ -454,6 +454,7 @@ if (isset($_POST['AddLessonData'])) {
     try {
         $lestype = $_POST['lestype'];
         $expdate = $_POST['expdate'];
+        $accessMonth = str_ireplace("-", "", $_POST['accessMonth']);
         $lesdict = $_POST['lesdict'];
         $week = $_POST['week'];
 
@@ -523,7 +524,7 @@ if (isset($_POST['AddLessonData'])) {
 
                     $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,ExpDate,Status) VALUE(?,?,?,?,?,?,?)";
                     $stmt = $conn->prepare($sql2);
-                    $stmt->bind_param("sssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $week, $expdate, $status);
+                    $stmt->bind_param("sssssss", $inserted_id, $classNew, $groupNew, $accessMonth, $week, $expdate, $status);
                     $stmt->execute();
 
                     $conn->commit();
@@ -548,7 +549,7 @@ if (isset($_POST['AddLessonData'])) {
 
                         $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?,?)";
                         $stmt = $conn->prepare($sql2);
-                        $stmt->bind_param("ssssssss", $quiz, $classNew, $groupNew, $thisMonth, $week, $today, $expdate, $status);
+                        $stmt->bind_param("ssssssss", $quiz, $classNew, $groupNew, $accessMonth, $week, $today, $expdate, $status);
                         $respons = $stmt->execute() ? "successfull" : "error";
                     } catch (Exception $e) {
                         $respons = "error";
@@ -575,7 +576,7 @@ if (isset($_POST['AddLessonData'])) {
 
                         $sql2 = "INSERT INTO recaccess(LesId,ClassId,GId,Month,week,InsDate,ExpDate,Status) VALUE(?,?,?,?,?,?,?,?)";
                         $stmt = $conn->prepare($sql2);
-                        $stmt->bind_param("ssssssss", $inserted_id, $classNew, $groupNew, $thisMonth, $week, $today, $expdate, $status);
+                        $stmt->bind_param("ssssssss", $inserted_id, $classNew, $groupNew, $accessMonth, $week, $today, $expdate, $status);
                         $stmt->execute();
                         $conn->commit();
 

@@ -47,12 +47,12 @@ function getqiozAttribute() {
 
 function getlessonAttribute() {
     inputfeelds = document.querySelectorAll('.AddLesSub1 input[type=text] , .AddLesSub1 select , .AddLesSub1 textarea');
-    datepiker = document.querySelectorAll('.AddLesSub input[type=checkbox] , .AddLesSub input[type=date]');
+    datepiker = document.querySelectorAll('.AddLesSub input[type=checkbox] , .AddLesSub input[type=date] , .AddLesSub input[type=month][name=accessMonth]');
     tags = document.querySelectorAll('.add-lesson .tags');  // .select2-selection__rendered li
 
     // lesson 2
     inputfeelds3 = document.querySelectorAll('.AddLesSub2 input[type=text] , .AddLesSub2 select , .AddLesSub2 textarea');
-    datepiker2 = document.querySelectorAll('.AddLesSub2 input[type=checkbox] , .AddLesSub2 input[type=date]');
+    datepiker2 = document.querySelectorAll('.AddLesSub2 input[type=checkbox] , .AddLesSub2 input[type=date] , .AddLesSub2 input[type=month][name=accessMonth]');
     tags2 = document.querySelectorAll('.add-lesson2 .tags');  // .select2-selection__rendered li
     reusaltLog = document.querySelectorAll('.rusaltLog div');
 
@@ -271,6 +271,7 @@ function submitAddLesson(val) {
             } else {
                 LessonData.append("expdate", "");
             }
+            LessonData.append(datepiker[3].name, datepiker[3].value);
             LessonData.append("grouplist", grouplist);
             LessonData.append("accesslist", accesslist);
         } else if (val == 2) {
@@ -299,12 +300,13 @@ function submitAddLesson(val) {
             } else {
                 LessonData.append("expdate", "");
             }
+            LessonData.append(datepiker2[3].name, datepiker2[3].value);
             LessonData.append("quiz", quizval.value);
             LessonData.append("grouplist", grouplist);
             LessonData.append("accesslist", accesslist);
         }
         // for (const [key, value] of LessonData.entries()) {
-        // console.log(`Key: ${key}, Value: ${value}`);
+        //     console.log(`Key: ${key}, Value: ${value}`);
         // }
 
         // pass php page data

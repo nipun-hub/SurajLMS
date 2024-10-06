@@ -11326,17 +11326,20 @@ img{
 }
 
 /* lesson.php page style start */
-.add-lesson .select-date input[type=date] , .add-lesson2 .select-date input[type=date]{
+.add-lesson .select-date input[type=date] , .add-lesson .select-month input[type=month] , .add-lesson2 .select-date input[type=date] , .add-lesson2 .select-month input[type=month]{
     pointer-events: none;
     opacity: .5;
     background-color: #aaa;
 }
 
-.add-lesson .select-date input[type=date]::before , .add-lesson2 .select-date input[type=date]::before{
+.add-lesson .select-date input[type=date]::before, .add-lesson .select-month input[type=month]::before , .add-lesson2 .select-date input[type=date]::before , .add-lesson2 .select-month input[type=month]::before{
     content: "";
 }
 
-.add-lesson .select-date input[name="date-check"]:checked + input[type=date][name="expdate"] , .add-lesson2 .select-date input[name="date-check"]:checked + input[type=date][name="expdate"] {
+.add-lesson .select-date input[name="date-check"]:checked + input[type=date][name="expdate"] ,
+.add-lesson .select-month input[name="date-check-month"]:checked + input[type=month][name="accessMonth"] ,
+.add-lesson2 .select-date input[name="date-check"]:checked + input[type=date][name="expdate"] ,
+.add-lesson2 .select-month input[name="date-check-month"]:checked + input[type=month][name="accessMonth"] {
     pointer-events: all;
     opacity: 1;
     background-color: #fff;
