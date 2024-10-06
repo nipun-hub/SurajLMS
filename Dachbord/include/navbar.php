@@ -1,24 +1,29 @@
 <?php
 
-$accessClass = " and ( ";
+$accessClass = " AND ( ";
 
-// generate paper access class start
-$sql = "SELECT ClassId FROM class WHERE year = (SELECT year FROM user where UserId = ?) and InstiName = (SELECT InstiName FROM user WHERE UserId = ?)";
+// Generate paper access class start
+$sql = "SELECT ClassId FROM class WHERE year = (SELECT year FROM user WHERE UserId = ?) AND InstiName = (SELECT InstiName FROM user WHERE UserId = ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ss', $UserId, $UserId);
 $stmt->execute();
-$reusalt = $stmt->get_result();
-while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
-    $accessClass .= " ClassId Like \"%[" . $row['ClassId'] . "]%\"  or ";
+$result = $stmt->get_result();
+
+// Dynamically append ClassId conditions
+while ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+    $accessClass .= " ClassId LIKE \"%[" . $row['ClassId'] . "]%\" OR ";
 }
 
-$position = strrpos($accessClass, ' or');
-
+// Replace the last " OR " with ")"
+$position = strrpos($accessClass, ' OR ');
 if ($position !== false) {
-    $accessClass = substr_replace($accessClass, ')', $position, strlen(' OR'));
+    $accessClass = substr_replace($accessClass, ')', $position, strlen(' OR '));
+} else {
+    $accessClass = "";
 }
 
-// generate paper access class end
+// Generate paper access class end
+
 ?>
 
 <!-- Page header starts -->
