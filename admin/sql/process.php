@@ -495,7 +495,7 @@ if (isset($_POST['AddLessonData'])) {
         // $group = json_encode($groupNew);
         // $access = json_encode($classNew);
 
-        $expdate = ($expdate == '' || $expdate == null || $expdate) ? null : str_replace("-", "", $expdate);
+        $expdate = ($expdate == '' || $expdate == null) ? null : str_replace("-", "", $expdate);
         $lesdict = ($lesdict == '' || $lesdict == null) ? null : $lesdict;
 
         $today = GetToday('ymd');
