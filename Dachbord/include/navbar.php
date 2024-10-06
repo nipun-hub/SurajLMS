@@ -1,3 +1,26 @@
+<?php
+
+$accessClass = " and ( ";
+
+// generate paper access class start
+$sql = "SELECT ClassId FROM class WHERE year = (SELECT year FROM user where UserId = ?) and InstiName = (SELECT InstiName FROM user WHERE UserId = ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('ss', $UserId, $UserId);
+$stmt->execute();
+$reusalt = $stmt->get_result();
+while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+    $accessClass .= " ClassId Like \"%[" . $row['ClassId'] . "]%\"  or ";
+}
+
+$position = strrpos($accessClass, ' or');
+
+if ($position !== false) {
+    $accessClass = substr_replace($accessClass, ')', $position, strlen(' OR'));
+}
+
+// generate paper access class end
+?>
+
 <!-- Page header starts -->
 <div class="page-header">
 
@@ -19,7 +42,7 @@
         <?php
         $today = GetToday('ymd', '-');
         $status = "finished";
-        $sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ?";
+        $sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ? " . $accessClass;
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $today, $status);
         $stmt->execute();
@@ -99,7 +122,8 @@
 <?php
 $today = GetToday('ymd', '-');
 $status = "finished";
-$sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ?";
+
+$sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ? " . $accessClass;
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $today, $status);
 $stmt->execute();

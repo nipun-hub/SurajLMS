@@ -31,7 +31,7 @@ if (true) {
     if ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $classId = $row['ClassId'];
         $activeClassName = $row['InstiName'];
-        $decodeDict = json_decode($row['Dict'],true);
+        $decodeDict = json_decode($row['Dict'], true);
         $endTime = $decodeDict[2];
         $currentTime = GetToday('hi', ':');
         if ($endTime < $currentTime) {

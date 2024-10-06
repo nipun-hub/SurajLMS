@@ -386,7 +386,7 @@ try {
 		    	        	<div class=' cardHeaderContent w-100 one item-center'>
 		    	        		<img class='text-red' height='50' width='50' src='assets/img/site use/classphy.png' alt=''>
 		    	        		<div class='headerContentBody w-100'>
-		    	        			<span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+		    	        			<span class='alert alert-success w-100 d-block w-auto'>Live Class</span>
 		    	        			<span>{$className}</span>
 		    	        		</div>
                                 <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
@@ -398,7 +398,7 @@ try {
 		    	        	<div class=' cardHeaderContent w-100 one item-center'>
 		    	        		<img class='text-red' height='50' width='50' src='assets/img/site use/youtube.png' alt=''>
 		    	        		<div class='headerContentBody w-100'>
-		    	        			<span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+		    	        			<span class='alert alert-success w-100 d-block w-auto'>Live Class</span>
 		    	        			<span>{$className}</span>
 		    	        		</div>
                                 <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
@@ -411,7 +411,7 @@ try {
 		    	        	<div class=' cardHeaderContent w-100 one item-center'>
                                 <img class='text-red' height='50' width='50' src='assets/img/site use/zoom.png' alt=''>
                                 <div class='headerContentBody w-100'>
-                                    <span class='alert alert-success w-100 d-block w-auto'>Now Class in progress</span>
+                                    <span class='alert alert-success w-100 d-block w-auto'>Live Class</span>
                                     {$PayStatus}
                                 </div>
                                 <img class='text-red' height='40' width='40' src='assets/img/site use/pending.gif' alt=''>
@@ -2083,7 +2083,27 @@ try {
         if ($type == 'searchbox') {
             $today = GetToday('ymd', '-');
             $status = "finished";
-            $sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ?";
+            $accessClass = " and ( ";
+
+            // generate paper access class start
+            $sql = "SELECT ClassId FROM class WHERE year = (SELECT year FROM user where UserId = ?) and InstiName = (SELECT InstiName FROM user WHERE UserId = ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('ss', $UserId, $UserId);
+            $stmt->execute();
+            $reusalt = $stmt->get_result();
+            while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+                $accessClass .= " ClassId Like \"%[" . $row['ClassId'] . "]%\"  or ";
+            }
+
+            $position = strrpos($accessClass, ' or');
+
+            if ($position !== false) {
+                $accessClass = substr_replace($accessClass, ')', $position, strlen(' OR'));
+            }
+
+            // generate paper access class end
+
+            $sql = "SELECT * FROM peaper WHERE DATE_ADD(finishDate, INTERVAL 8 DAY) >  ?  and Status = ? " . $accessClass;
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ss", $today, $status);
             $stmt->execute();
@@ -2108,6 +2128,8 @@ try {
                 </div>
                 ";
                 $respons = $modelHead . $ModelMiddle . $modelFooter;
+            } else {
+                $respons = $modelHead . "<p>Not Found!</p>" . $modelFooter;
             }
         } elseif ($type == 'peaperReusalt') {
             $data = $_POST['data'];
