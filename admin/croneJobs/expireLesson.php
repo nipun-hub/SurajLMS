@@ -9,7 +9,7 @@ try {
 }
 
 $today = GetToday("ymd", '-');
-$sql = "UPDATE recaccess SET Status = 'finished' WHERE ExpDate IS NOT NULL AND ExpDate < ?";
+$sql = "UPDATE recaccess SET Status = 'finished' WHERE ExpDate IS NOT NULL AND Status = 'active' AND ExpDate < ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $today);
 $stmt->execute();
