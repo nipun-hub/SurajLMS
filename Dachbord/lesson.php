@@ -10,10 +10,15 @@ mysqli_set_charset($conn, "utf8mb4"); ?>
 
 <?php
 
-// check isset class 
-if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !isset(explode("-", $_SESSION['clz'])[1]) || !isset(explode("-", $_SESSION['clz'])[2])) {
-	header('location:index.php');
-	exit;
+$url = $_SERVER['REQUEST_URI']; // Get the current URL
+parse_str(parse_url($url, PHP_URL_QUERY), $queryParams); // Parse the query string
+
+if (!isset($queryParams['lesson'])) {
+	// check isset class 
+	if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !isset(explode("-", $_SESSION['clz'])[1]) || !isset(explode("-", $_SESSION['clz'])[2])) {
+		header('location:index.php');
+		exit;
+	}
 }
 
 ?>
