@@ -61,11 +61,11 @@ if (element.classList.contains("register")) {
         updateFormSteps();
         updatemultibar();
       }
-    //   else if (formStepsNum == 4 && step_5()) {
-    //     formStepsNum++;
-    //     updateFormSteps();
-    //     updatemultibar();
-    //   }
+      //   else if (formStepsNum == 4 && step_5()) {
+      //     formStepsNum++;
+      //     updateFormSteps();
+      //     updatemultibar();
+      //   }
     });
   });
 
@@ -460,7 +460,7 @@ function handleCredentialResponse(response) {
   })
     .then(response => response.json())
     .then(data => {
-        console.log(data.error);
+      console.log(data.error);
       if (data.status == 1 || data.status == 3) {
         responsePayload = data.pdata;
         g_id_signin.style.display = 'flex';
@@ -472,8 +472,18 @@ function handleCredentialResponse(response) {
         // localStorage.setItem("lname", responsePayload.family_name);        
         search();
       } else if (data.status == 2) {
-        // Login and pass dashbord
-        window.location.href = "../Dachbord";
+
+        // Login and pass dashbord or location
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get('data');
+
+        if (dataParam !== null) {
+          window.location.href = dataParam;
+        } else {
+          window.location.href = "../Dachbord";
+        }
+
       } else {
         error_alt();
       }
@@ -499,7 +509,7 @@ function Register() {
   for (var count = 0; count < form_element.length; count++) {
     Register_Data.append(form_element[count].name, form_element[count].value);
   }
-  Register_Data.append("email" , localStorage.getItem('email'));
+  Register_Data.append("email", localStorage.getItem('email'));
   // Register_Data.append("fname" , localStorage.getItem('fname'));
   // Register_Data.append("lname" , localStorage.getItem('lname'));
   localStorage.clear();

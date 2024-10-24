@@ -156,6 +156,114 @@ try {
 
     // register insti user end
 
+    // ###################################### lesson Link manage section start
+    if (isset($_POST['setLinkLessons'])) {
+        $lessonId = isset($_POST['lesson'])  ? $_POST['lesson'] : null;
+        $lessonId = ltrim($lessonId, '0');
+
+
+
+
+        // function generate_id($id, $max_length = 5)
+        // {
+        //     $padded_id = str_pad($id, $max_length, '0', STR_PAD_LEFT);
+        //     return $padded_id;
+        // }
+
+        // $formatted_id = generate_id($lessonId);
+
+
+        // found lesson  
+        $sql = "SELECT recaccess.ClassId ,recaccess.Month , recaccess.GId , lesson.Type , lesson.LesId
+         FROM recaccess INNER JOIN lesson ON recaccess.LesId = lesson.LesId WHERE  recaccess.AccId = '$lessonId' ";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $classId = $row['ClassId'];
+            $classIdList = explode("][", substr($row['ClassId'], 1, -1));
+            $classListToString = implode(',', $classIdList);
+
+            $groupId = explode("][", substr($row['GId'], 1, -1))[0];
+
+            $accessMonth = $row['Month'];
+            $recId = $row['LesId'];
+            $lessonType = $row['Type'];
+
+            // check access 
+            $sql = "SELECT * FROM user u,class c 
+            WHERE u.UserId = '$UserId' and c.ClassId IN ($classListToString) and c.Status = 'active' and c.InstiName = u.InstiName and c.year = u.Year";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+                $instiName = $row["InstiName"];
+                // get class id
+                // $sql = "SELECT
+                //     (CASE WHEN u.UserId IS NULL THEN 'not access' ELSE u.UserId END) as UserId ,
+                //     c.ClassId,
+                //     C.ClassName, 
+                //     (CASE 
+                //         WHEN u.UserId IS NULL THEN 'not access' 
+                //         WHEN p.Status IS NULL THEN 'unpaid'
+                //         ELSE p.Status 
+                //         END
+                //     ) as Status
+                //     FROM
+                //     class C  
+                //     LEFT JOIN user u  ON u.UserId = ? AND U.InstiName = c.InstiName AND u.Year = c.year
+                //     LEFT JOIN payment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
+                //     WHERE C.ClassId IN ($classListToString) 
+                //     ORDER BY p.Status DESC
+                //      ";
+
+                $sql = "SELECT
+                        (CASE WHEN u.UserId IS NULL THEN 'not access' ELSE u.UserId END) as UserId ,
+                        c.ClassId,
+                        C.ClassName, 
+                        C.InstiName, 
+                        (CASE 
+                            WHEN u.UserId IS NULL THEN 'not access' 
+                            WHEN p.Status IS NULL THEN 'unpaid'
+                            ELSE p.Status 
+                            END
+                        ) as Status
+                        FROM
+                         user u
+                        INNER JOIN class C  ON  C.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
+                        LEFT JOIN payment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
+                        WHERE u.UserId = ? 
+                    ";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ss", $accessMonth, $UserId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $stmt->close();
+                if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+                    $Status = $row["Status"];
+                    $classId = $row["ClassId"];
+
+                    $sessionData = $instiName . '-' . $classId . '-' . 'lesson' . '-' . $groupId;
+                    $_SESSION['clz'] = $sessionData;
+
+                    $response = 'success' . '-' . $Status . '-' . $groupId . '-' . $recId . '-' . $lessonType  . '-' . $lessonId;
+                } else {
+                    $response = 'Class not found!';
+                }
+            } else {
+                $response = 'You are not access this lesson!';
+            }
+        } else {
+            $response = 'Lesson not found!';
+        }
+
+        // echo $_SESSION['clz'];
+        echo $response;
+    }
+    // ###################################### lesson Link manage section end
+
     // ####################################### Lesson.php start ##############
 
     // update PageControles start
@@ -917,7 +1025,7 @@ try {
                                 $contentRow .= "
                                 <div class='table-card-main d-flex align-items-center'>
 			                	    <div class='ms-3' style='color: #a9aaae;'><i class='fs-5 bi bi-arrow-return-right'></i></div>
-			                	    <div class='table-card-row ms-1 justify-content-between w-100'>
+			                	    <div class='ActiveLessonLink_{$row0['AccId']} table-card-row ms-1 justify-content-between w-100'>
 			                		    <div class='d-flex flex-grow-1' {$onclickEvent}>
                                             {$lesindi}
                                             &nbsp;&nbsp;
@@ -1931,7 +2039,7 @@ try {
 			    			</div> 
 			    		</div>
 			    		<div class='mb-3 col-sm-6 col-12'>
-			    			<label for='' class='form-label'>Select District</label>
+			    			<label for='' class='form-label'>FDistrict</label>
 			    			<select name='dictric' class='form-select'>
 			    				<option value='' " . ($row['Distric'] == '' ? "selected" : "") . ">Select District</option>
 			    				<option value='Ampara' " . ($row['Distric'] == 'Ampara' ? "selected" : "") . ">Ampara</option>

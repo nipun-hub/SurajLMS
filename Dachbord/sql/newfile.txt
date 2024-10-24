@@ -19,4 +19,23 @@ Stack trace:
 #1 {main}mysqli_sql_exception: Unknown column 'unreguser.URGId' in 'on clause' in C:\xampp\htdocs\new\arise\Dachbord\sql\process.php:2091
 Stack trace:
 #0 C:\xampp\htdocs\new\arise\Dachbord\sql\process.php(2091): mysqli->prepare('SELECT * FROM p...')
+#1 {main}mysqli_sql_exception: Unknown column 'recaccess' in 'where clause' in C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php:174
+Stack trace:
+#0 C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php(174): mysqli->prepare('SELECT * FROM r...')
+#1 {main}mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'JOINpayment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ...' at line 9 in C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php:208
+Stack trace:
+#0 C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php(208): mysqli->prepare('SELECT\r\n       ...')
+#1 {main}mysqli_sql_exception: Unknown column 'u.UsrId' in 'on clause' in C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php:208
+Stack trace:
+#0 C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php(208): mysqli->prepare('SELECT\r\n       ...')
+#1 {main}mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '\
+                        ELSE p.Status 
+                        END
+     ...' at line 7 in C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php:213
+Stack trace:
+#0 C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php(213): mysqli->prepare('SELECT\r\n       ...')
+#1 {main}mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
+     ...' at line 14 in C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php:235
+Stack trace:
+#0 C:\xampp\htdocs\Project\SurajLMS\Dachbord\sql\process.php(235): mysqli->prepare('SELECT\r\n       ...')
 #1 {main}

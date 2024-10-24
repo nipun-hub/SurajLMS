@@ -104,6 +104,13 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		-webkit-background-clip: text;
 		transform: translateX(-0.02em);
 	}
+
+	.linkLessonActive {
+		transform: scale(1.2);
+		box-shadow: 0px 0px 18px 12px rgba(0, 0, 0, 0.1);
+		transition: transform 0.3s ease;
+
+	}
 </style>
 
 <body>
@@ -266,6 +273,10 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 
 	<!-- model section end -->
 
+	<!-- nTost alert section start  -->
+	<div id='ntostDisplay'></div>
+	<!-- nTost alert section emd -->
+
 
 	<!-- alert include -->
 	<?php include('include/alert.php'); ?>
@@ -306,6 +317,7 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 	<!-- alert js -->
 	<script src="assets/js/alert.js"></script>
 	<script src="assets/js/error.js"></script>
+	<script src="assets/js/nTost.js"></script>
 	<!-- <script src="assets/js/alertNthj.js"></script> -->
 
 	<!-- quiz js -->
@@ -339,6 +351,51 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 		// 		}
 		// 	});
 		// });
+
+		// lesson link manage section start
+		function manageLessonLink(data) {
+			formData = "setLinkLessons=" + "&lesson=" + data;
+			$.post("sql/process.php", formData, function(response, status) {
+				// console.log(response);
+				if (response.includes('success')) {
+					const splitArray = response.split("-");
+					mainCardAction(splitArray[2], 1);
+					setTimeout(() => {
+						const selectClass = '.ActiveLessonLink_' + splitArray[5];
+						const selectLes = document.querySelector(selectClass);
+						if (selectLes) {
+							selectLes.scrollIntoView({
+								behavior: 'smooth',
+								block: 'center'
+							});
+							setTimeout(() => {
+								selectLes.classList.add('linkLessonActive');
+							}, 500);
+
+							function handleClickOutside(event) {
+								if (selectLes && !selectLes.contains(event.target)) {
+									selectLes.classList.remove('linkLessonActive');
+									document.removeEventListener('click', handleClickOutside); // Clean up the event listener
+								}
+							}
+
+							// Add event listener for clicks outside the card
+							document.addEventListener('click', handleClickOutside);
+						} else {
+							console.error('Element not found');
+						}
+						// splitArray[1] == 'active' ? lesEvent(splitArray[3], `video`) : null;
+					}, 300);
+
+				} else {
+					nTost({
+						type: 'error',
+						titleText: response
+					});
+				}
+			});
+		}
+		// lesson link manage section end
 
 		// ####  main function start ####
 
@@ -551,6 +608,13 @@ if (!isset($_SESSION['clz']) || !isset(explode("-", $_SESSION['clz'])[0]) || !is
 			// specialAnimation.forEach(function(self) {
 			// 	self.classList.add('snowflake');
 			// });
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const lessonParam = urlParams.get('lesson');
+
+			if (lessonParam) {
+				manageLessonLink(lessonParam)
+			}
 
 			url_data = window.location.search;
 			if (url_data == '?success_login') {

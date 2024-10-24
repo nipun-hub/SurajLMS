@@ -7,7 +7,14 @@
 <?php
 // chech logged user ?
 if (!isset($_SESSION['login'])) {
-	header('location:../login');
+	$protocol = $_SERVER['REQUEST_SCHEME'];
+	$host = $_SERVER['HTTP_HOST'];
+	$path = $_SERVER['REQUEST_URI'];
+
+	$fullUrl = $protocol . '://' . $host . $path;
+
+	// echo $fullUrl;
+	header('location:../login/?login&data=' . $fullUrl);
 	exit;
 } else {
 	$UserId = $_SESSION['login'];
@@ -19,7 +26,7 @@ if (!isset($_SESSION['login'])) {
 	if ($row = $result_data->fetch_assoc()) {
 		$_SESSION['username'] = $row['UserName'];
 		$_SESSION['regcode'] = $row['RegCode'];
-        $pict = isset($row['picture']) ? $row['picture'] : "assets/img/user.jpeg";
+		$pict = isset($row['picture']) ? $row['picture'] : "assets/img/user.jpeg";
 	} else {
 		header('location:../login');
 		exit;
