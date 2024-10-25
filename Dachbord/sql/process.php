@@ -220,8 +220,8 @@ try {
                 $sql = "SELECT
                         (CASE WHEN u.UserId IS NULL THEN 'not access' ELSE u.UserId END) as UserId ,
                         c.ClassId,
-                        C.ClassName, 
-                        C.InstiName, 
+                        c.ClassName, 
+                        c.InstiName, 
                         (CASE 
                             WHEN u.UserId IS NULL THEN 'not access' 
                             WHEN p.Status IS NULL THEN 'unpaid'
@@ -230,7 +230,7 @@ try {
                         ) as Status
                         FROM
                          user u
-                        INNER JOIN class cg  ON  c.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
+                        INNER JOIN class c  ON  c.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
                         LEFT JOIN payment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
                         WHERE u.UserId = ? 
                     ";
