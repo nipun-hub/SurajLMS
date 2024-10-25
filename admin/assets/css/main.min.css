@@ -12277,6 +12277,18 @@ input[name="sub_nav_rank"][id="sub_nav_rank-2"]:checked ~ .ul label[for="sub_nav
     width: auto;
     overflow: visible;
     transform: scale(1.1);
+}input[name="sub_nav_rank"][id="sub_nav_rank-7"]:checked ~ .ul label[for="sub_nav_rank-7"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
+}
+
+input[name="sub_nav_rank"][id="sub_nav_rank-absent"]:checked ~ .ul label[for="sub_nav_rank-absent"]{
+    background-color: #fff;
+    width: auto;
+    overflow: visible;
+    transform: scale(1.1);
 }
 /* ranking navbar css end */
 

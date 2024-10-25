@@ -119,18 +119,18 @@
                     <!-- Row start -->
                     <div class="row my-3 text-center">
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('addPeaper')" ><i class="bi bi-plus"></i>&nbsp;Add Peaper</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('addPeaper')"><i class="bi bi-plus"></i>&nbsp;Add Peaper</button>
                         </div>
                         <div class="col-auto m-2">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')" ><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarks')"><i class="bi bi-plus"></i>&nbsp;Upload marks Site User</button>
                         </div>
                         <div class="col-auto m-2">
                             <!-- <button class="btn btn-success w-100" onclick="updateModelContent('uploadMarkNotReg')" <?php echo ($adminType[0] == 'owner' || $adminType[0] == 'editor') ? null : "disabled" ?>><i class="bi bi-plus"></i>&nbsp;Add new student</button> -->
-                            <button class="btn btn-success w-100" onclick="updateModelContent('addNewStudent')" ><i class="bi bi-plus"></i>&nbsp;Add new student</button>
+                            <button class="btn btn-success w-100" onclick="updateModelContent('addNewStudent')"><i class="bi bi-plus"></i>&nbsp;Add new student</button>
                         </div>
-                        <!-- <div class="col-xxl-3 col-md-3 col-sm-6 col-6 mb-3">
-                            <button class="btn btn-success w-100" onclick="updateModelContent('winner','insert')"><i class="bi bi-plus"></i>&nbsp;Add Winner</button>
-                        </div> -->
+                        <div class="col-auto m-2">
+                            <button class="btn btn-success w-100" onclick="updateModelContent('viewStudentDetails')"><i class="bi bi-eye"></i>&nbsp;Student details</button>
+                        </div>
                     </div>
                     <!-- Row end -->
 
@@ -314,6 +314,13 @@
                         $('#modelMain').modal('show');
                     }
                 });
+            } else if (type == 'viewStudentDetails') {
+                formData = "loadModelDataPeaper=" + "&type=" + type;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#modelMainContent').html(response);
+                    updateModelContent(`studentDetailsTableData`, '')
+                    $('#modelMain').modal('show');
+                });
             } else if (type == 'uploadMarksTableData') {
                 formData = data == null ? "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperTable" : "loadModelDataPeaper=" + "&type=" + "loadModelDataPeaperTable" + "&data=" + data;
                 $.post("sql/process.php", formData, function(response, status) {
@@ -331,6 +338,16 @@
                     $('#modelMainxl').modal('show');
                     showViewOldPeaperBody();
                 });
+            } else if (type == "studentDetailsTableData") {
+                formData = data == null ? "loadModelDataPeaper=" + "&type=" + type : "loadModelDataPeaper=" + "&type=" + type + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#model-table-content-change').html(response);
+                });
+            } else if (type == "viewStudent") {
+                formData = "loadModelDataPeaper=" + "&type=" + type + "&data=" + data;
+                $.post("sql/process.php", formData, function(response, status) {
+                    $('#model-table-content-change').html(response);
+                });
             }
         }
 
@@ -342,6 +359,7 @@
             var searchval = document.querySelector('.input-group .searchInp').value;
             data = searchval == "" ? null : searchval;
             var checkedinp = document.querySelector('#sub-nav-body1 input:checked').value;
+            // checkedinp = checkedinp == 5 ? 2 : 5;
             var type = checkedinp == 1 ? "PeaperManage" : (checkedinp == 2 ? 'rankingManage' : (checkedinp == 3 ? "downloadPeaper" : (checkedinp == 4 ? "FinishedPeaper" : "undefind")));
 
             formData = data == null ? "changePeaperManageTable=" + type : "changePeaperManageTable=" + type + "&data=" + data;

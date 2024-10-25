@@ -369,11 +369,11 @@ if (isset($_POST['UpdateLessonContent'])) {
     </div>";
     $tableBodyContent = "";
     if ($search == '') {
-        $sql = "SELECT lesson.*,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
+        $sql = "SELECT lesson.*,recaccess.AccId,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
         $stmt = $conn->prepare($sql);
     } else {
         $search = "%" . $search . "%";
-        $sql = "SELECT lesson.*,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE ( lesson.LesName LIKE ? or lesson.Type LIKE ? ) and lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
+        $sql = "SELECT lesson.*,recaccess.AccId,recaccess.ClassId,recaccess.Month FROM lesson,recaccess WHERE ( lesson.LesName LIKE ? or lesson.Type LIKE ? ) and lesson.LesId = recaccess.LesId ORDER BY lesson.InsertDate DESC";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $search, $search);
     }
@@ -381,6 +381,7 @@ if (isset($_POST['UpdateLessonContent'])) {
     $reusalt = $stmt->get_result();
     while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
         $LesId = $row['LesId'];
+        $AccId = $row['AccId'];
         $name = $row['LesName'];
         $dict = empty($row['Dict']) ? "Not Found" : $row['Dict'];
 
@@ -438,6 +439,8 @@ if (isset($_POST['UpdateLessonContent'])) {
             <td class='item-center' {$hiddenStatus}>
                 <div class='actions'>
 					<a onclick='update(this.id)' id='{$LesId} {$type}'><i class='bi bi-pencil-square text-green'></i></a>
+                    <a id='copyButton' data-bs-toggle='tooltip' data-bs-placement='top' data-bs-trigger='manual' title='Copied!'
+                    onclick='copyText(event,`https://surajskumara.lk/Dachbord/lesson.php?lesson={$AccId}`)'><i class='bi bi-clipboard text-green'></i></a>
                     <i class='d-none' id='clickShowModel' data-bs-toggle='modal' data-bs-target='#mainModal'></i>
                     {$actionbtn}
 					<a onclick='viweMore({$LesId},`{$type}`)'><i class='bi bi-list text-green'></i></a>
@@ -1319,6 +1322,122 @@ if (isset($_POST['loadModelDataPeaper'])) {
                 <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the peaper</div>
             </div>";
         $modelContent = $modelHead . $modelBody . $modelFooter;
+    } elseif ($type == "viewStudentDetails") {
+        $sql = "SELECT * FROM peaper WHERE Status = 'active'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+            $modelHead = "
+            <div class='modal-header'>
+                <h5 class='modal-title' id='modelMainLabel'>Search Student Details</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body bg-light'>";
+            $modelBody = "
+            <!-- Row start -->
+            <div class='row'>
+                <div class='col-xl-12 col-sm-12 col-12'>
+                    <div class='card bg-transparent shadow-none d-flex gap-2'>
+                        <div class='card-header bg-white pb-3 rounded'>
+                            <div class='card-title'></div>
+                            <div class='search-container w-100'>
+                                <div class='input-group'>
+                                    <input type='text' class='form-control searchInp' style='background-color: #dae0e9;' placeholder='Search stusent' onkeyup='updateModelContent(`studentDetailsTableData`,this.value)'>
+                                    <button class='btn' type='button'>
+                                        <i class='bi bi-search'></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='card-body bg-white rounded' id='model-table-content-change'>
+                            <center><img src='assets/img/gif/loding.gif' width='200' alt='' srcset=''></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row end -->
+            <div class='my-3 rusaltLog mx-3'>
+                <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the peaper!</div>
+                <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the peaper</div>
+            </div>
+            ";
+            $modelContent = $modelHead . $modelBody;
+        } else {
+            $modelContent = 'not active peaper';
+        }
+    } else if ($type == 'viewStudent') {
+        $data = $_POST['data'];
+        $sql = "SELECT * FROM unreguser WHERE URGId = '{$data}'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $reusaltMain = $stmt->get_result();
+        $stmt->close();
+        if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+
+            $accessClass = "WHERE ";
+
+            // Generate paper access class start
+            $sql = "SELECT ClassId FROM class WHERE year = ? AND InstiName = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('ss', $rowMain['Year'], $rowMain['InstiName']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            // Dynamically append ClassId conditions
+            while ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+                $accessClass .= " peaper.ClassId LIKE \"%[" . $row['ClassId'] . "]%\" OR ";
+            }
+
+            // Replace the last " OR " with ")"
+            $position = strrpos($accessClass, ' OR ');
+            if ($position !== false) {
+                $accessClass = substr_replace($accessClass, '', $position, strlen(' OR '));
+            } else {
+                $accessClass = "";
+            }
+
+            // Generate paper access class end
+
+            $peaperData = "";
+            $sql = "SELECT peaper.peaperName, COALESCE(marksofpeaper.Marks, 'Not Available') AS Marks FROM peaper LEFT JOIN marksofpeaper ON marksofpeaper.PeaperId = peaper.PeaperId AND marksofpeaper.URGId = {$data} " . $accessClass;
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            $reusaltMarks = $stmt->get_result();
+            $stmt->close();
+            while ($reusaltMarks->num_rows > 0 && $rowMarks = $reusaltMarks->fetch_assoc()) {
+                $peaperData .= "<p>{$rowMarks['peaperName']} - {$rowMarks['Marks']}</p>";
+            }
+            $modelHead = "
+            <div class='modal-body bg-white'>";
+            $modelBody = "
+            <!-- Row start -->
+            <div class='row'>
+                <div class='col-xl-12 col-sm-12 col-12'>
+                    <p>Name :  {$rowMain['Name']}</p>
+                    <p>Exam Id :  {$rowMain['CousId']}</p>
+                    <p>Address :  {$rowMain['Name']}</p>
+                    <p>Institute :  {$rowMain['Name']}</p>
+                    <p>Mobile Number :  {$rowMain['Name']}</p>
+                    <p>Whatsapp Number :  {$rowMain['Name']}</p>
+                    
+                    <h5 class='text-center'>Exam and marks</h5></br>
+                    
+                    <p>{$peaperData}</p>
+
+                </div>
+            </div>
+            <!-- Row end -->
+            <div class='my-3 rusaltLog mx-3'>
+                <div class='valid-feedback alert alert-success text-center alert-dismissible fade show'>Successfull add the peaper!</div>
+                <div class='invalid-feedback alert alert-danger text-center alert-dismissible fade show'>Failed add the peaper</div>
+            </div>
+            ";
+            $modelContent = $modelHead . $modelBody;
+        } else {
+            $modelContent = 'not active peaper';
+        }
     } elseif ($type == 'loadModelDataPeaperTable') {
         $sql = "SELECT * FROM peaper WHERE Status = 'active'";
         $stmt = $conn->prepare($sql);
@@ -1575,7 +1694,47 @@ if (isset($_POST['loadModelDataPeaper'])) {
     } elseif ($type == 'loadModelDataviewFinishedPeaper') {
         $data = $_POST['data'];
 
-        $sql = "SELECT SUM(CASE WHEN marksofpeaper.Marks >=75 THEN 1 ELSE 0 END)AS Apass,SUM(CASE WHEN 75 > marksofpeaper.Marks AND marksofpeaper.Marks >=65 THEN 1 ELSE 0 END)AS Bpass,SUM(CASE WHEN 65 > marksofpeaper.Marks AND marksofpeaper.Marks >= 55 THEN 1 ELSE 0 END)AS Cpass,SUM(CASE WHEN 55 > marksofpeaper.Marks and marksofpeaper.Marks >=45 THEN 1 ELSE 0 END)AS Spass,SUM(CASE WHEN 45 > marksofpeaper.Marks THEN 1 ELSE 0 END)AS Fpass,COUNT(marksofpeaper.MOPId) AS doneStu,peaper.* FROM peaper,marksofpeaper WHERE peaper.peaperId = '$data' and peaper.PeaperId = marksofpeaper.PeaperId ";
+        $sql = "SELECT ClassId FROM peaper WHERE peaperId = $data";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));  // Extract class IDs
+            $ClassIdString = implode(',', $ClassIdList);  // Convert array of class IDs to comma-separated string
+        } else {
+            $ClassIdString = '';
+        }
+
+        $sql = "SELECT
+                  COUNT(*) AS Total_Student_Count,
+                  COUNT(CASE WHEN marksStudent.Marks IS NULL THEN 1 END) AS Absent_Stu,
+                  COUNT(CASE WHEN marksStudent.Marks IS NOT NULL THEN 1 ELSE NULL END) AS present_Stu,
+                  SUM(CASE WHEN marksStudent.Marks >= 75 THEN 1 ELSE 0 END) AS Apass,
+                  SUM(CASE WHEN 75 > marksStudent.Marks AND marksStudent.Marks >= 65 THEN 1 ELSE 0 END) AS Bpass,
+                  SUM(CASE WHEN 65 > marksStudent.Marks AND marksStudent.Marks >= 55 THEN 1 ELSE 0 END) AS Cpass,
+                  SUM(CASE WHEN 55 > marksStudent.Marks AND marksStudent.Marks >= 45 THEN 1 ELSE 0 END) AS Spass,
+                  SUM(CASE WHEN 45 > marksStudent.Marks THEN 1 ELSE 0 END) AS Fpass,
+                  peaper.*
+
+                FROM (
+                  SELECT
+                    unreguser.CousId,
+                    unreguser.Name,
+                    CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                    marksofpeaper.Marks,
+                    peaper.PeaperId
+                  FROM class
+                  INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+                  INNER JOIN peaper ON peaper.Status = 'active'
+                  LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+                  WHERE class.ClassId IN ($ClassIdString)
+                  GROUP BY unreguser.URGId
+                ) AS marksStudent
+                LEFT JOIN peaper ON peaper.Status = 'active'
+                WHERE marksStudent.PeaperId = peaper.PeaperId
+            ";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $reusalt = $stmt->get_result();
@@ -1703,17 +1862,26 @@ if (isset($_POST['loadModelDataPeaper'])) {
                         <div class='accordion-body'>
                             <strong>{$row['peaperName']}</strong>
                             <div class='row'>
-                                <div class='col-5 border border-1 m-2 p-2'>
-                                    <span class='text-dark'>Access Class</span><br>
-                                    {$ClassNameList}</div>
+                              <div class='col-auto border border-1 m-2 p-2'>
+                                <span class='text-dark'>Access Class</span><br>
+                                {$ClassNameList}
+                              </div>
+                              <div class='col-auto border border-1 m-2 p-2'>
+                               <span class='text-dark'>Download atendent details</span><br>
+                               <div class='actions item-center m-2'>
+                                  <a onclick='prepareFile(`activePeaperAttendantDetails`,`{$data}`)'><i class='bi bi-cloud-arrow-down text-green fs-3'></i></a>
+                              </div>
+                              </div>
                             </div>
                             <div class='row'>
-                                <span class='col-auto alert alert-success m-2 p-0 px-2'>Compleated : {$row['doneStu']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>A pass : {$row['Apass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>B pass : {$row['Bpass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>C pass : {$row['Cpass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>S pass : {$row['Spass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>F pass : {$row['Fpass']}</span>
+                              <span class='col-auto alert alert-success m-2 p-0 px-2'>All are asigned : {$row['Total_Student_Count']}</span>
+                              <span class='col-auto alert alert-success m-2 p-0 px-2'>Completed: {$row['present_Stu']}</span>
+                              <span class='col-auto alert alert-danger m-2 p-0 px-2'>Non Completed: {$row['Absent_Stu']}</span>
+                              <span class='col-auto alert alert-info m-2 p-0 px-2'>A pass: {$row['Apass']}</span>
+                              <span class='col-auto alert alert-info m-2 p-0 px-2'>B pass: {$row['Bpass']}</span>
+                              <span class='col-auto alert alert-info m-2 p-0 px-2'>C pass: {$row['Cpass']}</span>
+                              <span class='col-auto alert alert-info m-2 p-0 px-2'>S pass: {$row['Spass']}</span>
+                              <span class='col-auto alert alert-info m-2 p-0 px-2'>F pass: {$row['Fpass']}</span>
                             </div>
                             <div class='row'>
                                     <div id='oldPeaperchart' class='auto-align-graph bg-light align-center'></div>
@@ -1729,9 +1897,11 @@ if (isset($_POST['loadModelDataPeaper'])) {
                         <div class='radio-btn notifiradio'>
                             <input type='radio' name='sub_nav_rank' id='sub_nav_rank-1' value='iland' onclick='showViewOldPeaperBody()' checked>
                             {$radioList}
+                            <input type='radio' name='sub_nav_rank' id='sub_nav_rank-absent' value='absent' onclick='showViewOldPeaperBody()'>
                             <div class='ul'>
                                 <label class='text-overflow' for='sub_nav_rank-1'>ILand Rank</label>
                                 {$radioLable}
+                                <label class='text-overflow' for='sub_nav_rank-absent'>Absent</label>
                             </div>
                         </div
                     </div>
@@ -1742,6 +1912,64 @@ if (isset($_POST['loadModelDataPeaper'])) {
             ";
 
         $modelContent = $modelHead . $htmlContent . $modelFooter;
+    } else if ($type == "studentDetailsTableData") {
+        // $sql = "SELECT * FROM peaper WHERE Status = 'active'";
+        // $stmt = $conn->prepare($sql);
+        // $stmt->execute();
+        // $reusaltMain = $stmt->get_result();
+        // $stmt->close();
+        // if ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+        //     $PeaperId = $rowMain['PeaperId'];
+        $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
+        $tFirst = "
+            <div class='table-responsive'>
+                <table class='table table-bordered m-0'>
+                    <thead>";
+        $tMiddle = "
+            </thead>
+            <tbody>";
+        $tEnd = "
+                    </tbody>
+                </table>
+            </div>";
+        $tHead = "
+            <tr>
+                <th>Student Name</th>
+                <th>Instute</th>
+                <th>Exam Id</th>
+                <th>Action</th>
+            </tr>";
+        $tBody = "";
+        $sql_with_data = "SELECT * FROM unreguser WHERE Name LIKE ? or CousId LIKE ? or InstiName LIKE ?  GROUP BY InsertDate,Year,InstiName LIMIT 5";
+        $sql_without_data = "SELECT * FROM unreguser GROUP BY Name,Year,InstiName LIMIT 5 ";
+
+        if ($data != null) {
+            $stmt = $conn->prepare($sql_with_data);
+            $stmt->bind_param("sss", $data, $data, $data);
+        } else {
+            $stmt = $conn->prepare($sql_without_data);
+        }
+        $stmt->execute();
+        $reusalt = $stmt->get_result();
+        while ($reusalt->num_rows > 0 && $row = $reusalt->fetch_assoc()) {
+            $URGId = $row['URGId'];
+            $tBody .= "
+                <tr>
+                    <td>{$row['Name']}</td>
+                    <td>{$row['InstiName']} / {$row['Year']}</td>
+                    <td>{$row['CousId']}</td>
+                    <td> 
+                        <div class='actions item-center'>
+                            <a onclick='updateModelContent(`viewStudent`,this.id)' id='{$URGId}'><i class='bi bi-list text-green fs-6'></i></a>
+                        </div>
+                    </td>
+                </tr>";
+        }
+        if (!$reusalt->num_rows > 0) {
+            $tBody = "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+        }
+        // }
+        $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
     } else {
         $modelContent = 'invalied inputs ' . $type;
     }
@@ -1836,12 +2064,53 @@ if (isset($_POST['changePeaperManageTable'])) {
         }
         $htmlContent = ($reusalt->num_rows > 0) ?  $tFirst . $tHead . $tMiddle . $tBody . $tEnd : $tFirst . $tHead . $tMiddle . "<tr><td colspan='7'  class='text-info text-center'><i class='bi bi-search'>&nbsp;</i>Not A Peaper</td></tr>" . $tEnd;
     } elseif ($type == 'rankingManage') {
-        $sql = "SELECT SUM(CASE WHEN marksofpeaper.Marks >=75 THEN 1 ELSE 0 END)AS Apass,SUM(CASE WHEN 75 > marksofpeaper.Marks and marksofpeaper.Marks >=65 THEN 1 ELSE 0 END)AS Bpass,SUM(CASE WHEN 65 > marksofpeaper.Marks and marksofpeaper.Marks >=55 THEN 1 ELSE 0 END)AS Cpass,SUM(CASE WHEN 55 > marksofpeaper.Marks and marksofpeaper.Marks >=45 THEN 1 ELSE 0 END)AS Spass,SUM(CASE WHEN 45 > marksofpeaper.Marks THEN 1 ELSE 0 END)AS Fpass,COUNT(marksofpeaper.MOPId) AS doneStu,SUM(CASE WHEN marksofpeaper.UserId IS NOT NULL THEN 1 ELSE 0 END)AS Compsite,SUM(CASE WHEN marksofpeaper.URGId IS NOT NULL THEN 1 ELSE 0 END)AS CompNotReg,peaper.* FROM peaper,marksofpeaper WHERE peaper.Status = 'active' and peaper.PeaperId = marksofpeaper.PeaperId ";
+
+        $sql = "SELECT ClassId FROM peaper WHERE Status = 'active'";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));  // Extract class IDs
+            $ClassIdString = implode(',', $ClassIdList);  // Convert array of class IDs to comma-separated string
+        }
+
+        $sql = "SELECT
+              COUNT(*) AS Total_Student_Count,
+              COUNT(CASE WHEN marksStudent.Marks IS NULL THEN 1 END) AS Absent_Stu,
+              COUNT(CASE WHEN marksStudent.Marks IS NOT NULL THEN 1 ELSE NULL END) AS present_Stu,
+              SUM(CASE WHEN marksStudent.Marks >= 75 THEN 1 ELSE 0 END) AS Apass,
+              SUM(CASE WHEN 75 > marksStudent.Marks AND marksStudent.Marks >= 65 THEN 1 ELSE 0 END) AS Bpass,
+              SUM(CASE WHEN 65 > marksStudent.Marks AND marksStudent.Marks >= 55 THEN 1 ELSE 0 END) AS Cpass,
+              SUM(CASE WHEN 55 > marksStudent.Marks AND marksStudent.Marks >= 45 THEN 1 ELSE 0 END) AS Spass,
+              SUM(CASE WHEN 45 > marksStudent.Marks THEN 1 ELSE 0 END) AS Fpass,
+              peaper.*
+
+            FROM (
+              SELECT
+                unreguser.CousId,
+                unreguser.Name,
+                CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                marksofpeaper.Marks,
+                peaper.PeaperId
+              FROM class
+              INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+              INNER JOIN peaper ON peaper.Status = 'active'
+              LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+              WHERE class.ClassId IN ($ClassIdString)
+              GROUP BY unreguser.URGId
+            ) AS marksStudent
+            LEFT JOIN peaper ON peaper.Status = 'active'
+            WHERE marksStudent.PeaperId = peaper.PeaperId
+        ";
         $stmt = $conn->prepare($sql);
         $stmt->execute();
         $reusalt = $stmt->get_result();
         $stmt->close();
         $row = $reusalt->fetch_assoc();
+
+        $peaperId = $row["PeaperId"];
 
         // access class
         if ($row['ClassId'] == !null) {
@@ -1915,50 +2184,69 @@ if (isset($_POST['changePeaperManageTable'])) {
         }
 
         $htmlContent = "
-            <div class='accordion mb-3' id=''>
+        
+              <div class='accordion mb-3' id='accordionExample'>
+                <!-- Accordion item -->
                 <div class='accordion-item'>
-                    <h2 class='accordion-header' id='headingOneLight'>
-                        <button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#collapseOneLight' aria-expanded='true' aria-controls='collapseOneLight'>Peaper Details</button>
-                    </h2>
-                    <div id='collapseOneLight' class='accordion-collapse collapse' aria-labelledby='headingOneLight' data-bs-parent='#accordionExample2'>
-                        <div class='accordion-body'>
-                            <strong>{$row['peaperName']}</strong>
-                            <div class='row'>
-                                <div class='col-5 border border-1 m-2 p-2'>
-                                    <span class='text-dark'>Access Class</span><br>
-                                    {$ClassNameList}</div>
-                            </div>
-                            <div class='row'>
-                                <span class='col-auto alert alert-success m-2 p-0 px-2'>All Compleated : {$row['doneStu']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>A pass : {$row['Apass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>B pass : {$row['Bpass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>C pass : {$row['Cpass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>S pass : {$row['Spass']}</span>
-                                <span class='col-auto alert alert-info m-2 p-0 px-2'>F pass : {$row['Fpass']}</span>
-                            </div>
-                            <div class='row'>
-                                    <div id='activePeaperChart' class='auto-align-graph bg-light align-center'></div>
-                            </div>
+                  <h2 class='accordion-header' id='headingOneLight'>
+                    <button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#collapseOneLight' aria-expanded='true' aria-controls='collapseOneLight'>
+                      Peaper Details
+                    </button>
+                  </h2>
+                  <div id='collapseOneLight' class='accordion-collapse collapse' aria-labelledby='headingOneLight' data-bs-parent='#accordionExample'>
+                    <div class='accordion-body'>
+                      <strong>{$row['peaperName']}</strong>
+                      <div class='row'>
+                        <div class='col-auto border border-1 m-2 p-2'>
+                          <span class='text-dark'>Access Class</span><br>
+                          {$ClassNameList}
                         </div>
+                        <div class='col-auto border border-1 m-2 p-2'>
+                         <span class='text-dark'>Download atendent details</span><br>
+                         <div class='actions item-center m-2'>
+                            <a onclick='prepareFile(`activePeaperAttendantDetails`,`{$peaperId}`)'><i class='bi bi-cloud-arrow-down text-green fs-3'></i></a>
+                        </div>
+                        </div>
+                      </div>
+                      <div class='row'>
+                        <span class='col-auto alert alert-success m-2 p-0 px-2'>All are asigned : {$row['Total_Student_Count']}</span>
+                        <span class='col-auto alert alert-success m-2 p-0 px-2'>Completed: {$row['present_Stu']}</span>
+                        <span class='col-auto alert alert-danger m-2 p-0 px-2'>Non Completed: {$row['Absent_Stu']}</span>
+                        <span class='col-auto alert alert-info m-2 p-0 px-2'>A pass: {$row['Apass']}</span>
+                        <span class='col-auto alert alert-info m-2 p-0 px-2'>B pass: {$row['Bpass']}</span>
+                        <span class='col-auto alert alert-info m-2 p-0 px-2'>C pass: {$row['Cpass']}</span>
+                        <span class='col-auto alert alert-info m-2 p-0 px-2'>S pass: {$row['Spass']}</span>
+                        <span class='col-auto alert alert-info m-2 p-0 px-2'>F pass: {$row['Fpass']}</span>
+                      </div>
+                      <div class='row'>
+                        <div id='activePeaperChart' class='auto-align-graph bg-light align-center'></div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
+              </div>
 
-            <div class='row item-center'>
+              <!-- Rank section -->
+              <div class='row item-center'>
                 <div class='sub-nav'>
-                    <div class='sub-nav-body' id='sub-nav-body2'>
-                        <div class='radio-btn notifiradio'>
-                            <input type='radio' name='sub_nav_rank' id='sub_nav_rank-1' value='iland' onclick='ShowRankBody()' checked>
-                            {$radioList}
-                            <div class='ul'>
-                                <label class='text-overflow' for='sub_nav_rank-1'>ILand Rank</label>
-                                {$radioLable}
-                            </div>
-                        </div
+                  <div class='sub-nav-body' id='sub-nav-body2'>
+                    <div class='radio-btn notifiradio'>
+                      <input type='radio' name='sub_nav_rank' id='sub_nav_rank-1' value='iland' onclick='ShowRankBody()' checked>
+                      {$radioList}
+                      <input type='radio' name='sub_nav_rank' id='sub_nav_rank-absent' value='absent' onclick='ShowRankBody()'>
+                      <div class='ul'>
+                        <label class='text-overflow' for='sub_nav_rank-1'>ILand Rank</label>
+                        {$radioLable}
+                        <label class='text-overflow' for='sub_nav_rank-absent'>Absent</label>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
-            <div id='rank_Body'><center><img src='assets/img/gif/loding.gif' width='300' alt='' srcset=''></center></div>
+              </div>
+              <div id='rank_Body'>
+                <center><img src='assets/img/gif/loding.gif' width='300' alt='Loading...'></center>
+              </div>
+    
             ";
     } elseif ($type == "downloadPeaper") {
         $tHead = "
@@ -2097,48 +2385,94 @@ if (isset($_POST['changeRankingData'])) {
                 <th></th>
             </tr>";
         $tBody = "";
-        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m INNER JOIN unreguser un ON un.URGId = m.URGId ORDER BY m.Marks ) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) and t.PeaperId = p.PeaperId WHERE p.Status = 'active'  $limit" :
-            "SELECT * FROM peaper p INNER JOIN ( SELECT *,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m ORDER BY m.Marks) t ON t.PeaperId = p.PeaperId WHERE p.Status = 'active' $limit";
+
+        $sql = "SELECT PeaperId,ClassId FROM peaper WHERE Status = 'active'";
         $stmt = $conn->prepare($sql);
-        isset($_POST['data']) ? $stmt->bind_param("ss", $data, $data) : null;
         $stmt->execute();
-        $reusaltMain = $stmt->get_result();
+        $result = $stmt->get_result();
         $stmt->close();
-        while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
-            // $PeaperId = $rowMain['PeaperId'];
-            $URGId = $rowMain['URGId'];
-            $UserId = $rowMain['UserId'];
-            if ($UserId != null) {
-                $sql = "SELECT UserName,InstiId,InstiName FROM user WHERE UserId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $UserId);
-                $stmt->execute();
-                $reusaltUserData = $stmt->get_result();
-                $stmt->close();
-                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
-                    $UserName =  $rowUserData['UserName'];
-                    $InstiId =  $rowUserData['InstiId'];
-                    $InstiName =  $rowUserData['InstiName'];
-                }
-            } else {
-                $sql = "SELECT Name,InstiName,CousId FROM unreguser WHERE URGId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $URGId);
-                $stmt->execute();
-                $reusaltUserData = $stmt->get_result();
-                $stmt->close();
-                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
-                    $UserName =  $rowUserData['Name'];
-                    $InstiId =  $rowUserData['CousId'];
-                    $InstiName =  $rowUserData['InstiName'];
-                }
-            }
 
-            if ($type != 'iland' && $type != $InstiName) {
-                continue;
-            }
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));  // Extract class IDs
+            $ClassIdString = implode(',', $ClassIdList);  // Convert array of class IDs to comma-separated string
+        }
 
-            $tBody .= "
+        if ($type != 'absent') {
+            $sql = isset($_POST['data']) ?
+                "SELECT
+                  unreguser.CousId,
+                  unreguser.URGId,
+                  unreguser.Name,
+                  marksofpeaper.UserId,
+                  CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                  marksofpeaper.Marks,
+                  peaper.PeaperId,
+                  ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank
+                FROM class
+                INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year AND ( unreguser.Name LIKE ? or unreguser.CousId LIKE ? )
+                INNER JOIN peaper ON peaper.Status = 'active'
+                INNER JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+                WHERE class.ClassId IN ($ClassIdString)
+                GROUP BY unreguser.URGId
+                ORDER BY marksofpeaper.Marks DESC
+                $limit"
+                :
+                "SELECT
+                    unreguser.CousId,
+                    unreguser.URGId,
+                    unreguser.Name,
+                    marksofpeaper.UserId,
+                    CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                    marksofpeaper.Marks,
+                    peaper.PeaperId,
+                    ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank
+                  FROM class
+                  INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+                  INNER JOIN peaper ON peaper.Status = 'active'
+                  INNER JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+                  WHERE class.ClassId IN ($ClassIdString)
+                  GROUP BY unreguser.URGId
+                  ORDER BY marksofpeaper.Marks DESC $limit";
+            $stmt = $conn->prepare($sql);
+            isset($_POST['data']) ? $stmt->bind_param("ss", $data, $data) : null;
+            $stmt->execute();
+            $reusaltMain = $stmt->get_result();
+            $stmt->close();
+            while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+                // $PeaperId = $rowMain['PeaperId'];
+                $URGId = $rowMain['URGId'];
+                $UserId = $rowMain['UserId'];
+                if ($UserId != null) {
+                    $sql = "SELECT UserName,InstiId,InstiName FROM user WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $UserId);
+                    $stmt->execute();
+                    $reusaltUserData = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                        $UserName =  $rowUserData['UserName'];
+                        $InstiId =  $rowUserData['InstiId'];
+                        $InstiName =  $rowUserData['InstiName'];
+                    }
+                } else {
+                    $sql = "SELECT Name,InstiName,CousId FROM unreguser WHERE URGId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $URGId);
+                    $stmt->execute();
+                    $reusaltUserData = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                        $UserName =  $rowUserData['Name'];
+                        $InstiId =  $rowUserData['CousId'];
+                        $InstiName =  $rowUserData['InstiName'];
+                    }
+                }
+
+                if ($type != 'iland' && $type != $InstiName) {
+                    continue;
+                }
+
+                $tBody .= "
                 <tr>
                     <td>{$UserName}</td>
                     <td>{$InstiId}</td>
@@ -2147,9 +2481,83 @@ if (isset($_POST['changeRankingData'])) {
                     <td>{$rowMain['rank']}  ( " . ($rowMain['rank'] > 20 ? $rowMain['rank'] + 50 : $rowMain['rank']) . " )</td>
                     <td class='text-center'>" . (($rowMain['Marks'] >= 74) ? "A" : (($rowMain['Marks'] > 64) ? "B"  : (($rowMain['Marks'] > 54) ? "C" : (($rowMain['Marks'] > 34) ? "S" : "F")))) . "</td>
                 </tr>";
-        }
-        if (!$reusaltMain->num_rows > 0) {
-            $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
+            if (!$reusaltMain->num_rows > 0) {
+                $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
+        } else {
+
+            $tHead = "
+            <tr>
+                <td colspan='4' class='text-center'>Absent Student Details</td>
+                <td  class='text-center'>
+                    <div class='actions item-center'>
+                        <a onclick='prepareFile(`activePeaperAttendantDetails`,`{$row['PeaperId']}`)'><i class='bi bi-cloud-arrow-down text-green '></i></a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>User Id</th>
+                <th>Name</th>
+                <th>Institute</th>
+                <th>Mobile Number</th>
+                <th>Whatsapp Number</th>
+            </tr>
+            ";
+
+            // $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m INNER JOIN unreguser un ON un.URGId = m.URGId ORDER BY m.Marks ) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) and t.PeaperId = p.PeaperId WHERE p.Status = 'active'  $limit"
+            $sql = isset($_POST['data']) ?
+                "SELECT
+                  unreguser.CousId,
+                  unreguser.Name,
+                  unreguser.MOBNum,
+                  unreguser.WhaNum,
+                  CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                  marksofpeaper.Marks,
+                  peaper.PeaperId
+                FROM class
+                INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year AND ( unreguser.Name LIKE ? or unreguser.CousId LIKE ? )
+                INNER JOIN peaper ON peaper.Status = 'active'
+                LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+                WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NULL
+                GROUP BY unreguser.URGId
+                $limit"
+                :
+                "SELECT
+                  unreguser.CousId,
+                  unreguser.Name,
+                  unreguser.MOBNum,
+                  unreguser.WhaNum,
+                  CONCAT(class.InstiName, ' ', class.year) AS Insti,
+                  marksofpeaper.Marks,
+                  peaper.PeaperId
+                FROM class
+                INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+                INNER JOIN peaper ON peaper.Status = 'active'
+                LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = 			 	peaper.PeaperId
+                WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NULL
+                GROUP BY unreguser.URGId
+                $limit";
+            $stmt = $conn->prepare($sql);
+            isset($_POST['data']) ? $stmt->bind_param("ss", $data, $data) : null;
+            $stmt->execute();
+            $reusaltMain = $stmt->get_result();
+            $stmt->close();
+            while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+
+                $tBody .= "
+                <tr>
+                    <td>{$rowMain['CousId']}</td>
+                    <td>{$rowMain['Name']}</td>
+                    <td>{$rowMain['Insti']}</td>
+                    <td>{$rowMain['MOBNum']}</td>
+                    <td>{$rowMain['WhaNum']}</td>
+                </tr>
+                ";
+            }
+            if (!$reusaltMain->num_rows > 0) {
+                $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
         }
         $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
     }
@@ -2162,6 +2570,18 @@ if (isset($_POST['changeviewOldPeaperData'])) {
     if (true) {
         $data = isset($_POST['data']) ? "%" . $_POST['data'] . "%" : null;
         $limit = $_POST['limit'] == 'all' ? "" : " LIMIT " . $_POST['limit'];
+
+        $sql = "SELECT ClassId FROM peaper WHERE PeaperId = $peaperId";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+
+        if ($result->num_rows > 0 && $row = $result->fetch_assoc()) {
+            $ClassIdList = explode("][", substr($row['ClassId'], 1, -1));  // Extract class IDs
+            $ClassIdString = implode(',', $ClassIdList);  // Convert array of class IDs to comma-separated string
+        }
+
         $tFirst = "
             <div class='table-responsive'>
                 <table class='table table-bordered m-0'>
@@ -2187,55 +2607,90 @@ if (isset($_POST['changeviewOldPeaperData'])) {
                 </th>
             </tr>";
 
-        $limitInsti = empty($type) || $type == 'iland' ? "" : " and InstiName = '{$type}'";
+        $limitInsti = empty($type) || $type == 'iland' ? "" : " and class.InstiName = '{$type}'";
 
         $tBody = "";
-        $sql = isset($_POST['data']) ? "SELECT * FROM peaper p INNER JOIN  ( SELECT m.*,un.CousId,un.Name,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m , unreguser un WHERE m.PeaperId = ? and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t ON ( t.Name LIKE ? or t.CousId LIKE ? ) WHERE p.PeaperId = ? $limit" :
-            "SELECT * FROM peaper p INNER JOIN ( SELECT m.*,ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank FROM marksofpeaper m , unreguser un  WHERE m.peaperId = '$peaperId' and un.URGId = m.URGId $limitInsti ORDER BY m.Marks DESC) t WHERE p.PeaperId = '$peaperId' $limit";
+        if ($type != 'absent') {
+            $sql = isset($_POST['data']) ?
+                "SELECT
+               unreguser.CousId,
+               unreguser.MOBNum,
+               unreguser.WhaNum,
+               CONCAT(class.InstiName, ' ', class.year) AS Insti,
+               marksofpeaper.URGId,
+               marksofpeaper.UserId,
+               marksofpeaper.Marks,
+               peaper.PeaperId,
+               ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank
+             FROM class
+             INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year and ( unreguser.Name LIKE ? or unreguser.CousId LIKE ? )
+             INNER JOIN peaper ON peaper.peaperId = ?
+             LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+             WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NOT NULL $limitInsti
+             GROUP BY unreguser.URGId ORDER BY marksofpeaper.Marks DESC
+            "
+                :
+                "SELECT
+               unreguser.CousId,
+               unreguser.MOBNum,
+               unreguser.WhaNum,
+               CONCAT(class.InstiName, ' ', class.year) AS Insti,
+               marksofpeaper.URGId,
+               marksofpeaper.UserId,
+               marksofpeaper.Marks,
+               peaper.PeaperId,
+               ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank
+             FROM class
+             INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+             INNER JOIN peaper ON peaper.peaperId = $peaperId
+             LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+             WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NOT NULL $limitInsti
+             GROUP BY unreguser.URGId ORDER BY marksofpeaper.Marks DESC
+            ";
 
-        // DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank     --------- >>>  rank by same marks same rank
-        // ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank    --------- >>>  rank by same not marks same rank
+            // DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank     --------- >>>  rank by same marks same rank
+            // ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank    --------- >>>  rank by same not marks same rank
 
-        $stmt = $conn->prepare($sql);
-        isset($_POST['data']) ? $stmt->bind_param("ssss", $peaperId, $data, $data, $peaperId) : null;
-        $stmt->execute();
-        $reusaltMain = $stmt->get_result();
-        $stmt->close();
-        while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
-            // $PeaperId = $rowMain['PeaperId'];
-            $URGId = $rowMain['URGId'];
-            $UserIdstu = $rowMain['UserId'];
-            if ($UserIdstu != null) {
-                $sql = "SELECT UserName,InstiId,InstiName FROM user WHERE UserId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $UserIdstu);
-                $stmt->execute();
-                $reusaltUserData = $stmt->get_result();
-                $stmt->close();
-                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
-                    $UserName =  $rowUserData['UserName'];
-                    $InstiId =  $rowUserData['InstiId'];
-                    $InstiName =  $rowUserData['InstiName'];
+            $stmt = $conn->prepare($sql);
+            isset($_POST['data']) ? $stmt->bind_param("sss", $data, $data, $peaperId) : null;
+            $stmt->execute();
+            $reusaltMain = $stmt->get_result();
+            $stmt->close();
+            while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+                // $PeaperId = $rowMain['PeaperId'];
+                $URGId = $rowMain['URGId'];
+                $UserIdstu = $rowMain['UserId'];
+                if ($UserIdstu != null) {
+                    $sql = "SELECT UserName,InstiId,InstiName FROM user WHERE UserId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $UserIdstu);
+                    $stmt->execute();
+                    $reusaltUserData = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                        $UserName =  $rowUserData['UserName'];
+                        $InstiId =  $rowUserData['InstiId'];
+                        $InstiName =  $rowUserData['InstiName'];
+                    }
+                } else {
+                    $sql = "SELECT Name,InstiName,CousId FROM unreguser WHERE URGId = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $URGId);
+                    $stmt->execute();
+                    $reusaltUserData = $stmt->get_result();
+                    $stmt->close();
+                    if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
+                        $UserName =  $rowUserData['Name'];
+                        $InstiId =  $rowUserData['CousId'];
+                        $InstiName =  $rowUserData['InstiName'];
+                    }
                 }
-            } else {
-                $sql = "SELECT Name,InstiName,CousId FROM unreguser WHERE URGId = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $URGId);
-                $stmt->execute();
-                $reusaltUserData = $stmt->get_result();
-                $stmt->close();
-                if ($reusaltUserData->num_rows > 0 && $rowUserData = $reusaltUserData->fetch_assoc()) {
-                    $UserName =  $rowUserData['Name'];
-                    $InstiId =  $rowUserData['CousId'];
-                    $InstiName =  $rowUserData['InstiName'];
+
+                if ($type != 'iland' && $type != $InstiName) {
+                    continue;
                 }
-            }
 
-            if ($type != 'iland' && $type != $InstiName) {
-                continue;
-            }
-
-            $tBody .= "
+                $tBody .= "
                 <tr>
                     <td>{$UserName}</td>
                     <td>{$InstiId}</td>
@@ -2244,9 +2699,84 @@ if (isset($_POST['changeviewOldPeaperData'])) {
                     <td>{$rowMain['rank']}  ( " . ($rowMain['rank'] > 20 ? $rowMain['rank'] + 50 : $rowMain['rank']) . " )</td>
                     <td class='text-center'>" . (($rowMain['Marks'] >= 74) ? "A" : (($rowMain['Marks'] > 64) ? "B"  : (($rowMain['Marks'] > 54) ? "C" : (($rowMain['Marks'] > 34) ? "S" : "F")))) . "</td>
                 </tr>";
-        }
-        if (!$reusaltMain->num_rows > 0) {
-            $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
+            if (!$reusaltMain->num_rows > 0) {
+                $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
+        } else {
+
+            $tHead = "
+            <tr>
+                <td colspan='4' class='text-center'>Absent Student Details</td>
+                <td  class='text-center'>
+                    <div class='actions item-center'>
+                        <a onclick='prepareFile(`activePeaperAttendantDetails`,`{$peaperId}`)'><i class='bi bi-cloud-arrow-down text-green '></i></a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>User Id</th>
+                <th>Name</th>
+                <th>Institute</th>
+                <th>Mobile Number</th>
+                <th>Whatsapp Number</th>
+            </tr>
+            ";
+
+            $sql = isset($_POST['data']) ?
+                "SELECT
+               unreguser.CousId,
+               unreguser.Name,
+               unreguser.MOBNum,
+               unreguser.WhaNum,
+               CONCAT(class.InstiName, ' ', class.year) AS Insti,
+               peaper.PeaperId
+             FROM class
+             INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year and ( unreguser.Name LIKE ? or unreguser.CousId LIKE ? )
+             INNER JOIN peaper ON peaper.peaperId = ?
+             LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+             WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NULL
+             GROUP BY unreguser.URGId ORDER BY marksofpeaper.Marks DESC
+            "
+                :
+                "SELECT
+               unreguser.CousId,
+               unreguser.Name,
+               unreguser.MOBNum,
+               unreguser.WhaNum,
+               CONCAT(class.InstiName, ' ', class.year) AS Insti,
+               peaper.PeaperId
+             FROM class
+             INNER JOIN unreguser ON class.InstiName = unreguser.InstiName AND class.year = unreguser.Year
+             INNER JOIN peaper ON peaper.peaperId = $peaperId
+             LEFT JOIN marksofpeaper ON unreguser.URGId = marksofpeaper.URGId AND marksofpeaper.PeaperId = peaper.PeaperId
+             WHERE class.ClassId IN ($ClassIdString) AND marksofpeaper.Marks IS NULL
+             GROUP BY unreguser.URGId ORDER BY marksofpeaper.Marks DESC
+            ";
+
+            // DENSE_RANK() OVER (ORDER BY m.Marks DESC) AS rank     --------- >>>  rank by same marks same rank
+            // ROW_NUMBER() OVER (ORDER BY Marks DESC) AS rank    --------- >>>  rank by same not marks same rank
+
+            $stmt = $conn->prepare($sql);
+            isset($_POST['data']) ? $stmt->bind_param("sss", $data, $data, $peaperId) : null;
+            $stmt->execute();
+            $reusaltMain = $stmt->get_result();
+            $stmt->close();
+            while ($reusaltMain->num_rows > 0 && $rowMain = $reusaltMain->fetch_assoc()) {
+
+                $tBody .= "
+                <tr>
+                    <td>{$rowMain['CousId']}</td>
+                    <td>{$rowMain['Name']}</td>
+                    <td>{$rowMain['Insti']}</td>
+                    <td>{$rowMain['MOBNum']}</td>
+                    <td>{$rowMain['WhaNum']}</td>
+                </tr>
+                ";
+            }
+            if (!$reusaltMain->num_rows > 0) {
+                $tBody .= "<tr><td colspan='5' class='text-center'><i class='bi bi-search text-info'></i>&nbsp;Rusalt not found</td></tr>";
+            }
         }
         $modelContent = $tFirst . $tHead . $tMiddle . $tBody . $tEnd;
     }

@@ -708,6 +708,8 @@ function lesAction(val1, val2) {
 // lesson management end   *********************
 
 // peaper management start
+
+
 function peaperType(value) {
     getaddpeaperAttribute();
     if (value == 'online' || value == 'both') {
