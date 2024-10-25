@@ -162,8 +162,6 @@ try {
         $lessonId = ltrim($lessonId, '0');
 
 
-
-
         // function generate_id($id, $max_length = 5)
         // {
         //     $padded_id = str_pad($id, $max_length, '0', STR_PAD_LEFT);
@@ -232,7 +230,7 @@ try {
                         ) as Status
                         FROM
                          user u
-                        INNER JOIN class C  ON  C.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
+                        INNER JOIN class cg  ON  c.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
                         LEFT JOIN payment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
                         WHERE u.UserId = ? 
                     ";
