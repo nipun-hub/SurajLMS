@@ -230,8 +230,8 @@ try {
                         ) as Status
                         FROM
                          user u
-                        INNER JOIN class c  ON  c.ClassId IN ($classListToString) AND c.Status = 'active' AND  U.InstiName = c.InstiName AND u.Year = c.year
-                        LEFT JOIN payment P ON P.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
+                        INNER JOIN class c  ON  c.ClassId IN ($classListToString) AND c.Status = 'active' AND  u.InstiName = c.InstiName AND u.Year = c.year
+                        LEFT JOIN payment p ON p.UserId = u.UserId AND c.ClassId = p.ClassId AND p.Month = ? 
                         WHERE u.UserId = ? 
                     ";
                 $stmt = $conn->prepare($sql);
