@@ -562,6 +562,21 @@
     <script src="assets/js/validate.js"></script>
 
     <script>
+        // copy link text function 
+        function copyText(e, url) {
+            navigator.clipboard.writeText(url).then(() => {
+                // Create and show tooltip
+                const tooltip = new bootstrap.Tooltip(e.target, {
+                    title: 'Copied!',
+                    trigger: 'manual'
+                });
+                tooltip.show();
+                setTimeout(() => tooltip.hide(), 1000); // Hide after 1 second
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+
         function clickLessons(val) {
             val == 1 ? clearmodeldata('#lessovVidNot') : clearmodeldata('#lessonClzUpd');
             getlessonAttribute();
