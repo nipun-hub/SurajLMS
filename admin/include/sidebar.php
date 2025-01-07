@@ -5,6 +5,7 @@ $atendent = GetActive('atendent');
 $notification = GetActive('notification');
 $massage = GetActive('massage');
 $contact = GetActive('contact');
+$setting = GetActive('setting');
 $lessonManage_sub = GetActive('lessonManage', 'sub');
 $addsnippet_sub = GetActive('addsnippet', 'sub');
 $userManagement_sub = GetActive('userManagement', 'sub');
@@ -100,6 +101,12 @@ $peaperManagement_sub = GetActive('peaperManagement', 'sub');
                     <a class="sidea" href="contact.php">
                         <i class="bi bi-telephone "></i>
                         <span class="menu-text">Contact Us</span>
+                    </a>
+                </li>
+                <li class="<?php echo $setting; ?>">
+                    <a class="sidea" href="setting.php">
+                        <i class="bi bi-gear "></i>
+                        <span class="menu-text">Setting Us</span>
                     </a>
                 </li>
             </ul>

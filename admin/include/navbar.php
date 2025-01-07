@@ -9,7 +9,7 @@
             <i class="bi bi-house"></i>
             <a href="index.html">Home</a>
         </li>
-        <li class="breadcrumb-item breadcrumb-active" aria-current="page"><?php echo $_SESSION['active'] == 'dashbord' ? 'Dashbord' : ($_SESSION['active'] == 'dashbord' ? "Dashbord" : ($_SESSION['active'] == 'atendent' ? 'Atendent' : ($_SESSION['active'] == 'notification' ? 'Notification' : ($_SESSION['active'] == 'lessonManage' ? 'Lesson Management' : ($_SESSION['active'] == 'addsnippet' ? 'Snippet Management' : ($_SESSION['active'] == 'peaperManagement' ? 'Peaper Management' : ($_SESSION['active'] == 'userManagement' ? 'User Management' : ($_SESSION['active'] == 'profile' ? 'Profile' : ($_SESSION['active'] == 'contact' ? 'Contact Us' : ($_SESSION['active'] == 'massage' ? 'Massage' : null)))))))))); ?></li>
+        <li class="breadcrumb-item breadcrumb-active" aria-current="page"><?php echo $_SESSION['active'] == 'dashbord' ? 'Dashbord' : ($_SESSION['active'] == 'dashbord' ? "Dashbord" : ($_SESSION['active'] == 'atendent' ? 'Atendent' : ($_SESSION['active'] == 'notification' ? 'Notification' : ($_SESSION['active'] == 'lessonManage' ? 'Lesson Management' : ($_SESSION['active'] == 'addsnippet' ? 'Snippet Management' : ($_SESSION['active'] == 'peaperManagement' ? 'Peaper Management' : ($_SESSION['active'] == 'userManagement' ? 'User Management' : ($_SESSION['active'] == 'profile' ? 'Profile' : ($_SESSION['active'] == 'contact' ? 'Contact Us' : ($_SESSION['active'] == 'massage' ? 'Massage' : ($_SESSION['active'] == 'setting' ? 'Setting' : null))))))))))); ?></li>
     </ol>
     <!-- Breadcrumb end -->
 

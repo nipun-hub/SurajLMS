@@ -5251,6 +5251,13 @@ if (isset($_POST['save'])) {
 }
 // profile end ***************************************
 
+// setting start
+if (isset($_POST['replaceFile'])) {
+    echo "error";
+    // return "done";
+}
+// setting end
+
 // same ad alol site  stast *****************
 if (isset($_POST['enableWith'])) {
     $type = $_POST['type'];
