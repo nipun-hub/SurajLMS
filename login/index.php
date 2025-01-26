@@ -1,3 +1,4 @@
+<?php include('../Dachbord/sql/conn.php'); ?>
 <!doctype html>
 <html lang="en">
 
@@ -44,9 +45,9 @@
 	<link rel="stylesheet" href="../Dachbord/assets/css/main.min.css">
 	<link rel="stylesheet" href="../assets/css/login-css/animated.css">
 	<link rel="stylesheet" href="../assets/css/login-css/multi-form.css">
-	
-    <!-- Bootstrap Select CSS -->
-    <!--<link rel="stylesheet" href="../Dachbord/assets/vendor/bs-select/bs-select.css" />-->
+
+	<!-- Bootstrap Select CSS -->
+	<!--<link rel="stylesheet" href="../Dachbord/assets/vendor/bs-select/bs-select.css" />-->
 
 	<!-- alert css -->
 	<link rel="stylesheet" href="../Dachbord/assets/css/alert.css">
@@ -114,14 +115,14 @@
 							<!-- multi bar -->
 							<div class="multi-form">
 								<div class="multi" id="multi"></div>
-								<div class="multi-step multi-step-active" data-title="Intro"></div>
-								<div class="multi-step" data-title="Personal"></div>
-								<div class="multi-step" data-title="School"></div>
-								<div class="multi-step" data-title="Delivery "></div>
-								<!--<div class="multi-step" data-title="Guardian "></div>-->
+								<div class="multi-step multi-step-active" data-title=""></div>
+								<div class="multi-step" data-title=""></div>
+								<div class="multi-step" data-title=""></div>
+								<div class="multi-step" data-title=" "></div>
+								<div class="multi-step" data-title=" "></div>
 							</div>
 
-							<div class="form-step row form-step-active ">
+							<div class="form-step row form-step-active">
 								<div class=" mb-3 col-6 fname">
 									<label class="form-label">First Name</label>
 									<input name="fname" onkeyup="fname_val()" type="text" class="form-control Register_Data" required>
@@ -179,16 +180,16 @@
 								<div class="mb-3 col-6 year">
 									<!--<label class="form-label">විභාගයට මුහුණදෙන අවුරුද්ද</label>-->
 									<select name="year" onchange="year_val()" class="form-select Register_Data">
-										 <option value="">Select the exam year</option> 
-										<option value="2024">2024</option>
+										<option value="">Select the exam year</option>
 										<option value="2025">2025</option>
 										<option value="2026">2026</option>
+										<option value="2027">2024</option>
 									</select>
 								</div>
 								<div class="mb-3 col-6 streem">
 									<!--<label class="form-label">විෂය ධාරාව</label>-->
 									<select name="streem" onchange="streem_val()" class="form-select Register_Data">
-										 <option value="">Select subject stream</option> 
+										<option value="">Select subject stream</option>
 										<option value="Maths">Maths</option>
 										<option value="Bio">Bio</option>
 										<option value="Tec">Tec</option>
@@ -199,7 +200,7 @@
 								<div class="mb-3 col-6 shy">
 									<!--<label class="form-label">Select Shy</label>-->
 									<select name="shy" onchange="shy_val()" class="form-select Register_Data">
-										 <option value="">Select Shy</option> 
+										<option value="">Select Shy</option>
 										<option value="1">1'st shy</option>
 										<option value="2">2'nd shy</option>
 										<option value="3">3'rd shy</option>
@@ -208,7 +209,7 @@
 								<div class="mb-3 col-6 medium">
 									<!--<label class="form-label">Select Medium</label>-->
 									<select name="medium" onchange="medium_val()" class="form-select Register_Data">
-									    <option value="">Select Medium</option>
+										<option value="">Select Medium</option>
 										<option value="Sinhala">Sinhala</option>
 										<option value="English">English</option>
 									</select>
@@ -229,41 +230,73 @@
 									<select name="dictric" onchange="Dictric_val()" style="" class=" Register_Data form-select">
 										<option value="">Select District</option>
 										<option value="Ampara">Ampara</option>
-                                        <option value="Anuradhapura">Anuradhapura</option>
-                                        <option value="Badulla">Badulla</option>
-                                        <option value="Batticaloa">Batticaloa</option>
-                                        <option value="Colombo">Colombo</option>
-                                        <option value="Galle">Galle</option>
-                                        <option value="Gampaha">Gampaha</option>
-                                        <option value="Hambantota">Hambantota</option>
-                                        <option value="Jaffna">Jaffna</option>
-                                        <option value="Kalutara">Kalutara</option>
-                                        <option value="Kandy">Kandy</option>
-                                        <option value="Kegalle">Kegalle</option>
-                                        <option value="Kilinochchi">Kilinochchi</option>
-                                        <option value="Kurunegala">Kurunegala</option>
-                                        <option value="Mannar">Mannar</option>
-                                        <option value="Matale">Matale</option>
-                                        <option value="Matara">Matara</option>
-                                        <option value="Moneragala">Moneragala</option>
-                                        <option value="Mullaitivu">Mullaitivu</option>
-                                        <option value="Nuwara Eliya">Nuwara Eliya</option>
-                                        <option value="Polonnaruwa">Polonnaruwa</option>
-                                        <option value="Puttalam">Puttalam</option>
-                                        <option value="Ratnapura">Ratnapura</option>
-                                        <option value="Trincomalee">Trincomalee</option>
-                                        <option value="Vavuniya">Vavuniya</option>
+										<option value="Anuradhapura">Anuradhapura</option>
+										<option value="Badulla">Badulla</option>
+										<option value="Batticaloa">Batticaloa</option>
+										<option value="Colombo">Colombo</option>
+										<option value="Galle">Galle</option>
+										<option value="Gampaha">Gampaha</option>
+										<option value="Hambantota">Hambantota</option>
+										<option value="Jaffna">Jaffna</option>
+										<option value="Kalutara">Kalutara</option>
+										<option value="Kandy">Kandy</option>
+										<option value="Kegalle">Kegalle</option>
+										<option value="Kilinochchi">Kilinochchi</option>
+										<option value="Kurunegala">Kurunegala</option>
+										<option value="Mannar">Mannar</option>
+										<option value="Matale">Matale</option>
+										<option value="Matara">Matara</option>
+										<option value="Moneragala">Moneragala</option>
+										<option value="Mullaitivu">Mullaitivu</option>
+										<option value="Nuwara Eliya">Nuwara Eliya</option>
+										<option value="Polonnaruwa">Polonnaruwa</option>
+										<option value="Puttalam">Puttalam</option>
+										<option value="Ratnapura">Ratnapura</option>
+										<option value="Trincomalee">Trincomalee</option>
+										<option value="Vavuniya">Vavuniya</option>
 									</select>
 								</div>
 								<div class="mb-3 city">
 									<label class="form-label">Select City</label>
 									<input name="city" onkeyup="city_val()" type="Text" class="form-control Register_Data">
-									<!--<select name="city" onclick="city_val()" class="form-select Register_Data">-->
-									<!--	<option value="galigamuwa">galigamuwa</option>-->
-									<!--	<option value="kegalle">kegalle</option>-->
-									<!--	<option value="kandy">kandy</option>-->
+									<!-- <select name="city" onclick="city_val()" class="form-select Register_Data">
+										<option value="galigamuwa">galigamuwa</option>
+										<option value="kegalle">kegalle</option>
+										<option value="kandy">kandy</option>
+									</select> -->
+								</div>
+								<!-- <div class="login-form-actions">
+									<input type="hidden" name="register" class="Register_Data">
+									<button class="btn btn-prev"> <span class="icon"> <i class="bi bi-box-arrow-in-left"></i> </span> Previous</button>
+									<button id="register" class="btn submit-btn"><span class="icon"><i class="bi bi-arrow-right-circle"></i></span> Register</button>
+								</div>
+								<center><img class="loading" style="display: none;" src="../assets/images/gif/loading01.gif" width="50" height="50" alt=""></center> -->
+								<div class="login-form-actions">
+									<button class="btn btn-prev"> <span class="icon"> <i class="bi bi-box-arrow-in-left"></i> </span> Previous</button>
+									<button class="btn btn-next"> <span class="icon"> <i class="bi bi-box-arrow-in-right"></i> </span> Next</button>
+								</div>
+							</div>
+
+							<div class="row form-step">
+								<div class="mb-3 col-12 insti">
+									<label class="form-label">Select the your institute</label>
+									<select name="insti" onchange="insti_val()" class="form-select Register_Data w-100">
+										<option value="">Select your institute</option>
+										<?php
+										$query = "SELECT CONCAT(InstiId, '-', InstiName,'-',InstiPlace) as instiData,InstiName FROM `insti` Where status = 'active'";
+										$result = $conn->query($query);
+										while ($row = $result->fetch_assoc()) {
+											echo "<option value='" . $row['instiData'] . "'>" . $row['InstiName'] . "</option>";
+										}
+										?>
 									</select>
 								</div>
+
+								<div class="mb-3 col-12 paySlip">
+									<label class="form-label">Upload your paument slip</label>
+									<input name="paySlip" type="file" class="form-control" accept=".jpeg, .jpg, .png, .tiff">
+								</div>
+
 								<div class="login-form-actions">
 									<input type="hidden" name="register" class="Register_Data">
 									<button class="btn btn-prev"> <span class="icon"> <i class="bi bi-box-arrow-in-left"></i> </span> Previous</button>
@@ -271,23 +304,6 @@
 								</div>
 								<center><img class="loading" style="display: none;" src="../assets/images/gif/loading01.gif" width="50" height="50" alt=""></center>
 							</div>
-
-							<!--<div class="row form-step">-->
-							<!--	<div class="mb-3 guaname">-->
-							<!--		<label class="form-label">Guardian Name</label>-->
-							<!--		<input name="guaname" onkeyup="gunName_val()" type="Text" class="form-control Register_Data">-->
-							<!--	</div>-->
-							<!--	<div class="mb-3 gunnum">-->
-							<!--		<label class="form-label">Guardian Phone Number</label>-->
-							<!--		<input name="guanum" onkeyup="GuaNum_val()" type="number" class="form-control Register_Data">-->
-							<!--	</div>-->
-							<!--	<div class="login-form-actions">-->
-							<!--		<input type="hidden" name="register" class="Register_Data">-->
-							<!--		<button class="btn btn-prev"> <span class="icon"> <i class="bi bi-box-arrow-in-left"></i> </span> Previous</button>-->
-							<!--		<button id="register" class="btn submit-btn"><span class="icon"><i class="bi bi-arrow-right-circle"></i></span> Register</button>-->
-							<!--	</div>-->
-							<!--	<center><img class="loading" style="display: none;" src="../assets/images/gif/loading01.gif" width="50" height="50" alt=""></center>-->
-							<!--</div>-->
 
 							<div class="login-form-footer">
 								<div class="additional-link">
@@ -337,27 +353,29 @@
 	<!-- *************
 			************ Required JavaScript Files *************
 		************* -->
-		
+
 	<script>
-	window.onload = function() {
-		url_data = window.location.search;
-		if (url_data == '?register') {
-			if (!localStorage.getItem("regStatus") == 1) {
-				window.location.href = "../login";
-			}else{
-				email.value = localStorage.getItem("email");
-				// fname.value = localStorage.getItem("fname");
-				// lname.value = localStorage.getItem("lname");
+		window.onload = function() {
+			localStorage.setItem("regStatus", "1");
+			localStorage.setItem("email", "oshanavishka6@gmail.com");
+			url_data = window.location.search;
+			if (url_data == '?register') {
+				if (!localStorage.getItem("regStatus") == 1) {
+					window.location.href = "../login";
+				} else {
+					email.value = localStorage.getItem("email");
+					// fname.value = localStorage.getItem("fname");
+					// lname.value = localStorage.getItem("lname");
+				}
 			}
-		}
-	};
+		};
 	</script>
 	<!-- Required jQuery first, then Bootstrap Bundle JS -->
 	<script src="../Dachbord/assets/js/jquery.min.js"></script>
 	<script src="../Dachbord/assets/js/bootstrap.bundle.min.js"></script>
 	<script src="../Dachbord/assets/js/modernizr.js"></script>
 	<script src="../Dachbord/assets/js/moment.js"></script>
-	
+
 	<!-- Bootstrap Select JS -->
 	<!--<script src="../Dachbord/assets/vendor/bs-select/bs-select.min.js"></script>-->
 	<!--<script src="../Dachbord/assets/vendor/bs-select/bs-select-custom.js"></script>-->
