@@ -36,7 +36,8 @@ const address = document.querySelector('.address input');
 const dictric = document.querySelector('.dictric select');
 const city = document.querySelector('.city input');
 const guaname = document.querySelector('.guaname input');
-const gunnum = document.querySelector('.gunnum input');
+const insti = document.querySelector('.insti select');
+const paySlip = document.querySelector('.paySlip input');
 let formStepsNum = 0;
 
 if (element.classList.contains("register")) {
@@ -61,11 +62,11 @@ if (element.classList.contains("register")) {
         updateFormSteps();
         updatemultibar();
       }
-      //   else if (formStepsNum == 4 && step_5()) {
-      //     formStepsNum++;
-      //     updateFormSteps();
-      //     updatemultibar();
-      //   }
+      else if (formStepsNum == 4 && step_5()) {
+        formStepsNum++;
+        updateFormSteps();
+        updatemultibar();
+      }
     });
   });
 
@@ -73,6 +74,7 @@ if (element.classList.contains("register")) {
     btn.addEventListener("click", () => {
       event.preventDefault();
       formStepsNum--;
+
       updateFormSteps();
       updatemultibar();
     });
@@ -80,7 +82,7 @@ if (element.classList.contains("register")) {
 
   submitBtns.addEventListener("click", () => {
     event.preventDefault();
-    if (step_4()) {
+    if (step_5()) {
       submitBtns.style.display = 'none';
       loding_img.style.display = 'block';
       prevBtns.forEach((btn) => {
@@ -117,7 +119,6 @@ function updatemultibar() {
 
   multi.style.width =
     ((multiActive.length - 1) / (multiSteps.length - 1)) * 100 + "%";
-
 }
 
 function sineup() {
@@ -391,6 +392,37 @@ function GuaNum_val() {
   }
 }
 
+function insti_val() {
+  if (TextValidation(insti.value, 'select')) {
+    insti.classList.toggle("is-invalid", false);
+    insti.classList.toggle("is-invalid", false);
+
+    // if ((!insti.value.includes("Online")) || !TextValidation(insti.value, 'select')) {
+    //   paySlip.parentElement.classList.toggle("d-none", false);
+    // } else {
+    //   paySlip.parentElement.classList.toggle("d-none", true);
+    // }
+    return true;
+  } else {
+    insti.classList.toggle("is-valid", false);
+    insti.classList.toggle("is-invalid", true);
+    return false;
+  }
+}
+
+function paySlip_val() {
+  // if ((insti.value.includes("Online"))) return true;
+  if (paySlip.files.length > 0) {
+    paySlip.classList.toggle("is-valid", true);
+    paySlip.classList.toggle("is-invalid", false);
+    return true;
+  } else {
+    paySlip.classList.toggle("is-valid", false);
+    paySlip.classList.toggle("is-invalid", true);
+    return false;
+  }
+}
+
 // validate function end
 
 function step_1() {
@@ -427,11 +459,11 @@ function step_4() {
   // return true;
 }
 
-// function step_5() {
-//   gunName_val();
-//   GuaNum_val();
-//   return gunName_val() && GuaNum_val();
-// }
+function step_5() {
+  insti_val();
+  paySlip_val();
+  return insti_val() && paySlip_val();
+}
 
 // form validation function end
 
@@ -512,10 +544,17 @@ function Register() {
   Register_Data.append("email", localStorage.getItem('email'));
   // Register_Data.append("fname" , localStorage.getItem('fname'));
   // Register_Data.append("lname" , localStorage.getItem('lname'));
-  localStorage.clear();
+
   var nic_pic = register_form.querySelector('[name="nic_pic"]').files[0];
   Register_Data.append('nic_pic', nic_pic);
-  console.log(Register_Data);
+
+  var paySlip_pic = register_form.querySelector('[name="paySlip"]').files[0];
+  Register_Data.append('paySlip', paySlip_pic);
+
+  // Register_Data.forEach((value, key) => {
+  //   console.log(key, value);
+  // });
+
   // Register_Data.append(form_element[count].name, form_element[count].value);
 
   // document.getElementById('Register').disabled = true;
@@ -529,9 +568,10 @@ function Register() {
   ajax_request.onreadystatechange = function () {
     if (ajax_request.readyState == 4 && ajax_request.status == 200) {
       try {
-        var response = JSON.parse(ajax_request.responseText);
+        var response = JSON.parse(ajax_request.responseText.replace(/<br\s*[\/]?>/gi, ""));
         console.log(response);
         if (response.rusalt == "Successfull") {
+          localStorage.clear();
           window.location.href = "../Dachbord/?success_register";
         } else {
           submitBtns.style.display = 'flex';
@@ -542,6 +582,7 @@ function Register() {
           error_alert();
         }
       } catch (error) {
+        console.log(error);
         var response = "null";
         submitBtns.style.display = 'flex';
         loding_img.style.display = 'none';

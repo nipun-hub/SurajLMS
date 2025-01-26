@@ -19,6 +19,7 @@ if (isset($_POST['register'])) {
   $email = $_POST['email'];
   $nic = $_POST['nic'];
   $fileTmpName = isset($_FILES['nic_pic']) ? $_FILES['nic_pic']['tmp_name'] : null;
+  $instiFileTmpName = isset($_FILES['paySlip']) ? $_FILES['paySlip']['tmp_name'] : null;
   // $NicPic = "images";
   $NumMob = $_POST['NumMob'];
   $NumWha = $_POST['NumWha'];
@@ -31,8 +32,7 @@ if (isset($_POST['register'])) {
   $address = $_POST['address'];
   $dictric = $_POST['dictric'];
   $city = $_POST['city'];
-  //   $guaname = $_POST['guaname'];
-  //   $guanum = $_POST['guanum'];
+  $insti = $_POST['insti'];
 
   $UserName = $fname . " " . $lname;
   $regCode = null;
@@ -50,32 +50,47 @@ if (isset($_POST['register'])) {
         $regCode = "ICT" . substr($year, -2) . $insert_id; // make reg code
         $fillCount = 10 - strlen($regCode);
         $regCode = substr($regCode, 0, 5) . str_repeat(0, $fillCount) . substr($regCode, 5);
+
+        $instituteData = explode("-", $insti);
+        $instiName = $instituteData[1];
+        $instiId = $instituteData[0];
+
         $fileName = isset($_FILES['nic_pic']) ? "Nic-" . $insert_id . "-" . date("Ymd") . ".jpg" : null;
+        $instiPicName = isset($_FILES['paySlip']) ? "instiPic-" . $insert_id . ".jpg" : null;
+
         $targetFile = "../Dachbord/user_images/nic_pic/" . $fileName;
+        $instiTargetFile = "../Dachbord/user_images/instiRegImg/" . $instiPicName;
+
+        $active = "active";
 
         $conn->begin_transaction();
-        $sql = "INSERT INTO `userdata`(`UserId`, `RegCode`, `Fname`, `Lname`, `Email`, `Nic`, `NicPic`, `MobNum`, `WhaNum`, `Dob`, `SchName`, `Year`, `Streem`, `Shy`, `Medium`, `Address`, `Distric`, `City`) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO `userdata`(`UserId`, `RegCode`, `Fname`, `Lname`, `Email`, `Nic`, `NicPic`, `MobNum`, `WhaNum`, `Dob`, `SchName`, `Year`, `Streem`, `Shy`, `Medium`, `Address`, `Distric`, `City`,`InstiName`,`InstiId`,`InstiPic`,`Status`) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssssssssssss", $insert_id, $regCode, $fname, $lname, $email, $nic, $fileName, $NumMob, $NumWha, $dob, $school, $year, $streem, $shy, $medium, $address, $dictric, $city);
+        $stmt->bind_param("ssssssssssssssssssssss", $insert_id, $regCode, $fname, $lname, $email, $nic, $fileName, $NumMob, $NumWha, $dob, $school, $year, $streem, $shy, $medium, $address, $dictric, $city, $instiName, $regCode, $instiPicName, $active);
         $stmt->execute();
 
-        $sql = "UPDATE user SET RegCode=? , Year=? WHERE UserId = ?";
+        $sql = "UPDATE user SET RegCode=?, Year=?, InstiName=?, InstiId=?, Status=? WHERE UserId=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $regCode, $year, $insert_id);
-        if ($stmt->execute()) {
-          // file upload
-          (isset($_FILES['nic_pic'])) ? move_uploaded_file($fileTmpName, $targetFile) : $rusalt = "";
-          $_SESSION['login'] = $insert_id;
-          $rusalt = "Successfull";
+        $stmt->bind_param("ssssss", $regCode, $year, $instiName, $regCode, $active, $insert_id);
+        $stmt->execute();
+
+        // file upload
+        if (isset($_FILES['nic_pic'])) {
+          move_uploaded_file($fileTmpName, $targetFile);
+        }
+        if (isset($_FILES['paySlip'])) {
+          move_uploaded_file($instiFileTmpName, $instiTargetFile);
         }
         $conn->commit();
+        $_SESSION['login'] = $insert_id;
+        $rusalt = "Successfull";
       } catch (Exception $e) {
         $conn->rollback();
         $rusalt = "error001" . $e;
       }
     } else {
-      $rusalt = "ardins";
+      $rusalt = "Alredy register";
     }
   } catch (Exception $e) {
     $rusalt = "error004";
@@ -88,6 +103,22 @@ if (isset($_POST['register'])) {
     'rusalt'    =>  $rusalt,
     'regcode'    =>  $regCode,
   );
+  WriteFile(json_encode($output));
   echo json_encode($output);
+}
+
+function generateRegCode($year, $id)
+{
+  $regCode = "ICT" . substr($year, -2) . $id; // make reg code
+  $fillCount = 10 - strlen($regCode);
+  $regCode = substr($regCode, 0, 5) . str_repeat(0, $fillCount) . substr($regCode, 5);
+  return $regCode;
+}
+
+function WriteFile($content)
+{
+  $file = fopen("myfile.txt", "a"); // Open in write mode (overwrites existing content)
+  fwrite($file, $content);
+  fclose($file);
 }
 ?>

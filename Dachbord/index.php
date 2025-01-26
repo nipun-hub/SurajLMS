@@ -213,6 +213,7 @@
 								</div>
 							</div>
 							<?php }
+
 						if (!$rusalt_insti_data->num_rows > 0) {
 							$thisMonth = GetToday('ym');
 							// $sql = "SELECT c.*,p.Status AS 'payStatus' FROM user u JOIN class c ON u.Year = c.year and u.InstiName = c.InstiName and c.Status = 'active' LEFT JOIN payment p ON u.UserId = p.UserId and c.ClassId = p.ClassId and p.Month = ? WHERE u.UserId = ? ";
