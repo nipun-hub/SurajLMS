@@ -144,7 +144,7 @@ if (!isset($queryParams['lesson'])) {
 				<!-- Content wrapper start -->
 				<div class="content-wrapper">
 
-					<!-- row start -->
+					<!-- winner card section -->
 					<?php if (true) { ?>
 						<div class="row item-center" id="stuWinInforBaer">
 							<div class="col-xxl-6 col-md-8 col-sm-10 col-12 carousel slide" id="carouselExampleSlidesOnly" data-bs-ride="carousel">
@@ -191,21 +191,15 @@ if (!isset($queryParams['lesson'])) {
 							</div>
 						</div>
 					<?php } ?>
-					<!-- row end -->
 
-					<!-- row start -->
-					<div class="row" id="PageControles">
-
-					</div>
-					<!-- row end -->
-
-					<!-- row start  -->
+					<!-- payment card section  -->
 					<div class="row" id="PaymentStatus"></div>
-					<!-- row end -->
 
-					<!-- Row start -->
+					<!-- page controls for lesson and month -->
+					<div class="row item-center" id="PageControles"></div>
+
+					<!-- main card section show lessons  -->
 					<div class="row" id="mainCardContent"></div>
-					<!-- Row end -->
 
 					<!-- video player start -->
 					<!-- <div class="row g-4" id="mainCardContent">
@@ -334,8 +328,22 @@ if (!isset($queryParams['lesson'])) {
 	?>
 
 	<script>
+		// Method 2: Using window.history and popstate event
+		(function() {
+			// Push a new state to create history entry
+			window.history.pushState(null, '', window.location.href);
+
+			// Handle popstate event (triggered when back button is clicked)
+			window.addEventListener('popstate', function() {
+				PageControles();
+				PaymentStatus();
+				mainCardContent();
+			});
+		})();
+
+
 		// let questions
-		changeContent(`month`) // month for active 
+		// changeContent(`month`) // month for active 
 		prograss_snipper();
 		PageControles();
 		PaymentStatus();

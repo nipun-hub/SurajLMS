@@ -630,8 +630,8 @@ try {
 
                 $htmlFullContent = "";
                 $htmlContentHeader = "
-                    `<div class='col-12 mainGroupOptions'>
-                    `<div class='card'>";
+                    <div class='col-12 mainGroupOptions'>
+                    <div class='card'>";
                 $htmlContentFooter = "
                     </div>
                     </div>";
@@ -641,6 +641,7 @@ try {
 		            	<div class='table-card'>";
                 $allLessonContent = "";
 
+                // latest resocing section start 
                 if (true) {
                     // $GidNew = "%[{$data}]%";
                     $activeClaId_upd = "%[{$activeClaId}]%";
@@ -730,8 +731,11 @@ try {
                     }
                 }
                 $htmlFullContent = $htmlContentHeader . $allLessonContent . $htmlContentFooter;
+                // latest resocing section end 
+
             }
 
+            // if type is lesson show lesson card and else month card
             if ($maintype == 'lesson') {
                 $sql = "SELECT * FROM grouplist WHERE ShowFrom LIKE '%All%' or ShowFrom LIKE '%[$activeClaId]%' ORDER BY Status ASC";
                 // $sql = "SELECT * FROM grouplist WHERE HideFrom Not LIKE '%$insti%' and HideFrom NOT LIKE '%All%' and HideFrom Not LIKE '%[$activeClaId]%' OR HideFrom IS NULL ORDER BY Status ASC";
@@ -757,7 +761,7 @@ try {
                     }
 
                     $htmlContent .= "
-                    <div class='col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup'>
+                    <div class='col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup' onclick='mainCardAction({$Gid},{$type})'>
                         <div class='main-card h-auto' style='--index:{$i}'>
                             <div class='main-sub-card'>
                                 <i class='{$indigate} position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>" .
@@ -766,9 +770,9 @@ try {
                                     {$action}
                                     <div class='name'>{$MGName}</div>
                                 </div>
-                                <div class='main-card-footer mt-2 h-auto'>
-                                    <button onclick='mainCardAction({$Gid},{$type})' class='btn btn-info py-1 px-3'>{$btn}</button>
-                                </div>
+                                <!-- <div class='main-card-footer mt-2 h-auto'>
+						            <button onclick='mainCardAction({$Gid},{$type})' class='btn btn-info py-1 px-3'>{$btn}</button>
+					            </div> -->
                             </div>
                         </div>
                     </div>";
@@ -801,40 +805,40 @@ try {
                     } else {
                         $type = 0;
                         $indigate = $lock;
-                        $action = $Restricted;
+                        $action = $notply;
                         $btn = $lockbtn;
                     }
 
                     $htmlContent .= "
-                <div class='col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup'>
-                    <div class='main-card h-auto' style='--index:{$i}'>
-                        <div class='main-sub-card'>
-                                <i class='{$indigate} position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>
-                                <div class='StylingText01'>
-									<div class='subtitle'>{$year}</div>
-									<div class='top'>{$MonthName}</div>
-									<div class='bottom' aria-hidden='true'>{$MonthName}</div>
-								</div>
-                            <div class='main-card-details w-100 mt-2'>
-                                <div class='d-flex justify-content-between mb-2'>
-                                    {$action}
-                                    <!--<div class='d-flex'>
-                                        <div class='text-dark'><span>20%</span></div>
-                                        <div class='circular'>
-                                            <input type='hidden' value='100'>
-                                            <div class='circular-progress flex-end'>
+                    <div class='col-xxl-2 col-sm-4 col-md-3 col-6 position-relative mainGroup' onclick='mainCardAction({$Month},`{$maintype}`)'>
+                        <div class='main-card h-auto' style='--index:{$i}'>
+                            <div class='main-sub-card'>
+                                    <i class='{$indigate} position-absolute top-0 start-100 pe-5 pt-5 translate-middle'></i>
+                                    <div class='StylingText01'>
+				    					<div class='subtitle'>{$year}</div>
+				    					<div class='top'>{$MonthName}</div>
+				    					<div class='bottom' aria-hidden='true'>{$MonthName}</div>
+				    				</div>
+                                <div class='main-card-details w-100 mt-2'>
+                                    <div class='d-flex justify-content-between mb-2'>
+                                        {$action}
+                                        <!--<div class='d-flex'>
+                                            <div class='text-dark'><span>20%</span></div>
+                                            <div class='circular'>
+                                                <input type='hidden' value='100'>
+                                                <div class='circular-progress flex-end'>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>-->
+                                        </div>-->
+                                    </div>
+                                    <div class='name text-center'>{$year} {$MonthName}</div>
                                 </div>
-                                <div class='name text-center'>{$year} {$MonthName}</div>
-                            </div>
-                            <div class='main-card-footer mt-2 h-auto'>
-                                <button onclick='mainCardAction({$Month},`{$maintype}`)' class='btn btn-info py-1 px-3'>{$btn}</button>
+                                <!-- <div class='main-card-footer mt-2 h-auto'>
+                                    <button onclick='mainCardAction({$Month},`{$maintype}`)' class='btn btn-info py-1 px-3'>{$btn}</button>
+                                </div> -->
                             </div>
                         </div>
-                    </div>
-                </div>";
+                    </div>";
                     $i++;
                 }
             } else {
