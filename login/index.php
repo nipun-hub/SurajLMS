@@ -356,8 +356,6 @@
 
 	<script>
 		window.onload = function() {
-			localStorage.setItem("regStatus", "1");
-			localStorage.setItem("email", "oshanavishka6@gmail.com");
 			url_data = window.location.search;
 			if (url_data == '?register') {
 				if (!localStorage.getItem("regStatus") == 1) {
