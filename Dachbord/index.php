@@ -349,7 +349,7 @@
 
 				formData = "ClassLogin" + "&id=" + this.id;
 				$.post("sql/process.php", formData, function(response, status) {
-					if (response == " success") {
+					if (response.trim() == "success") {
 						clear_btn();
 						window.location.href = "lesson.php";
 					} else {
