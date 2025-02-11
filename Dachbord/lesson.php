@@ -11,7 +11,7 @@ mysqli_set_charset($conn, "utf8mb4"); ?>
 <?php
 
 $url = $_SERVER['REQUEST_URI']; // Get the current URL
-parse_str(parse_url($url, PHP_URL_QUERY), $queryParams); // Parse the query string
+parse_str(parse_url($url, PHP_URL_QUERY) ?? '', $queryParams); // Parse the query string
 
 if (!isset($queryParams['lesson'])) {
 	// check isset class 
