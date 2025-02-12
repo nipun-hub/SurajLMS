@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  webserver:
+    container_name: PHP-webserver
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./www:/var/www/html
+      - ./php_logs:/var/log/php # Mount PHP error logs
+
+    ports:
+      - 8000:80
+    depends_on:
+      - mariadb
+    environment:
+      - APACHE_RUN_USER=#33
+      - APACHE_RUN_GROUP=#33
+    command: >
+      bash -c "docker-php-ext-install mysqli pdo pdo_mysql && apache2-foreground"
+
+  mariadb:
+    image: mariadb:10.6.20
+    container_name: mariadb-container
+    environment:
+      MYSQL_ROOT_PASSWORD: JSo{5#rcV{kA
+      MYSQL_DATABASE: ict_lms
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: JSo{5#rcV{kA
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d # Auto-import SQL script
+  # New Backup Service
+  db_backup:
+    image: bash:latest # Use a lightweight Bash container
+    container_name: db-backup-container
+    volumes:
+      - mariadb_data:/var/lib/mysql # Access MariaDB data
+      - ./db_backups:/backups # Store backups on host
+      - ./backup.sh:/backup.sh # Mount custom backup script
+    environment:
+      MYSQL_CONTAINER: mariadb-container
+      MYSQL_USER: root
+      MYSQL_PASSWORD: JSo{5#rcV{kA
+      MYSQL_DATABASE: ict_lms
+    entrypoint: /bin/sh -c "apk add --no-cache mysql-client && while true; do sh /backup.sh; sleep 86400; done"
+      # Run backup every hour
+      # Infinite loop to run the backup script once every 24 hours
+
+volumes:
+  mariadb_data:
+  php_logs: # Define volume for PHP logs
+  db_backups:
