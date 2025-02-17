@@ -1214,8 +1214,11 @@ try {
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssss", $UserId, $paymentClass, $type, $Month, $fileName, $today);
                 $stmt->execute();
-                move_uploaded_file($fileTemp, $targetFile . $fileName);
-                echo "success";
+                if (move_uploaded_file($fileTemp, $targetFile . $fileName)) {
+                    echo "success";
+                } else {
+                    echo "error";
+                }
             } else {
                 echo "error";
             }

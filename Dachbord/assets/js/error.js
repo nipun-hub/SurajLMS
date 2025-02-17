@@ -1,6 +1,6 @@
 function errorHadel(value, type = null) {
     if (type == null) {
-        if (value == " success") { return 'Successfull'; }
+        if (value.trim() == "success") { return 'Successfull'; }
         else if (value == " upload Error") { return 'Upload Problem'; }
         else if (value == " Insert Error") { return 'Insert Problem'; }
         else if (value == " alredy register") { return 'Alredy Registered'; }
