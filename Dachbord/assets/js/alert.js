@@ -340,7 +340,9 @@ function Pay(type, val = null, val2 = null) {
         processData: false,
         contentType: false,
         success: function (data, status) {
+          console.log(data);
           response = errorHadel(data);
+          console.log(response)
           if (response == "Successfull") {
             PaymentStatus();
             // update html content
@@ -395,7 +397,9 @@ function Pay(type, val = null, val2 = null) {
         processData: false,
         contentType: false,
         success: function (response, status) {
+          console.log(response)
           response = errorHadel(response);
+          console.log(response)
           if (response == "Successfull") {
             PaymentStatus();
             // update html content

@@ -1190,6 +1190,7 @@ try {
     // payment physuical start
 
     if (isset($_POST['PaymetPhy'])) {
+        $conn->begin_transaction();
         try {
             $paymentClass = explode("-", $_SESSION['clz'])[1];
             $type = "active";
@@ -1215,14 +1216,18 @@ try {
                 $stmt->bind_param("ssssss", $UserId, $paymentClass, $type, $Month, $fileName, $today);
                 $stmt->execute();
                 if (move_uploaded_file($fileTemp, $targetFile . $fileName)) {
+                    $conn->commit();
                     echo "success";
                 } else {
-                    echo "error";
+                    $conn->rollback();
+                    echo "error1";
                 }
             } else {
-                echo "error";
+                $conn->rollback();
+                echo "error2";
             }
         } catch (Exception $e) {
+            $conn->rollback();
             echo "error" . $e;
         }
     }
@@ -1273,13 +1278,17 @@ try {
                 $stmt->execute();
                 $inserted_id = $stmt->insert_id;
                 move_uploaded_file($fileTemp, $targetFile . $fileName);
-
-                $sql = "INSERT INTO paydata(PayId, Address, Tel1, Tel2, TelW, Distric, City, Dict) VALUES(?,?,?,?,?,?,?,?)";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssssssss", $inserted_id, $address, $num01, $num02, $numwha, $distric, $city, $dict);
-                $stmt->execute();
-                $conn->commit();
-                echo "success";
+                if (move_uploaded_file($fileTemp, $targetFile . $fileName)) {
+                    $sql = "INSERT INTO paydata(PayId, Address, Tel1, Tel2, TelW, Distric, City, Dict) VALUES(?,?,?,?,?,?,?,?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssssssss", $inserted_id, $address, $num01, $num02, $numwha, $distric, $city, $dict);
+                    $stmt->execute();
+                    $conn->commit();
+                    echo "success";
+                } else {
+                    $conn->rollback();
+                    echo "error";
+                }
             } else {
                 echo "alredy add payment";
             }
