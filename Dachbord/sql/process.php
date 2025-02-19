@@ -1215,6 +1215,9 @@ try {
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssss", $UserId, $paymentClass, $type, $Month, $fileName, $today);
                 $stmt->execute();
+                if (!file_exists($targetFile)) {
+                    mkdir($targetFile, 0777, true);
+                }
                 if (move_uploaded_file($fileTemp, $targetFile . $fileName)) {
                     $conn->commit();
                     echo "success";
@@ -1228,7 +1231,7 @@ try {
             }
         } catch (Exception $e) {
             $conn->rollback();
-            echo "error" . $e;
+            echo "error3" . $e;
         }
     }
 
