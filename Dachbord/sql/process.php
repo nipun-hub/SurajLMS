@@ -1280,7 +1280,9 @@ try {
                 $stmt->bind_param("ssssssss", $UserId, $UserName, $classid, $price, $paymethod, $Month, $fileName, $today);
                 $stmt->execute();
                 $inserted_id = $stmt->insert_id;
-                move_uploaded_file($fileTemp, $targetFile . $fileName);
+                if (!file_exists($targetFile)) {
+                    mkdir($targetFile, 0777, true);
+                }
                 if (move_uploaded_file($fileTemp, $targetFile . $fileName)) {
                     $sql = "INSERT INTO paydata(PayId, Address, Tel1, Tel2, TelW, Distric, City, Dict) VALUES(?,?,?,?,?,?,?,?)";
                     $stmt = $conn->prepare($sql);
@@ -1290,14 +1292,14 @@ try {
                     echo "success";
                 } else {
                     $conn->rollback();
-                    echo "error";
+                    echo "error1";
                 }
             } else {
                 echo "alredy add payment";
             }
         } catch (Exception $e) {
             $conn->rollback();
-            echo "error" . $e;
+            echo "error2" . $e;
         }
     }
     // payment online end
