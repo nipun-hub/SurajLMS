@@ -21,6 +21,9 @@ RUN mkdir -p /var/log/php \
     && touch /var/log/php/error.log \
     && chmod -R 777 /var/log/php
 
+# Ensure Apache runs as www-data
+RUN usermod -u 33 www-data && groupmod -g 33 www-data
+
 # Expose Apache port
 EXPOSE 80
 
