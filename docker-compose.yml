@@ -9,7 +9,7 @@ services:
       - ./:/var/www/html
       - ./php_logs:/var/log/php # Mount PHP error logs
     ports:
-      - 9000:80
+      - 6000:80
     depends_on:
       - mariadb
     environment:
