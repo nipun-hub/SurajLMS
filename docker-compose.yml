@@ -8,7 +8,6 @@ services:
     volumes:
       - ./www:/var/www/html
       - ./php_logs:/var/log/php # Mount PHP error logs
-
     ports:
       - 8000:80
     depends_on:
@@ -17,8 +16,8 @@ services:
       - APACHE_RUN_USER=#33
       - APACHE_RUN_GROUP=#33
     command: >
-      bash -c "docker-php-ext-install mysqli pdo pdo_mysql && apache2-foreground"
-
+      bash -c "chown -R www-data:www-data /var/www/html && apache2-foreground"
+      # Ensure correct ownership before starting Apache
   mariadb:
     image: mariadb:10.6.20
     container_name: mariadb-container
@@ -48,8 +47,8 @@ services:
     entrypoint: /bin/sh -c "apk add --no-cache mysql-client && while true; do sh /backup.sh; sleep 86400; done"
       # Run backup every hour
       # Infinite loop to run the backup script once every 24 hours
-
 volumes:
   mariadb_data:
   php_logs: # Define volume for PHP logs
   db_backups:
+    
