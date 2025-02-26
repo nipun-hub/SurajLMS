@@ -6,7 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./www:/var/www/html
       - ./php_logs:/var/log/php # Mount PHP error logs
     ports:
       - 8000:80
@@ -37,8 +36,8 @@ services:
     container_name: db-backup-container
     volumes:
       - mariadb_data:/var/lib/mysql # Access MariaDB data
-      - ./db_backups:/backups # Store backups on host
-      - ./backup.sh:/backup.sh # Mount custom backup script
+      - /backups/surajLms:/backups # Store backups on host
+      - /backup.sh:/backup.sh # Mount custom backup script
     environment:
       MYSQL_CONTAINER: mariadb-container
       MYSQL_USER: root
