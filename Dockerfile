@@ -10,11 +10,11 @@ RUN echo "output_buffering = On" >> /usr/local/etc/php/php.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /var/log/php/error.log" >> /usr/local/etc/php/php.ini
 
-# Copy project files
-COPY . /var/www/html/
-
 # Set working directory
 WORKDIR /var/www/html/
+
+# Copy project files
+COPY . /var/www/html/
 
 # Create log directory and set permissions
 RUN mkdir -p /var/log/php \
