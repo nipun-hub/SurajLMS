@@ -11,7 +11,7 @@ RUN echo "output_buffering = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /var/log/php/error.log" >> /usr/local/etc/php/php.ini
 
 # Copy project files
-COPY ./www /var/www/html/
+COPY . /var/www/html/
 
 # Set working directory
 WORKDIR /var/www/html/
