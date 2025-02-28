@@ -75,6 +75,15 @@ if (isset($_POST['register'])) {
         $stmt->bind_param("ssssss", $regCode, $year, $instiName, $regCode, $active, $insert_id);
         $stmt->execute();
 
+        // check it location
+        if (!file_exists($targetFile)) {
+          mkdir($targetFile, 0777, true);
+        }
+
+        if (!file_exists($instiTargetFile)) {
+          mkdir($instiTargetFile, 0777, true);
+        }
+
         // file upload
         if (isset($_FILES['nic_pic'])) {
           move_uploaded_file($fileTmpName, $targetFile);
