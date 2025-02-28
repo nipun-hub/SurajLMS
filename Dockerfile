@@ -10,16 +10,19 @@ RUN echo "output_buffering = On" >> /usr/local/etc/php/php.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /var/log/php/error.log" >> /usr/local/etc/php/php.ini
 
-# Copy project files
-COPY ./www /var/www/html/
-
 # Set working directory
 WORKDIR /var/www/html/
+
+# Copy project files
+COPY . /var/www/html/
 
 # Create log directory and set permissions
 RUN mkdir -p /var/log/php \
     && touch /var/log/php/error.log \
     && chmod -R 777 /var/log/php
+
+# Ensure Apache runs as www-data
+RUN usermod -u 33 www-data && groupmod -g 33 www-data
 
 # Expose Apache port
 EXPOSE 80
