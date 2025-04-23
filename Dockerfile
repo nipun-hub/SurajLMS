@@ -5,7 +5,9 @@ FROM php:8.1.25-apache
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # Set PHP configurations
-RUN echo "output_buffering = On" >> /usr/local/etc/php/php.ini \
+RUN echo "upload_max_filesize = 20M" >> /usr/local/etc/php/php.ini \
+    && echo "post_max_size = 20M" >> /usr/local/etc/php/php.ini \
+    && echo "output_buffering = On" >> /usr/local/etc/php/php.ini \
     && echo "display_errors = Off" >> /usr/local/etc/php/php.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /var/log/php/error.log" >> /usr/local/etc/php/php.ini
