@@ -37,7 +37,7 @@ services:
     container_name: db-backup-container
     volumes:
       - mariadb_data:/var/lib/mysql # Access MariaDB data
-      - /backups/surajLms:/backups # Store backups on host
+      - ./db_backups:/backups # Store backups on host
       - ./backup.sh:/backup.sh # Mount custom backup script
     environment:
       MYSQL_CONTAINER: mariadb-container
@@ -51,4 +51,3 @@ volumes:
   mariadb_data:
   php_logs: # Define volume for PHP logs
   db_backups:
-    
